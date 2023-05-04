@@ -10,9 +10,10 @@ inputs:
 tasks:
   - label: List files in ${path}
     name: listOfFiles
-    type: shell/bash
-    script: |
-          for f in ${path}
-          do
-            echo "$f"
-          done
+    type: bash/v1/execute
+    parameters:
+      script: |
+            for f in ${path}
+            do
+              echo "$f"
+            done

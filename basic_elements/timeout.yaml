@@ -1,0 +1,24 @@
+label: Hello Timeout
+
+inputs:
+  - name: yourName
+    label: Your Name
+    type: string
+    required: true
+
+tasks:
+  - label: Print a greeting
+    type: logger/v1/info
+    parameters:
+      text: Hello ${yourName}
+
+  - label: Sleep a lot
+    type: delay/v1/sleep
+    parameters:
+      timeout: 5s
+      millis: 60000
+
+  - label: Print a farewell
+    type: logger/v1/info
+    parameters:
+      text: Goodbye ${yourName}

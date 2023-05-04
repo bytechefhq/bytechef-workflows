@@ -5,9 +5,9 @@ outputs:
     value: ${randomNumber}
 
 tasks:
-
   - name: randomNumber
     label: Generate a random integer
-    type: random/int
-    startInclusive: 0
-    endInclusive: 1000
+    type: random/v1/randomInt
+    parameters:
+      startInclusive: 0
+      endInclusive: 1000
