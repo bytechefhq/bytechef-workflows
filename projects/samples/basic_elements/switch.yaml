@@ -8,6 +8,7 @@ tasks:
       endInclusive: 4
 
   - type: switch
+    name: switch1
     parameters:
       expression: c${selector}
       cases:
@@ -30,10 +31,12 @@ tasks:
                 value: other
 
   - type: delay/v1/sleep
+    name: delay1
     parameters:
       millis: ${selector*1000}
 
   - type: logger/v1/info
+    name: logger1
     label: ${selector}-${output}
     parameters:
       text: ${output}

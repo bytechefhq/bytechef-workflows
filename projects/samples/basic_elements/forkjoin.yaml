@@ -1,7 +1,8 @@
 label: Hello fork/join
 
 tasks:
-  - type: forkjoin/v1
+  - name: forkjoin
+    type: forkjoin/v1
     parameters:
       branches:
          - - name: randomNumber
@@ -12,6 +13,7 @@ tasks:
               endInclusive: 5000
 
            - type: delay/v1/sleep
+             name: delay1
              parameters:
               millis: ${randomNumber}
 
@@ -23,10 +25,12 @@ tasks:
               endInclusive: 5000
 
            - type: delay/v1/sleep
+             name: delay2
              parameters:
               millis: ${randomNumber}
 
            - type: each
+             name: each
              parameters:
               list: [1000, 2000, 10000]
               iteratee:
