@@ -2,13 +2,13 @@ label: Hello Switch
 
 tasks:
   - name: selector
-    type: random/v1/randomInt
+    type: randomHelper/v1/randomInt
     parameters:
       startInclusive: 1
       endInclusive: 4
 
-  - type: switch
-    name: switch1
+  - name: switch1
+    type: switch/v1
     parameters:
       expression: c${selector}
       cases:

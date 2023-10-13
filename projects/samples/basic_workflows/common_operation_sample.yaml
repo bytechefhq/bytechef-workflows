@@ -81,7 +81,7 @@ tasks:
       name: "loggJsonArrayElement"
       description: "Print json array content in log with INFO log level"
       parameters:
-        text: "Array ${itemIndex} element ${item}"
+        text: "Array ${index} element ${item}"
 - name: "loop_1"
   type: "loop/v1"
   parameters:

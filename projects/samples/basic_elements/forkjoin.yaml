@@ -7,7 +7,7 @@ tasks:
       branches:
          - - name: randomNumber
              label: Generate a random number
-             type: random/v1/randomInt
+             type: randomHelper/v1/randomInt
              parameters:
               startInclusive: 0
               endInclusive: 5000
@@ -19,7 +19,7 @@ tasks:
 
          - - name: randomNumber
              label: Generate a random number
-             type: random/v1/randomInt
+             type: randomHelper/v1/randomInt
              parameters:
               startInclusive: 0
               endInclusive: 5000
