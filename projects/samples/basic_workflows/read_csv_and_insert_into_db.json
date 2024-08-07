@@ -1,0 +1,118 @@
+{
+    "label" : "Read CSV and send to DB",
+    "description" : "Read text file lines where data is separated by comma character.",
+    "inputs" : [ ],
+    "triggers" : [ {
+        "label" : "Manual",
+        "name" : "manual",
+        "type" : "manual/v1/manual"
+    } ],
+    "tasks" : [ {
+        "label" : "Filesystem",
+        "name" : "filesystem_1",
+        "parameters" : {
+            "filename" : "/absolute/path/to/cities.csv"
+        },
+        "type" : "filesystem/v1/readFile",
+        "description" : "Files at local machine where ByteChef Self Hosted docker image is running. Folder is configured with environment variable.",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    }, {
+        "label" : "CSV File",
+        "name" : "csvFile_1",
+        "parameters" : {
+            "delimiter" : ",",
+            "headerRow" : true,
+            "includeEmptyCells" : false,
+            "readAsString" : false,
+            "fileEntry" : "${filesystem_1}",
+            "enclosingCharacter" : "\""
+        },
+        "type" : "csvFile/v1/read",
+        "description" : "Interface to physical file configured by Filesystem component.",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    }, {
+        "type" : "loop/v1",
+        "name" : "loop_1",
+        "parameters" : {
+            "items" : "${csvFile_1}",
+            "iteratee" : [ {
+                "label" : "IF City and Country Present",
+                "name" : "condition_1",
+                "type" : "condition/v1",
+                "parameters" : {
+                    "rawExpression" : true,
+                    "expression" : "${loop_1.item['City'] != null and loop_1.item['State'] != null}",
+                    "caseTrue" : [ {
+                        "label" : "Log",
+                        "name" : "logEntry1",
+                        "parameters" : {
+                            "text" : "Line> ${loop_1.item} city: ${loop_1.item['City']}"
+                        },
+                        "type" : "logger/v1/info"
+                    }, {
+                        "label" : "PostgreSQL",
+                        "name" : "postgresql_1",
+                        "type" : "postgresql/v1/insert",
+                        "parameters" : {
+                            "schema" : "public",
+                            "table" : "CITY",
+                            "rows" : [ {
+                                "name" : "${loop_1.item['City']}",
+                                "country" : "${loop_1.item['State']}"
+                            } ],
+                            "columns" : [ "name", "country" ]
+                        },
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "columns[0]" : "STRING",
+                                    "columns[1]" : "STRING"
+                                }
+                            }
+                        }
+                    } ],
+                    "caseFalse" : [ {
+                        "label" : "Log Warning",
+                        "name" : "logEntryWarn1",
+                        "parameters" : {
+                            "text" : "Missing data: ${loop_1.item}"
+                        },
+                        "type" : "logger/v1/warn"
+                    } ]
+                }
+            } ]
+        }
+    }, {
+        "label" : "PostgreSQL",
+        "name" : "postgresql_2",
+        "type" : "postgresql/v1/query",
+        "parameters" : {
+            "query" : "SELECT count(*) from CITY"
+        },
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    }, {
+        "label" : "Logger",
+        "name" : "logger_1",
+        "type" : "logger/v1/info",
+        "parameters" : {
+            "text" : "Total records: ${postgresql_2.[0].count}"
+        },
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    } ]
+}
