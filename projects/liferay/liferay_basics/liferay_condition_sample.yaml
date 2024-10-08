@@ -54,10 +54,10 @@ tasks:
   type: "condition/v1"
   parameters:
     conditions:
-    - string:
-        value1: "${liferayObjectApiGet.statusCode}"
-        operation: "NOT_EQUALS"
-        value2: "200"
+    - - string:
+          value1: "${liferayObjectApiGet.statusCode}"
+          operation: "NOT_EQUALS"
+          value2: "200"
     combineOperation: "ANY"
     caseTrue:
     - type: "filesystem/v1/readFile"

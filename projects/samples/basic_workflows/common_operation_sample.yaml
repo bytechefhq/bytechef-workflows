@@ -46,10 +46,10 @@ tasks:
   type: "condition/v1"
   parameters:
     conditions:
-    - string:
-        value1: "${jsonObject1.name}"
-        operation: "NOT_EQUALS"
-        value2: "C_Stocks"
+    - - string:
+          value1: "${jsonObject1.name}"
+          operation: "NOT_EQUALS"
+          value2: "C_Stocks"
     combineOperation: "ANY"
     caseTrue:
     - type: "logger/v1/info"
