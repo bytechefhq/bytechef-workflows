@@ -1,0 +1,36 @@
+{
+  "label": "Print Greetings",
+  "description": "Prints a greeting to the first given name and a goodbye to a second one. Inputs don't work.",
+  "inputs": [
+    {
+      "name": "yourName",
+      "label": "Your Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "myName",
+      "label": "My Name",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Print a greeting",
+      "name": "logger1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Hello ${yourName}"
+      }
+    },
+    {
+      "label": "Print a farewell",
+      "name": "logger2",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Goodbye ${myName}"
+      }
+    }
+  ]
+}

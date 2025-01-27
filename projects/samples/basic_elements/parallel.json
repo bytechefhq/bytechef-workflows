@@ -1,0 +1,46 @@
+{
+  "label": "Parallel Demo",
+  "description": "Creates a parallel workflow that: 1. waits for 10 seconds; 2. prints hello; 3. Waits for 1, 2 and then 3 seconds. String can't be turned into long.",
+  "tasks": [
+    {
+      "type": "parallel/v1",
+      "name": "parallel1",
+      "parameters": {
+        "tasks": [
+          {
+            "type": "delay/v1/sleep",
+            "name": "delay1",
+            "parameters": {
+              "millis": 10000
+            }
+          },
+          {
+            "type": "logger/v1/info",
+            "name": "logger1",
+            "parameters": {
+              "text": "hello"
+            }
+          },
+          {
+            "type": "each/v1",
+            "name": "each1",
+            "parameters": {
+              "list": [
+                1000,
+                2000,
+                3000
+              ],
+              "iteratee": {
+                "type": "delay/v1/sleep",
+                "name": "delay2",
+                "parameters": {
+                  "millis": "${item}"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

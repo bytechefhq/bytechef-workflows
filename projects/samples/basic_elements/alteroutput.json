@@ -1,0 +1,20 @@
+{
+  "label": "Alter output",
+  "description": "Creates a number as a string and as an integer.",
+  "tasks": [
+    {
+      "name": "stringNumber",
+      "type": "var/v1/set",
+      "parameters": {
+        "value": "1234"
+      }
+    },
+    {
+      "name": "intNumber",
+      "type": "var/v1/set",
+      "parameters": {
+        "value": "${int(stringNumber)}"
+      }
+    }
+  ]
+}

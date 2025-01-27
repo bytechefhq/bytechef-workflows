@@ -1,0 +1,23 @@
+{
+  "label": "Bash Script",
+  "description": "Creates a bash script which lists the files in defined path. Requires input path, but doesn't accept it",
+  "inputs": [
+    {
+      "name": "path",
+      "label": "Path pattern to list",
+      "default": "/tmp/*.*",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "tasks": [
+    {
+      "label": "List files in ${path}",
+      "name": "listOfFiles",
+      "type": "bash/v1/execute",
+      "parameters": {
+        "script": "for f in ${path}\ndo\n  echo \"$f\"\ndone\n"
+      }
+    }
+  ]
+}
