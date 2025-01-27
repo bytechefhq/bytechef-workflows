@@ -1,0 +1,39 @@
+{
+  "label": "Hello Timeout",
+  "description": "Prints a greeting to the first given name, waits for an hour and a goodbye to a second one. Inputs don't work.",
+  "inputs": [
+    {
+      "name": "yourName",
+      "label": "Your Name",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Print a greeting",
+      "name": "logger1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Hello ${yourName}"
+      }
+    },
+    {
+      "label": "Sleep a lot",
+      "name": "delay1",
+      "type": "delay/v1/sleep",
+      "parameters": {
+        "timeout": "5s",
+        "millis": 60000
+      }
+    },
+    {
+      "label": "Print a farewell",
+      "name": "logger2",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Goodbye ${yourName}"
+      }
+    }
+  ]
+}

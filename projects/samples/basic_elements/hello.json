@@ -1,0 +1,53 @@
+{
+  "label": "Hello Demo",
+  "description": "Generates a number between 0 and 5000. Prints a Hello with the given name, waits for the previously generated number of milliseconds and prints a goodbye. Do outputs work?",
+  "inputs": [
+    {
+      "name": "yourName",
+      "label": "Your Name",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "myMagicNumber",
+      "value": "${randomNumber}"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "randomNumber",
+      "label": "Generate a random number",
+      "type": "randomHelper/v1/randomInt",
+      "parameters": {
+        "startInclusive": 0,
+        "endInclusive": 5000
+      }
+    },
+    {
+      "label": "Print a greeting",
+      "name": "logger1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Hello ${yourName}"
+      }
+    },
+    {
+      "label": "Sleep a little",
+      "name": "delay1",
+      "type": "delay/v1/sleep",
+      "parameters": {
+        "millis": "${randomNumber}"
+      }
+    },
+    {
+      "label": "Print a farewell",
+      "name": "logger2",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Goodbye ${yourName}"
+      }
+    }
+  ]
+}
