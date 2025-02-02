@@ -1,6 +1,6 @@
 {
   "label": "Scheduling Appointments Based on Incoming Emails",
-  "description": "",
+  "description": "When I get a new email, analyze the mail for the patient name, the type of appointment and doctor and the date-time. Get all free time slot that are at least 45 minutes. Finally, send an email with all the available appointments.",
   "inputs": [],
   "triggers": [
     {

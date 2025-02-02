@@ -1,6 +1,6 @@
 {
     "label" : "Read CSV and send to DB",
-    "description" : "Read text file lines where data is separated by comma character.",
+    "description" : "Read a CSV file and iterate it. If a line contains both 'City' and 'Country' values, log them and insert them into PostgreSQL table 'CITY', otherwise just log a warning. After that, make a query counting the number of records inside table 'CITY' and log it.",
     "inputs" : [ ],
     "triggers" : [ {
         "label" : "Manual",

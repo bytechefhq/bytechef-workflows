@@ -1,6 +1,6 @@
 {
   "label": "Customer Support Ticketing",
-  "description": "",
+  "description": "Whenever a Hubspot ticket is created: analyse its contents and rewrite it in clear, concise, and organized format. Then determine if it's a tech or customer support ticket and send it to Notion. If it's customer support then send a notification message with the rewritten to #sales-team, and if it's tech send it to #tech-team.",
   "inputs": [],
   "triggers": [
     {

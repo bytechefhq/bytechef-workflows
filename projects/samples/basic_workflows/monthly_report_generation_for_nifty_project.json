@@ -1,6 +1,6 @@
 {
   "label": "Monthly Report Generation for Nifty Project",
-  "description": "",
+  "description": "At the beginning of every month at 09:00, make a Google Sheets of the previous month with headers: 'Task ID', 'Task Name', 'Start Time', 'End Time' and 'Duration (hours)'. Then fetch the total tracked time for that month from Nifty. Calculate hours for each individual nifty task and put them into the created sheets document. Finally, send an email notification with the google sheets link.",
   "inputs": [],
   "triggers": [
     {
