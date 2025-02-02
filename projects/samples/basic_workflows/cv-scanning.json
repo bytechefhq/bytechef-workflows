@@ -1,6 +1,6 @@
 {
   "label": "CV Scanning",
-  "description": "",
+  "description": "When somebody fills in our Google Forms, download the pdf from the question 3, summarize it and score the candidate on how well they match our requirements. Insert the first 2 questions, the pdf summary, and the score into a Google Sheets document. If the score equals 0, upload the pdf file into 'Rejected candidates' Google Drive, otherwise to 'Potential Candidates' Google Drive.",
   "inputs": [],
   "triggers": [
     {
