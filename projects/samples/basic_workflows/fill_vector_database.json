@@ -1,0 +1,57 @@
+{
+  "label" : "Fill vector database",
+  "description" : "Takes all files located in directory '/home/user/IdeaProjects/bytechef/docs/src/content/docs' and uploads them to a vector database.",
+  "inputs" : [ ],
+  "triggers" : [ ],
+  "tasks" : [ {
+    "label" : "Filesystem",
+    "name" : "filesystem_1",
+    "type" : "filesystem/v1/ls",
+    "parameters" : {
+      "recursive" : true,
+      "path" : "/home/user/IdeaProjects/bytechef/docs/src/content/docs"
+    },
+    "metadata" : {
+      "ui" : {
+        "dynamicPropertyTypes" : { }
+      }
+    }
+  }, {
+    "type" : "loop/v1",
+    "name" : "loop_1",
+    "parameters" : {
+      "items" : "${filesystem_1}",
+      "iteratee" : [
+        {
+          "label" : "Filesystem",
+          "name" : "filesystem_2",
+          "parameters" : {
+            "filename" : "/home/user/IdeaProjects/bytechef/docs/src/content/docs/${loop_1.item.relativePath}"
+          },
+          "type" : "filesystem/v1/readFile",
+          "metadata" : {
+            "ui" : {
+              "dynamicPropertyTypes" : { }
+            }
+          }
+        },
+        {
+          "label" : "Pinecone",
+          "name" : "pinecone_1",
+          "parameters" : {
+            "useTokenTextSplitter" : false,
+            "useKeywordEnricher" : false,
+            "useSummaryEnricher" : false,
+            "documentType" : "MD",
+            "document" : "${filesystem_2}"
+          },
+          "type" : "pinecone/v1/loadData",
+          "metadata" : {
+            "ui" : {
+              "dynamicPropertyTypes" : { }
+            }
+          }
+        } ]
+    }
+  }]
+}

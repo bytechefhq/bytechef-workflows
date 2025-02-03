@@ -1,0 +1,33 @@
+{
+    "label" : "List Sheets",
+    "description" : "Lists all sheets and logs them.",
+    "inputs" : [ ],
+    "triggers" : [ ],
+    "tasks" : [ {
+        "description" : "Google Sheets is a cloud-based spreadsheet software that allows users to create, edit, and collaborate on spreadsheets in real-time.",
+        "label" : "Google Sheets",
+        "name" : "googleSheets_1",
+        "parameters" : {
+            "spreadsheetId" : "1wnYhkyBVNfys2XCxZgxjYFGOB3_pLSxB9ISMUhMvXDs"
+        },
+        "type" : "googleSheets/v1/listSheets",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    }, {
+        "description" : "Logs a value to the system log.",
+        "label" : "Logger",
+        "name" : "logger_1",
+        "parameters" : {
+            "text" : "${googleSheets_1}"
+        },
+        "type" : "logger/v1/info",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : { }
+            }
+        }
+    } ]
+}
