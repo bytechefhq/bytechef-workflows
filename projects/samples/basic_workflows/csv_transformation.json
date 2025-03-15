@@ -1,0 +1,145 @@
+{
+    "label" : "CSV Transformation",
+    "description" : "Reduce number of columns",
+    "inputs" : [ ],
+    "triggers" : [ ],
+    "tasks" : [ {
+        "label" : "AWS S3",
+        "name" : "awsS3_1",
+        "parameters" : {
+            "filename" : "offices.csv",
+            "key" : "files/offices.csv"
+        },
+        "type" : "awsS3/v1/getObject",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "filename" : "STRING",
+                    "key" : "STRING"
+                }
+            }
+        }
+    }, {
+        "label" : "AgentsCSV",
+        "name" : "csvFile_1",
+        "parameters" : {
+            "delimiter" : ",",
+            "headerRow" : true,
+            "includeEmptyCells" : false,
+            "readAsString" : false,
+            "fileEntry" : "${awsS3_1}"
+        },
+        "type" : "csvFile/v1/read",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "fileEntry" : "FILE_ENTRY"
+                }
+            }
+        },
+        "description" : "location details about agents"
+    }, {
+        "description" : "Loops sequentially over list of items.",
+        "label" : "Loop",
+        "name" : "loop_1",
+        "parameters" : {
+            "loopForever" : false,
+            "iteratee" : [ {
+                "label" : "Var",
+                "name" : "var_1",
+                "parameters" : {
+                    "type" : "OBJECT",
+                    "value" : {
+                        "F-NOM0103" : "${loop_1.item['F-NOM0103']}",
+                        "F-COD0047" : "${loop_1.item['F-COD0047']}",
+                        "F-LOC0001" : "${loop_1.item['F-LOC0001']}",
+                        "NUM0366" : "${loop_1.item['NUM0366']}"
+                    }
+                },
+                "type" : "var/v1/set",
+                "metadata" : {
+                    "ui" : {
+                        "dynamicPropertyTypes" : {
+                            "value.F-NOM0103" : "STRING"
+                        }
+                    }
+                }
+            }, {
+                "label" : "Data Storage",
+                "name" : "dataStorage_1",
+                "parameters" : {
+                    "scope" : "CURRENT_EXECUTION",
+                    "key" : "list",
+                    "type" : "OBJECT",
+                    "value" : "${var_1}"
+                },
+                "type" : "dataStorage/v1/appendValueToList",
+                "metadata" : {
+                    "ui" : {
+                        "dynamicPropertyTypes" : {
+                            "key" : "STRING",
+                            "value" : "OBJECT"
+                        }
+                    }
+                }
+            } ],
+            "items" : "${csvFile_1}"
+        },
+        "type" : "loop/v1",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "items" : "ARRAY"
+                }
+            }
+        }
+    }, {
+        "label" : "Data Storage",
+        "name" : "dataStorage_2",
+        "parameters" : {
+            "scope" : "CURRENT_EXECUTION",
+            "key" : "list",
+            "type" : "ARRAY"
+        },
+        "type" : "dataStorage/v1/getValue",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "key" : "STRING"
+                }
+            }
+        }
+    }, {
+        "label" : "CSV File",
+        "name" : "csvFile_2",
+        "parameters" : {
+            "filename" : "file.csv",
+            "rows" : "${dataStorage_2}"
+        },
+        "type" : "csvFile/v1/write",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "rows" : "ARRAY"
+                }
+            }
+        }
+    }, {
+        "label" : "AWS S3",
+        "name" : "awsS3_2",
+        "parameters" : {
+            "acl" : "private",
+            "key" : "files/offices_reduced.csv",
+            "fileEntry" : "${csvFile_2}"
+        },
+        "type" : "awsS3/v1/putObject",
+        "metadata" : {
+            "ui" : {
+                "dynamicPropertyTypes" : {
+                    "key" : "STRING",
+                    "fileEntry" : "FILE_ENTRY"
+                }
+            }
+        }
+    } ]
+}
