@@ -1,27 +1,23 @@
 {
     "label" : "Read CSV and send to DB",
-    "description" : "Read a CSV file and iterate it. If a line contains both 'City' and 'Country' values, log them and insert them into PostgreSQL table 'CITY', otherwise just log a warning. After that, make a query counting the number of records inside table 'CITY' and log it.",
+    "description" : "Read a CSV file called 'cities.csv' and iterate through it. If a line contains both 'City' and 'Country' values, log them and insert them into PostgreSQL table 'CITY', otherwise just log a warning. After that, make a query counting the number of records inside table 'CITY' and log it.",
     "inputs" : [ ],
-    "triggers" : [ {
-        "label" : "Manual",
-        "name" : "manual",
-        "type" : "manual/v1/manual"
-    } ],
+    "triggers" : [ ],
     "tasks" : [ {
-        "label" : "Filesystem",
+        "label" : "Load a csv file from local machine",
         "name" : "filesystem_1",
         "parameters" : {
             "filename" : "/absolute/path/to/cities.csv"
         },
         "type" : "filesystem/v1/readFile",
-        "description" : "Files at local machine where ByteChef Self Hosted docker image is running. Folder is configured with environment variable.",
+        "description" : "Files at local machine where ByteChef Self Hosted docker image is running. Folder is configured with environment variable. The file is put into a data pill.",
         "metadata" : {
             "ui" : {
                 "dynamicPropertyTypes" : { }
             }
         }
     }, {
-        "label" : "CSV File",
+        "label" : "Read from CSV file data pill",
         "name" : "csvFile_1",
         "parameters" : {
             "delimiter" : ",",
@@ -39,12 +35,13 @@
             }
         }
     }, {
+        "label" : "Loop through CSV rows",
         "type" : "loop/v1",
         "name" : "loop_1",
         "parameters" : {
             "items" : "${csvFile_1}",
             "iteratee" : [ {
-                "label" : "IF City and Country Present",
+                "label" : "If 'City' and 'State' are present",
                 "name" : "condition_1",
                 "type" : "condition/v1",
                 "parameters" : {
@@ -58,7 +55,7 @@
                         },
                         "type" : "logger/v1/info"
                     }, {
-                        "label" : "PostgreSQL",
+                        "label" : "Store columns into a database",
                         "name" : "postgresql_1",
                         "type" : "postgresql/v1/insert",
                         "parameters" : {
@@ -70,6 +67,7 @@
                             } ],
                             "columns" : [ "name", "country" ]
                         },
+                        "description" : "Store columns 'City' and 'State' into a PostgreSQL database under a table 'CITY'",
                         "metadata" : {
                             "ui" : {
                                 "dynamicPropertyTypes" : {
@@ -91,9 +89,10 @@
             } ]
         }
     }, {
-        "label" : "PostgreSQL",
+        "label" : "Query a database",
         "name" : "postgresql_2",
         "type" : "postgresql/v1/query",
+        "description" : "Query a PostgreSQL database to count all rows from table 'CITY'",
         "parameters" : {
             "query" : "SELECT count(*) from CITY"
         },
