@@ -1,15 +1,16 @@
 {
     "label" : "CSV Transformation",
-    "description" : "Reduce number of columns",
+    "description" : "Every time a button is clicked, take an object called 'offices.csv' from AWS S3 with the key 'files/offices.csv'. Reduce number of columns in the csv file to ['F-NOM0103','F-COD0047','F-LOC0001','NUM0366']. Upload the file",
     "inputs" : [ ],
     "triggers" : [ ],
     "tasks" : [ {
-        "label" : "AWS S3",
+        "label" : "Retrieve an object from AWS S3",
         "name" : "awsS3_1",
         "parameters" : {
             "filename" : "offices.csv",
             "key" : "files/offices.csv"
         },
+        "description": "Get an object called 'office.csv' with the key 'files/office.csv'",
         "type" : "awsS3/v1/getObject",
         "metadata" : {
             "ui" : {
@@ -20,7 +21,7 @@
             }
         }
     }, {
-        "label" : "AgentsCSV",
+        "label" : "Turn the csv file into a data pill",
         "name" : "csvFile_1",
         "parameters" : {
             "delimiter" : ",",
@@ -36,16 +37,14 @@
                     "fileEntry" : "FILE_ENTRY"
                 }
             }
-        },
-        "description" : "location details about agents"
+        }
     }, {
-        "description" : "Loops sequentially over list of items.",
-        "label" : "Loop",
+        "label" : "Loop over the csv items",
         "name" : "loop_1",
         "parameters" : {
             "loopForever" : false,
             "iteratee" : [ {
-                "label" : "Var",
+                "label" : "Create a data pill object for csv row",
                 "name" : "var_1",
                 "parameters" : {
                     "type" : "OBJECT",
@@ -57,6 +56,7 @@
                     }
                 },
                 "type" : "var/v1/set",
+                "description" : "Create a data pill object for item columns: 'F-NOM0103','F-COD0047','F-LOC0001' and 'NUM0366'",
                 "metadata" : {
                     "ui" : {
                         "dynamicPropertyTypes" : {
@@ -65,7 +65,7 @@
                     }
                 }
             }, {
-                "label" : "Data Storage",
+                "label" : "Store the variable object data pill into a list",
                 "name" : "dataStorage_1",
                 "parameters" : {
                     "scope" : "CURRENT_EXECUTION",
@@ -74,6 +74,7 @@
                     "value" : "${var_1}"
                 },
                 "type" : "dataStorage/v1/appendValueToList",
+                "description" : "Store the variable object data pill into a list under a key: 'list'",
                 "metadata" : {
                     "ui" : {
                         "dynamicPropertyTypes" : {
@@ -94,13 +95,14 @@
             }
         }
     }, {
-        "label" : "Data Storage",
+        "label" : "Get a variable object",
         "name" : "dataStorage_2",
         "parameters" : {
             "scope" : "CURRENT_EXECUTION",
             "key" : "list",
             "type" : "ARRAY"
         },
+        "description" : "Get a variable object under a key: 'list'",
         "type" : "dataStorage/v1/getValue",
         "metadata" : {
             "ui" : {
@@ -110,7 +112,7 @@
             }
         }
     }, {
-        "label" : "CSV File",
+        "label" : "Convert a data pill into a csv file",
         "name" : "csvFile_2",
         "parameters" : {
             "filename" : "file.csv",
@@ -125,13 +127,14 @@
             }
         }
     }, {
-        "label" : "AWS S3",
+        "label" : "Put the csv file into AWS S3",
         "name" : "awsS3_2",
         "parameters" : {
             "acl" : "private",
             "key" : "files/offices_reduced.csv",
             "fileEntry" : "${csvFile_2}"
         },
+        "description" : "Put the csv file into AWS S3 under a key: 'files/offices_reduced.csv'",
         "type" : "awsS3/v1/putObject",
         "metadata" : {
             "ui" : {

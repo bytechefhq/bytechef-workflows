@@ -1,17 +1,17 @@
 {
   "label": "Scheduling Appointments Based on Incoming Emails",
-  "description": "When I get a new email, analyze the mail for the patient name, the type of appointment and doctor and the date-time. Get all free time slot that are at least 45 minutes. Finally, send an email with all the available appointments.",
+  "description": "When I get a new email, analyze the mail for the patient name, the type of appointment and doctor and the date-time. Get all free time slots that are at least 45 minutes long. Finally, send an email with all the available appointments.",
   "inputs": [],
   "triggers": [
     {
-      "label": "Gmail",
+      "label": "Poll all new emails",
       "name": "trigger_1",
       "type": "googleMail/v1/newEmailPolling"
     }
   ],
   "tasks": [
     {
-      "label": "Google Mail",
+      "label": "Get an email from the trigger",
       "name": "googleMail_1",
       "type": "googleMail/v1/getMail",
       "parameters": {
@@ -25,7 +25,7 @@
       }
     },
     {
-      "label": "OpenAI",
+      "label": "Convert the mail into a json",
       "name": "openAi_1",
       "parameters": {
         "responseFormat": 1,
@@ -54,7 +54,7 @@
       }
     },
     {
-      "label": "Google Calendar",
+      "label": "Get free time slots",
       "name": "googleCalendar_1",
       "type": "googleCalendar/v1/getFreeTimeSlots",
       "parameters": {
@@ -72,6 +72,7 @@
       }
     },
     {
+      "label": "Loop through dates",
       "type": "loop/v1",
       "name": "loop_1",
       "parameters": {
@@ -86,7 +87,7 @@
               "expression": "T(java.time.LocalDateTime).parse('${loop_1.item.endTime}').minusMinutes(45).isAfter(T(java.time.LocalDateTime).parse('${loop_1.item.startTime}'))",
               "caseTrue": [
                 {
-                  "label": "Data Storage",
+                  "label": "Append to a list",
                   "name": "dataStorage_1",
                   "parameters": {
                     "scope": "CURRENT_EXECUTION",
@@ -118,7 +119,7 @@
       }
     },
     {
-      "label": "Data Storage",
+      "label": "Get stored list",
       "name": "dataStorage_2",
       "type": "dataStorage/v1/getValue",
       "parameters": {
@@ -141,7 +142,7 @@
       }
     },
     {
-      "label": "OpenAI",
+      "label": "Suggest a list of appointments",
       "name": "openAi_2",
       "parameters": {
         "responseFormat": 0,
@@ -169,7 +170,7 @@
       }
     },
     {
-      "label": "Google Mail",
+      "label": "Reply to the Email",
       "name": "googleMail_2",
       "type": "googleMail/v1/replyToEmail",
       "parameters": {
