@@ -6,6 +6,7 @@
     {
       "label": "Schedule",
       "name": "trigger_1",
+      "description": "Every month at 09:00",
       "type": "schedule/v1/everyMonth",
       "parameters": {
         "hour": 9,

@@ -4,7 +4,7 @@
   "inputs": [],
   "triggers": [
     {
-      "label": "Hubspot",
+      "label": "New Hubspot ticket is created",
       "name": "trigger_1",
       "type": "hubspot/v1/newTicket",
       "parameters": {
@@ -19,7 +19,7 @@
   ],
   "tasks": [
     {
-      "label": "Hubspot",
+      "label": "Get the ticket from the trigger",
       "name": "hubspot_1",
       "parameters": {
         "ticketId": "${trigger_1.objectId}"

@@ -4,7 +4,7 @@
   "inputs": [],
   "triggers": [
     {
-      "label": "Google Forms",
+      "label": "A Google Forms is filled",
       "name": "trigger_1",
       "type": "googleForms/v1/newResponse",
       "parameters": {
