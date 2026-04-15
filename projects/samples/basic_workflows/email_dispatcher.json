@@ -1,0 +1,400 @@
+{
+    "label" : "Email Dispatcher",
+    "description" : "",
+    "inputs" : [ ],
+    "triggers" : [
+        {
+            "description" : "",
+            "label" : "New email",
+            "name" : "trigger_1",
+            "parameters" : {
+                "format" : "SIMPLE"
+            },
+            "type" : "googleMail/v1/newEmailPolling"
+        }
+    ],
+    "tasks" : [
+        {
+            "clusterElements" : { },
+            "description" : "",
+            "label" : "Get correct label for the email",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "userPrompt" : "STRING",
+                        "systemPrompt" : "STRING"
+                    }
+                }
+            },
+            "name" : "openAi_1",
+            "parameters" : {
+                "format" : "SIMPLE",
+                "response" : {
+                    "responseFormat" : "JSON",
+                    "responseSchema" : "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"label\":{\"type\":\"string\",\"title\":\"label\",\"enum\":[\"HR\",\"Sales\",\"Support\",\"Finance\",\"Operations\",\"URGENT\"]}},\"required\":[\"label\"],\"type\":\"object\",\"title\":\"label\"}"
+                },
+                "n" : 1,
+                "temperature" : 1,
+                "topP" : 1,
+                "frequencyPenalty" : 0,
+                "presencePenalty" : 0,
+                "model" : "gpt-5-mini",
+                "userPrompt" : "Subject: ${trigger_1.subject}, body: ${trigger_1.bodyPlain}, sender: ${trigger_1.from}\n\nClassify this email.",
+                "systemPrompt" : "Classify the given email into exactly one of the following labels: Sales, Support, Finance, Operations, HR.\nIf none of these labels apply, return URGENT."
+            },
+            "type" : "openAi/v1/ask"
+        },
+        {
+            "clusterElements" : { },
+            "description" : "",
+            "label" : "Forward email to...",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "expression" : "STRING"
+                    }
+                }
+            },
+            "name" : "branch_1",
+            "parameters" : {
+                "cases" : [
+                    {
+                        "key" : "Sales",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_2",
+                                "parameters" : {
+                                    "id" : "${trigger_1.id}",
+                                    "labelIds" : [
+                                        "Label_7029496612486189861"
+                                    ]
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_3",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "sales@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "key" : "Support",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_3",
+                                "parameters" : {
+                                    "labelIds" : [
+                                        "Label_2719971371277482271"
+                                    ],
+                                    "id" : "${trigger_1.id}"
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_4",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "support@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "key" : "Finance",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_4",
+                                "parameters" : {
+                                    "id" : "${trigger_1.id}",
+                                    "labelIds" : [
+                                        "Label_3431546461617599207"
+                                    ]
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_5",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "finance@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "key" : "Operations",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_5",
+                                "parameters" : {
+                                    "id" : "${trigger_1.id}",
+                                    "labelIds" : [
+                                        "Label_7090219816637088141"
+                                    ]
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_6",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "operations@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "key" : "HR",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_6",
+                                "parameters" : {
+                                    "id" : "${trigger_1.id}",
+                                    "labelIds" : [
+                                        "Label_3727140594684952045"
+                                    ]
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_7",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "humanResources@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "key" : "URGENT",
+                        "tasks" : [
+                            {
+                                "label" : "Add label",
+                                "name" : "googleMail_8",
+                                "parameters" : {
+                                    "id" : "${trigger_1.id}",
+                                    "labelIds" : [
+                                        "Label_8029494612036172861"
+                                    ]
+                                },
+                                "type" : "googleMail/v1/addLabels",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "id" : "STRING"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "label" : "Set value of recipient",
+                                "name" : "dataStorage_9",
+                                "parameters" : {
+                                    "key" : "emailResponder",
+                                    "scope" : "CURRENT_EXECUTION",
+                                    "type" : "STRING",
+                                    "value" : "info@bytechef.com"
+                                },
+                                "type" : "dataStorage/v1/setValue",
+                                "metadata" : {
+                                    "ui" : {
+                                        "dynamicPropertyTypes" : {
+                                            "key" : "STRING",
+                                            "value" : "STRING"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "default" : [
+                    {
+                        "label" : "Set value of recipient",
+                        "name" : "dataStorage_2",
+                        "parameters" : {
+                            "key" : "emailResponder",
+                            "scope" : "CURRENT_EXECUTION",
+                            "type" : "STRING",
+                            "value" : "info@bytechef.com"
+                        },
+                        "type" : "dataStorage/v1/setValue",
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "key" : "STRING",
+                                    "value" : "STRING"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label" : "Logger",
+                        "name" : "logger_1",
+                        "parameters" : {
+                            "text" : "No label was added to incoming email."
+                        },
+                        "type" : "logger/v1/info",
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "text" : "STRING"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "expression" : "${openAi_1.label}"
+            },
+            "type" : "branch/v1"
+        },
+        {
+            "clusterElements" : { },
+            "description" : "",
+            "label" : "Get value of recipient",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "key" : "STRING",
+                        "defaultValue" : "STRING"
+                    }
+                }
+            },
+            "name" : "dataStorage_8",
+            "parameters" : {
+                "key" : "emailResponder",
+                "scope" : "CURRENT_EXECUTION",
+                "type" : "STRING",
+                "defaultValue" : "info@bytechef.com"
+            },
+            "type" : "dataStorage/v1/getValue"
+        },
+        {
+            "clusterElements" : { },
+            "description" : "",
+            "label" : "Send email to the right team",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "to[0]" : "STRING",
+                        "subject" : "STRING",
+                        "body" : "STRING"
+                    }
+                }
+            },
+            "name" : "googleMail_7",
+            "parameters" : {
+                "bodyType" : "html",
+                "to" : [
+                    "${dataStorage_8}"
+                ],
+                "subject" : "${trigger_1.subject}",
+                "body" : "${trigger_1.bodyHtml}"
+            },
+            "type" : "googleMail/v1/sendEmail"
+        }
+    ]
+}
