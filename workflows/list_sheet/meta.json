@@ -3,6 +3,12 @@
   "category": "it",
   "description": "Lists all sheets in a Google Sheets spreadsheet and logs them. A minimal, on-demand example workflow.",
   "shortDescription": "A minimal example workflow that lists every sheet in a Google Sheets spreadsheet.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
   "keyFeatures": [
     "Google Sheets sheet enumeration",
     "Result logging"

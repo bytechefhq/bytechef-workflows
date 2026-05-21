@@ -3,6 +3,12 @@
   "category": "ai",
   "description": "Polls Gmail for new emails and uses OpenAI to classify each one into a single department label (Sales, Support, Finance, Operations, HR, or URGENT). The matching Gmail label is applied, the department's recipient address is stored, and the original email is forwarded to the correct team.",
   "shortDescription": "Classify incoming Gmail messages with AI and route them to the right team.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
   "keyFeatures": [
     "AI classification constrained to a fixed set of labels via a JSON response schema",
     "Multi-way branch routing, one case per department label",

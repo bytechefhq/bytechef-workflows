@@ -3,6 +3,12 @@
   "category": "it",
   "description": "Reads a local cities.csv file, parses it, and loops over each row. Rows with both a City and a State value are logged and inserted into the PostgreSQL CITY table; rows missing either value are logged as warnings. After the loop, it queries the row count of the CITY table and logs the total.",
   "shortDescription": "Validate rows from a CSV file and load them into a PostgreSQL database.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
   "keyFeatures": [
     "Local file reading from the ByteChef host",
     "CSV parsing with a header row",

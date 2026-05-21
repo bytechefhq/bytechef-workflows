@@ -3,6 +3,12 @@
   "category": "sales",
   "description": "On every new Gmail message, checks whether it arrived within business hours (Mon-Fri, 09:00-17:00 UTC). For emails received outside working hours, OpenAI classifies the urgency, the email is logged to a Google Sheet, and a condition branches: urgent emails get an AI-summarized internal Slack alert plus an urgent auto-reply, while non-urgent emails get an AI-generated helpful auto-reply.",
   "shortDescription": "Triage, auto-reply to, and escalate customer emails that arrive after hours.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
   "keyFeatures": [
     "New-email trigger",
     "Business-hours detection via date helpers",
