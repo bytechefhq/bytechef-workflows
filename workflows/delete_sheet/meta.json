@@ -21,9 +21,5 @@
     "Delete the specified sheet from the Google Sheets spreadsheet.",
     "Log the result."
   ],
-  "componentNames": [
-    "googleSheets",
-    "logger"
-  ],
   "screenshot": "screenshot.png"
 }

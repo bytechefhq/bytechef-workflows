@@ -30,12 +30,5 @@
     "Read the stored recipient address, defaulting to a fallback inbox.",
     "Forward the original email to the resolved team address."
   ],
-  "componentNames": [
-    "googleMail",
-    "openAi",
-    "branch",
-    "dataStorage",
-    "logger"
-  ],
   "screenshot": "screenshot.png"
 }

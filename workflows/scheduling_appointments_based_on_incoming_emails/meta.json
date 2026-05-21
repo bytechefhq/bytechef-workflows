@@ -33,14 +33,5 @@
     "Propose a list of 45-minute appointment options with OpenAI.",
     "Reply to the original email with the suggested appointments."
   ],
-  "componentNames": [
-    "googleMail",
-    "openAi",
-    "googleCalendar",
-    "loop",
-    "condition",
-    "dataStorage",
-    "logger"
-  ],
   "screenshot": "screenshot.png"
 }

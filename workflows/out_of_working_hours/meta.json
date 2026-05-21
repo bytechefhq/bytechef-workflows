@@ -33,13 +33,5 @@
     "Log the email and its classification to a Google Sheet.",
     "Condition: if urgent, generate an internal team message, send an urgent auto-reply, and post a Slack alert; if not urgent, generate and send a helpful auto-reply."
   ],
-  "componentNames": [
-    "googleMail",
-    "dateHelper",
-    "condition",
-    "openAi",
-    "googleSheets",
-    "slack"
-  ],
   "screenshot": "screenshot.png"
 }

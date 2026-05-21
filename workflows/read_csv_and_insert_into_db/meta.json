@@ -29,13 +29,5 @@
     "Query the total record count of the CITY table.",
     "Log the total count."
   ],
-  "componentNames": [
-    "filesystem",
-    "csvFile",
-    "loop",
-    "condition",
-    "logger",
-    "postgresql"
-  ],
   "screenshot": "screenshot.png"
 }

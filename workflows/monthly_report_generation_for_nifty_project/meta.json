@@ -35,15 +35,5 @@
     "Add a total-hours summary row.",
     "Send an email notification with a link to the report."
   ],
-  "componentNames": [
-    "schedule",
-    "dateHelper",
-    "openAi",
-    "googleSheets",
-    "nifty",
-    "loop",
-    "mathHelper",
-    "googleMail"
-  ],
   "screenshot": "screenshot.png"
 }

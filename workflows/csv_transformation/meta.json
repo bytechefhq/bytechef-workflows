@@ -29,12 +29,5 @@
     "Convert the list into a new CSV file.",
     "Upload the reduced CSV to AWS S3 as offices_reduced.csv."
   ],
-  "componentNames": [
-    "awsS3",
-    "csvFile",
-    "loop",
-    "var",
-    "dataStorage"
-  ],
   "screenshot": "screenshot.png"
 }

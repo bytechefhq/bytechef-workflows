@@ -33,14 +33,5 @@
     "Record the name, email, summary, and score in a Google Sheet.",
     "Condition: if the score is 0, file the CV in Rejected Candidates; otherwise in Potential Candidates."
   ],
-  "componentNames": [
-    "googleForms",
-    "googleDrive",
-    "pdfHelper",
-    "aiText",
-    "openAi",
-    "googleSheets",
-    "condition"
-  ],
   "screenshot": "screenshot.png"
 }

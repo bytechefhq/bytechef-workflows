@@ -24,10 +24,5 @@
     "List all files in the documentation directory recursively.",
     "Loop over each file: read its contents and load it into the Pinecone vector database."
   ],
-  "componentNames": [
-    "filesystem",
-    "loop",
-    "pinecone"
-  ],
   "screenshot": "screenshot.png"
 }

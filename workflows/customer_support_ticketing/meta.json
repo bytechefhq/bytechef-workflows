@@ -28,11 +28,5 @@
     "Categorize the ticket as tech or customer support with OpenAI.",
     "Condition: if tech, notify the tech-team Slack channel; otherwise notify the sales-team channel."
   ],
-  "componentNames": [
-    "hubspot",
-    "openAi",
-    "condition",
-    "slack"
-  ],
   "screenshot": "screenshot.png"
 }

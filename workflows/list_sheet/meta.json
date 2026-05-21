@@ -21,9 +21,5 @@
     "List all sheets in the Google Sheets spreadsheet.",
     "Log the result."
   ],
-  "componentNames": [
-    "googleSheets",
-    "logger"
-  ],
   "screenshot": "screenshot.png"
 }
