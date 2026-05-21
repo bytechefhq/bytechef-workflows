@@ -1,6 +1,6 @@
 {
   "name": "CSV Transformation",
-  "category": "it",
+  "category": "documentOps",
   "description": "Retrieves an offices.csv object from AWS S3, reads it into rows, and loops over each row keeping only four selected columns. The reduced rows are collected into a list, written to a new CSV file, and uploaded back to S3 as offices_reduced.csv. The workflow runs on demand.",
   "shortDescription": "Trim and reshape CSV exports stored in cloud object storage.",
   "author": {
