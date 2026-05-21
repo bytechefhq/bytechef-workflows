@@ -1,0 +1,39 @@
+{
+  "name": "Scheduling Appointments Based on Incoming Emails",
+  "category": "Communication",
+  "description": "Polls Gmail for new emails. For each email, OpenAI extracts the patient name, doctor type, and requested date-time period. Free time slots are fetched from Google Calendar for that period, the workflow loops over them keeping only slots at least 45 minutes long, and OpenAI proposes a list of concrete 45-minute appointment options. The workflow replies to the original email with the suggestions.",
+  "keyFeatures": [
+    "Email polling trigger",
+    "AI extraction of appointment details into structured JSON",
+    "Google Calendar free-slot lookup for the requested period",
+    "Slot filtering by minimum duration",
+    "AI appointment suggestion in a fixed text format",
+    "Automatic reply to the original email"
+  ],
+  "prerequisites": [
+    "Google Mail connection",
+    "OpenAI API key",
+    "Google Calendar connection with the target calendar"
+  ],
+  "idealFor": "Clinics or service businesses that want to turn appointment-request emails into concrete bookable time slots automatically.",
+  "steps": [
+    "Trigger: poll Gmail for new emails.",
+    "Fetch the email from the trigger.",
+    "Extract the patient name, doctor type, and requested date-time period with OpenAI.",
+    "Get free time slots from Google Calendar for that period.",
+    "Loop over the slots, keeping only those at least 45 minutes long.",
+    "Read back the list of valid slots.",
+    "Propose a list of 45-minute appointment options with OpenAI.",
+    "Reply to the original email with the suggested appointments."
+  ],
+  "componentNames": [
+    "googleMail",
+    "openAi",
+    "googleCalendar",
+    "loop",
+    "condition",
+    "dataStorage",
+    "logger"
+  ],
+  "screenshot": "screenshot.png"
+}

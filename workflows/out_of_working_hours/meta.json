@@ -1,0 +1,38 @@
+{
+  "name": "out of working hours",
+  "category": "Sales & Support",
+  "description": "On every new Gmail message, checks whether it arrived within business hours (Mon-Fri, 09:00-17:00 UTC). For emails received outside working hours, OpenAI classifies the urgency, the email is logged to a Google Sheet, and a condition branches: urgent emails get an AI-summarized internal Slack alert plus an urgent auto-reply, while non-urgent emails get an AI-generated helpful auto-reply.",
+  "keyFeatures": [
+    "New-email trigger",
+    "Business-hours detection via date helpers",
+    "AI urgency classification of the incoming email",
+    "Google Sheets logging of each out-of-hours email",
+    "Condition-based urgent vs. non-urgent handling",
+    "AI-generated auto-replies to the sender",
+    "Slack alerts to the internal team for urgent cases"
+  ],
+  "prerequisites": [
+    "Google Mail connection",
+    "OpenAI API key",
+    "Google Sheets connection with the logging spreadsheet",
+    "Slack connection with the alert channel"
+  ],
+  "idealFor": "Support teams that want after-hours customer emails triaged, auto-acknowledged, and escalated when urgent.",
+  "steps": [
+    "Trigger: a new Gmail message arrives.",
+    "Get the current timestamp and check whether it falls within business hours.",
+    "Condition: continue only if the email arrived outside working hours.",
+    "Classify the email's urgency with OpenAI.",
+    "Log the email and its classification to a Google Sheet.",
+    "Condition: if urgent, generate an internal team message, send an urgent auto-reply, and post a Slack alert; if not urgent, generate and send a helpful auto-reply."
+  ],
+  "componentNames": [
+    "googleMail",
+    "dateHelper",
+    "condition",
+    "openAi",
+    "googleSheets",
+    "slack"
+  ],
+  "screenshot": "screenshot.png"
+}

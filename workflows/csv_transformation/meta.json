@@ -1,0 +1,33 @@
+{
+  "name": "CSV Transformation",
+  "category": "Data Processing",
+  "description": "Retrieves an offices.csv object from AWS S3, reads it into rows, and loops over each row keeping only four selected columns. The reduced rows are collected into a list, written to a new CSV file, and uploaded back to S3 as offices_reduced.csv. The workflow runs on demand.",
+  "keyFeatures": [
+    "AWS S3 object download and upload",
+    "CSV parsing with a header row",
+    "Per-row column projection to a reduced column set",
+    "In-execution list accumulation of transformed rows",
+    "CSV regeneration from the accumulated list"
+  ],
+  "prerequisites": [
+    "AWS S3 connection with access to the source bucket",
+    "An offices.csv object stored at key files/offices.csv"
+  ],
+  "idealFor": "Data teams that need to slim down or reshape CSV exports stored in cloud object storage.",
+  "steps": [
+    "Retrieve offices.csv from AWS S3.",
+    "Parse the CSV into rows using the header row.",
+    "Loop over each row, building an object with only the four selected columns and appending it to a list.",
+    "Read the accumulated list back out.",
+    "Convert the list into a new CSV file.",
+    "Upload the reduced CSV to AWS S3 as offices_reduced.csv."
+  ],
+  "componentNames": [
+    "awsS3",
+    "csvFile",
+    "loop",
+    "var",
+    "dataStorage"
+  ],
+  "screenshot": "screenshot.png"
+}

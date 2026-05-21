@@ -1,0 +1,34 @@
+{
+  "name": "AI Email Classifier",
+  "category": "AI & Automation",
+  "description": "Polls Gmail for new emails and uses OpenAI to classify each one into a single department label (Sales, Support, Finance, Operations, HR, or URGENT). The matching Gmail label is applied, the department's recipient address is stored, and the original email is forwarded to the correct team.",
+  "keyFeatures": [
+    "AI classification constrained to a fixed set of labels via a JSON response schema",
+    "Multi-way branch routing, one case per department label",
+    "Automatic Gmail label tagging of the incoming message",
+    "Per-team recipient address resolved through in-execution data storage",
+    "HTML email forwarding to the resolved team address"
+  ],
+  "prerequisites": [
+    "Google Mail (Gmail) connection",
+    "OpenAI API key",
+    "Gmail labels pre-created, matching the label IDs referenced in the workflow",
+    "Department recipient email addresses"
+  ],
+  "idealFor": "Support and operations teams that want incoming email triaged and routed to the correct department automatically.",
+  "steps": [
+    "Trigger: poll Gmail for a new email.",
+    "Classify the email into a single label (Sales, Support, Finance, Operations, HR, or URGENT) with OpenAI.",
+    "Branch on the predicted label: add the matching Gmail label and store the team's recipient address.",
+    "Read the stored recipient address, defaulting to a fallback inbox.",
+    "Forward the original email to the resolved team address."
+  ],
+  "componentNames": [
+    "googleMail",
+    "openAi",
+    "branch",
+    "dataStorage",
+    "logger"
+  ],
+  "screenshot": "screenshot.png"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Monthly Report Generation for Nifty Project",
+  "category": "Productivity",
+  "description": "On the first day of every month at 09:00, computes the previous month, creates a new Google Sheet tab for it, and fetches the tracked-time report from Nifty. It loops over each tracked task to retrieve details and compute its duration in hours, writes a row per task, adds a total-hours row, and emails a notification with a link to the spreadsheet.",
+  "keyFeatures": [
+    "Monthly schedule trigger",
+    "Date arithmetic to derive the previous-month reporting period",
+    "AI-assisted extraction of month name, year, and period boundaries",
+    "Per-task tracked-time retrieval from Nifty",
+    "Duration math converting minutes to hours",
+    "Google Sheets report generation with a total-hours row",
+    "Email notification with a link to the report"
+  ],
+  "prerequisites": [
+    "Nifty connection with the project ID configured",
+    "Google Sheets connection with the target spreadsheet",
+    "OpenAI API key",
+    "Google Mail connection"
+  ],
+  "idealFor": "Project managers who need an automated monthly time-tracking report for a Nifty project.",
+  "steps": [
+    "Trigger: schedule - the first day of every month at 09:00.",
+    "Get the current date and subtract one month to derive the reporting period.",
+    "Extract the month name, year, and first and last day of the month with OpenAI.",
+    "Create a Google Sheet tab for the reporting month with the report headers.",
+    "Fetch the tracked-time report for that period from Nifty.",
+    "Loop over each tracked task: retrieve task details, compute its duration, convert it to hours, and insert a row into the sheet.",
+    "Add a total-hours summary row.",
+    "Send an email notification with a link to the report."
+  ],
+  "componentNames": [
+    "schedule",
+    "dateHelper",
+    "openAi",
+    "googleSheets",
+    "nifty",
+    "loop",
+    "mathHelper",
+    "googleMail"
+  ],
+  "screenshot": "screenshot.png"
+}

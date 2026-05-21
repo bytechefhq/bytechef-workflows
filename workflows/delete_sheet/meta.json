@@ -1,0 +1,22 @@
+{
+  "name": "Delete Sheet",
+  "category": "Productivity",
+  "description": "Deletes a specific sheet from a Google Sheets spreadsheet and logs the result. A minimal, on-demand example workflow.",
+  "keyFeatures": [
+    "Google Sheets sheet deletion by sheet ID",
+    "Result logging"
+  ],
+  "prerequisites": [
+    "Google Sheets connection with access to the target spreadsheet"
+  ],
+  "idealFor": "Developers learning ByteChef who want a minimal Google Sheets example.",
+  "steps": [
+    "Delete the specified sheet from the Google Sheets spreadsheet.",
+    "Log the result."
+  ],
+  "componentNames": [
+    "googleSheets",
+    "logger"
+  ],
+  "screenshot": "screenshot.png"
+}

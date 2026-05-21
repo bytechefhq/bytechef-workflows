@@ -1,0 +1,34 @@
+{
+  "name": "Read CSV and send to DB",
+  "category": "Data Processing",
+  "description": "Reads a local cities.csv file, parses it, and loops over each row. Rows with both a City and a State value are logged and inserted into the PostgreSQL CITY table; rows missing either value are logged as warnings. After the loop, it queries the row count of the CITY table and logs the total.",
+  "keyFeatures": [
+    "Local file reading from the ByteChef host",
+    "CSV parsing with a header row",
+    "Per-row validation via a condition",
+    "PostgreSQL inserts for valid rows",
+    "Warning logs for incomplete rows",
+    "Post-load row-count query"
+  ],
+  "prerequisites": [
+    "Local filesystem access to cities.csv on the ByteChef host",
+    "A PostgreSQL connection with a CITY table (columns name, country)"
+  ],
+  "idealFor": "Data engineers loading and validating CSV records into a relational database.",
+  "steps": [
+    "Load the cities.csv file from the local machine.",
+    "Parse the CSV into rows.",
+    "Loop over each row: if both City and State are present, log and insert the row into the PostgreSQL CITY table; otherwise log a warning.",
+    "Query the total record count of the CITY table.",
+    "Log the total count."
+  ],
+  "componentNames": [
+    "filesystem",
+    "csvFile",
+    "loop",
+    "condition",
+    "logger",
+    "postgresql"
+  ],
+  "screenshot": "screenshot.png"
+}
