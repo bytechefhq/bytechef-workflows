@@ -1,6 +1,6 @@
 {
   "name": "Delete Sheet",
-  "category": "Productivity",
+  "category": "it",
   "description": "Deletes a specific sheet from a Google Sheets spreadsheet and logs the result. A minimal, on-demand example workflow.",
   "shortDescription": "A minimal example workflow that deletes a sheet from a Google Sheets spreadsheet.",
   "keyFeatures": [
