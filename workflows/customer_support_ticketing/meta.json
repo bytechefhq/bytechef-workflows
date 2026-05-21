@@ -2,6 +2,7 @@
   "name": "Customer Support Ticketing",
   "category": "Sales & Support",
   "description": "When a new HubSpot ticket is created, fetches the ticket and uses OpenAI to rewrite its content into a clear, structured format. OpenAI then categorizes the ticket as tech or customer support, and a condition routes a Slack notification with the rewritten ticket to either the tech-team or sales-team channel.",
+  "shortDescription": "Rewrite and categorize new support tickets, then route them to the right team.",
   "keyFeatures": [
     "HubSpot new-ticket trigger",
     "AI rewriting of ticket content for clarity and structure",

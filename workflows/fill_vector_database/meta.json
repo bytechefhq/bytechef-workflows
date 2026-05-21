@@ -2,6 +2,7 @@
   "name": "Fill vector database",
   "category": "AI & Automation",
   "description": "Lists all files in a local documentation directory recursively, then loops over each file, reads its contents, and loads it into a Pinecone vector database as a Markdown document, building a searchable knowledge base for retrieval-augmented generation.",
+  "shortDescription": "Load a folder of documentation into a Pinecone vector database for RAG.",
   "keyFeatures": [
     "Recursive filesystem listing of a documentation directory",
     "Per-file loop over the discovered files",

@@ -2,6 +2,7 @@
   "name": "Monthly Report Generation for Nifty Project",
   "category": "Productivity",
   "description": "On the first day of every month at 09:00, computes the previous month, creates a new Google Sheet tab for it, and fetches the tracked-time report from Nifty. It loops over each tracked task to retrieve details and compute its duration in hours, writes a row per task, adds a total-hours row, and emails a notification with a link to the spreadsheet.",
+  "shortDescription": "Generate a monthly Nifty time-tracking report into Google Sheets on schedule.",
   "keyFeatures": [
     "Monthly schedule trigger",
     "Date arithmetic to derive the previous-month reporting period",

@@ -2,6 +2,7 @@
   "name": "CV Scanning",
   "category": "AI & Automation",
   "description": "When a Google Forms response is submitted, downloads the attached CV PDF from Google Drive, extracts its text, and summarizes it with AI. OpenAI scores the candidate from 0 to 10 against a Senior Java Developer job description. The name, email, summary, and score are recorded in a Google Sheet, and the CV file is filed into a Rejected or Potential candidates Google Drive folder based on the score.",
+  "shortDescription": "Screen, summarize, and score job applicants automatically as applications arrive.",
   "keyFeatures": [
     "Google Forms submission trigger",
     "PDF text extraction from the uploaded CV",
