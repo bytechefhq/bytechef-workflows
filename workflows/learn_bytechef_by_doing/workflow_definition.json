@@ -1,0 +1,62 @@
+{
+	"label": "Learn ByteChef by doing",
+	"description": "New to ByteChef? This simple workflow is the perfect way to get started. In just a few minutes, you’ll build your first automation that runs on a schedule, fetches a random quote from the internet and logs it.",
+	"inputs": [],
+	"triggers": [
+		{
+			"description": "",
+			"label": "Daily",
+			"name": "trigger_1",
+			"parameters": {
+				"hour": 0,
+				"minute": 0
+			},
+			"type": "schedule/v1/everyDay"
+		}
+	],
+	"tasks": [
+		{
+			"clusterElements": {},
+			"description": "",
+			"label": "Get a random quote",
+			"maxRetries": 3,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"uri": "STRING"
+					}
+				}
+			},
+			"name": "httpClient_1",
+			"parameters": {
+				"allowUnauthorizedCerts": false,
+				"responseType": "JSON",
+				"responseContentType": "application/octet-stream",
+				"fullResponse": false,
+				"followAllRedirects": false,
+				"followRedirect": false,
+				"ignoreResponseCode": false,
+				"timeout": 1000,
+				"uri": "https://dummyjson.com/quotes/random"
+			},
+			"type": "httpClient/v1/get"
+		},
+		{
+			"clusterElements": {},
+			"label": "Log the quote",
+			"maxRetries": 0,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"text": "STRING"
+					}
+				}
+			},
+			"name": "logger_1",
+			"parameters": {
+				"text": "${httpClient_1.quote}"
+			},
+			"type": "logger/v1/info"
+		}
+	]
+}

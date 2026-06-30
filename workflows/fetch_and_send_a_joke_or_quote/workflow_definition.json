@@ -1,0 +1,153 @@
+{
+	"label": "Fetch and send a joke or quote",
+	"description": "This workflow fetches an inspirational quote on weekdays, and a joke on the weekends and then sends it to the email address you specify.",
+	"inputs": [],
+	"triggers": [
+		{
+			"label": "Daily",
+			"name": "trigger_1",
+			"parameters": {
+				"hour": 8,
+				"minute": 0,
+				"dayOfWeek": [2, 3, 4, 5, 6, 7, 1],
+				"timezone": "Europe/London"
+			},
+			"type": "schedule/v1/everyDay"
+		}
+	],
+	"tasks": [
+		{
+			"clusterElements": {},
+			"description": "",
+			"label": "Check if its the weekend",
+			"maxRetries": 0,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"date": "DATE_TIME",
+						"timeZone": "STRING"
+					}
+				}
+			},
+			"name": "dateHelper_1",
+			"parameters": {
+				"date": "${trigger_1.dateTime}",
+				"timeZone": "Europe/London"
+			},
+			"type": "dateHelper/v1/isWeekend"
+		},
+		{
+			"clusterElements": {},
+			"description": "",
+			"label": "Quote or a joke",
+			"maxRetries": 0,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"expression": "STRING"
+					}
+				}
+			},
+			"name": "condition_1",
+			"parameters": {
+				"rawExpression": true,
+				"expression": "=${dateHelper_1}",
+				"caseFalse": [
+					{
+						"clusterElements": {},
+						"label": "Get a random quote",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"uri": "STRING"
+								}
+							}
+						},
+						"name": "httpClient_1",
+						"parameters": {
+							"allowUnauthorizedCerts": false,
+							"responseType": "JSON",
+							"responseContentType": "application/octet-stream",
+							"fullResponse": false,
+							"followAllRedirects": false,
+							"followRedirect": false,
+							"ignoreResponseCode": false,
+							"timeout": 1000,
+							"uri": "https://dummyjson.com/quotes/random"
+						},
+						"type": "httpClient/v1/get"
+					},
+					{
+						"clusterElements": {},
+						"label": "Send the quote",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"subject": "STRING",
+									"body": "STRING"
+								}
+							}
+						},
+						"name": "googleMail_2",
+						"parameters": {
+							"bodyType": "plain",
+							"subject": "Here's a quote by ${httpClient_1.author}",
+							"body": "${httpClient_1.quote} "
+						},
+						"type": "googleMail/v1/sendEmail"
+					}
+				],
+				"caseTrue": [
+					{
+						"clusterElements": {},
+						"label": "Get a random joke",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"uri": "STRING"
+								}
+							}
+						},
+						"name": "httpClient_2",
+						"parameters": {
+							"allowUnauthorizedCerts": false,
+							"responseType": "JSON",
+							"responseContentType": "application/octet-stream",
+							"fullResponse": false,
+							"followAllRedirects": false,
+							"followRedirect": false,
+							"ignoreResponseCode": false,
+							"timeout": 1000,
+							"uri": "https://official-joke-api.appspot.com/random_joke"
+						},
+						"type": "httpClient/v1/get"
+					},
+					{
+						"clusterElements": {},
+						"label": "Send the joke",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"subject": "STRING",
+									"body": "STRING"
+								}
+							}
+						},
+						"name": "googleMail_1",
+						"parameters": {
+							"bodyType": "plain",
+							"subject": "Here's a joke - ${httpClient_2.setup}",
+							"body": "${httpClient_2.punchline}"
+						},
+						"type": "googleMail/v1/sendEmail"
+					}
+				]
+			},
+			"type": "condition/v1"
+		}
+	]
+}

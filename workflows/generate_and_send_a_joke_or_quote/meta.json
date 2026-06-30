@@ -1,0 +1,30 @@
+{
+	"name": "Generate and send a joke or quote",
+	"category": "ai",
+	"description": "This workflow prompts OpenAI for an inspirational quote on weekdays and a joke on the weekends. The quote is enriched with some context. Afterwards, the joke or the quote is sent via email.",
+	"shortDescription": "Use AI to generate a daily quote with context on weekdays and a joke on weekends, then email it.",
+	"author": {
+		"name": "",
+		"email": "",
+		"role": "",
+		"socialLinks": ""
+	},
+	"keyFeatures": [
+		"Daily schedule trigger at 08:00 London time",
+		"Weekend detection using the dateHelper component",
+		"Condition-based branching: AI joke on weekends, AI quote on weekdays",
+		"OpenAI gpt-4o-mini generates structured JSON responses via a response schema",
+		"Weekday quotes enriched with historical context and usage",
+		"Gmail email delivery with dynamic subject and body from AI response"
+	],
+	"prerequisites": ["OpenAI API key", "Google Mail (Gmail) connection"],
+	"idealFor": "Anyone who wants a daily AI-generated email — a contextual inspirational quote during the week and a fresh joke on weekends.",
+	"steps": [
+		"Trigger: the workflow fires every day at 08:00 Europe/London.",
+		"Check if it's the weekend using the dateHelper isWeekend component with the trigger timestamp.",
+		"Condition branches on the result: TRUE path for weekends, FALSE path for weekdays.",
+		"Weekend (TRUE): prompt OpenAI for a joke in JSON format (setup + punchline), then send it as an email with the setup as subject and punchline as body.",
+		"Weekday (FALSE): prompt OpenAI for a quote in JSON format (author + quote + context), then send it as an email with the author as subject and the quote plus context as body."
+	],
+	"screenshot": "screenshot.png"
+}
