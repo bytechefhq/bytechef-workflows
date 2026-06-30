@@ -1,0 +1,29 @@
+{
+	"name": "Fetch and send a joke or quote",
+	"category": "getting-started",
+	"description": "This workflow fetches an inspirational quote on weekdays, and a joke on the weekends and then sends it to the email address you specify.",
+	"shortDescription": "Send yourself a daily quote on weekdays and a joke on weekends via email.",
+	"author": {
+		"name": "",
+		"email": "",
+		"role": "",
+		"socialLinks": ""
+	},
+	"keyFeatures": [
+		"Daily schedule trigger at 08:00 London time",
+		"Weekend detection using the dateHelper component",
+		"Condition-based branching: joke on weekends, quote on weekdays",
+		"HTTP GET requests to two separate public APIs",
+		"Gmail email delivery with dynamic subject and body from API response"
+	],
+	"prerequisites": ["Google Mail (Gmail) connection", "Internet access to reach the public joke and quote APIs"],
+	"idealFor": "Anyone who wants a fun daily email — an inspirational quote to start the work week and a joke to kick off the weekend.",
+	"steps": [
+		"Trigger: the workflow fires every day at 08:00 Europe/London.",
+		"Check if it's the weekend using the dateHelper isWeekend component.",
+		"Condition branches on the result: TRUE path for weekends, FALSE path for weekdays.",
+		"Weekend (TRUE): fetch a random joke from the Official Joke API, then send it as an email with the setup as subject and punchline as body.",
+		"Weekday (FALSE): fetch a random quote from dummyjson.com, then send it as an email with the author as subject and the quote as body."
+	],
+	"screenshot": "screenshot.png"
+}

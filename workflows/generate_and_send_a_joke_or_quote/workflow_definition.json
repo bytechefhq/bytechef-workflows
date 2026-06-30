@@ -1,0 +1,158 @@
+{
+	"label": "Generate and send a joke or quote",
+	"description": "This workflow prompts OpenAI for an inspirational quote on weekdays and a joke on the weekends. The quote is enriched with some context. Afterwards, the joke or the quote is sent via email.",
+	"inputs": [],
+	"triggers": [
+		{
+			"label": "Daily",
+			"name": "trigger_1",
+			"parameters": {
+				"hour": 8,
+				"minute": 0,
+				"dayOfWeek": [2, 3, 4, 5, 6, 7, 1],
+				"timezone": "Europe/London"
+			},
+			"type": "schedule/v1/everyDay"
+		}
+	],
+	"tasks": [
+		{
+			"clusterElements": {},
+			"description": "",
+			"label": "Check if its the weekend",
+			"maxRetries": 0,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"date": "DATE_TIME"
+					}
+				}
+			},
+			"name": "dateHelper_1",
+			"parameters": {
+				"date": "${trigger_1.dateTime}",
+				"timeZone": "Europe/London"
+			},
+			"type": "dateHelper/v1/isWeekend"
+		},
+		{
+			"clusterElements": {},
+			"description": "",
+			"label": "Quote or a joke",
+			"maxRetries": 0,
+			"metadata": {
+				"ui": {
+					"dynamicPropertyTypes": {
+						"expression": "STRING"
+					}
+				}
+			},
+			"name": "condition_1",
+			"parameters": {
+				"rawExpression": true,
+				"expression": "=${dateHelper_1}",
+				"caseFalse": [
+					{
+						"label": "Generate a quote",
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"userPrompt": "STRING",
+									"systemPrompt": "STRING"
+								}
+							}
+						},
+						"name": "openAi_2",
+						"parameters": {
+							"format": "SIMPLE",
+							"response": {
+								"responseFormat": "JSON",
+								"responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"author\":{\"type\":\"string\",\"title\":\"Author\"},\"quote\":{\"type\":\"string\",\"title\":\"Quote\"},\"context\":{\"type\":\"string\",\"title\":\"Context\"}},\"required\":[],\"type\":\"object\"}"
+							},
+							"n": 1,
+							"temperature": 1,
+							"topP": 1,
+							"frequencyPenalty": 0,
+							"presencePenalty": 0,
+							"model": "gpt-4o-mini",
+							"userPrompt": "Give me an inspirational quote with an author and the quote text, also the context for the quote - like a historical event, a speech where the quote occurred, or how its used today.",
+							"systemPrompt": "The output should be JSON, with an author, quote, context properties. Make sure the quote is an actual human quote."
+						},
+						"type": "openAi/v1/ask"
+					},
+					{
+						"clusterElements": {},
+						"label": "Send the quote",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"subject": "STRING",
+									"body": "STRING"
+								}
+							}
+						},
+						"name": "googleMail_2",
+						"parameters": {
+							"bodyType": "plain",
+							"subject": "Here's a quote by ${openAi_2.author}",
+							"body": "${openAi_2.quote}\n\nA little bit more about the quote:\n${openAi_2.context}"
+						},
+						"type": "googleMail/v1/sendEmail"
+					}
+				],
+				"caseTrue": [
+					{
+						"label": "Generate a joke",
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"userPrompt": "STRING",
+									"systemPrompt": "STRING"
+								}
+							}
+						},
+						"name": "openAi_1",
+						"parameters": {
+							"format": "SIMPLE",
+							"response": {
+								"responseFormat": "JSON",
+								"responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"setup\":{\"type\":\"string\",\"title\":\"Setup\"},\"punchline\":{\"type\":\"string\",\"title\":\"Punchline\"}},\"required\":[],\"type\":\"object\"}"
+							},
+							"n": 1,
+							"temperature": 1,
+							"topP": 1,
+							"frequencyPenalty": 0,
+							"presencePenalty": 0,
+							"model": "gpt-4o-mini",
+							"userPrompt": "Give me a joke with a setup and punchline",
+							"systemPrompt": "The output should be JSON, with a setup and punchline properties. Make sure the joke is an actual human joke."
+						},
+						"type": "openAi/v1/ask"
+					},
+					{
+						"clusterElements": {},
+						"label": "Send the joke",
+						"maxRetries": 0,
+						"metadata": {
+							"ui": {
+								"dynamicPropertyTypes": {
+									"subject": "STRING",
+									"body": "STRING"
+								}
+							}
+						},
+						"name": "googleMail_1",
+						"parameters": {
+							"bodyType": "plain",
+							"subject": "Here's a joke - ${openAi_1.setup}",
+							"body": "${openAi_1.punchline}"
+						},
+						"type": "googleMail/v1/sendEmail"
+					}
+				]
+			},
+			"type": "condition/v1"
+		}
+	]
+}
