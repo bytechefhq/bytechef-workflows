@@ -1,0 +1,139 @@
+{
+    "label": "Python Converts Prices to USD",
+    "description": "Fetches USD exchange rate from Source, scrapes a VARTA battery catalog page, and uses Python to convert scraped EUR prices to USD.",
+    "inputs": [
+        {
+            "internalOnly": false,
+            "label": "CCY Rates Resource URL",
+            "name": "ccyRestResource",
+            "required": true,
+            "type": "string"
+        }
+    ],
+    "triggers": [
+        {
+            "description": "",
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual",
+            "parameters": {}
+        }
+    ],
+    "tasks": [
+        {
+            "clusterElements": {},
+            "description": "",
+            "label": "Get EUR/USD Rate (Today)",
+            "maxRetries": 0,
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "uri": "STRING",
+                        "queryParameters.valuta": "ARRAY",
+                        "queryParameters.valuta[0]": "STRING"
+                    }
+                }
+            },
+            "name": "httpClient_1",
+            "parameters": {
+                "uri": "${ccyRestResource}",
+                "responseType": "JSON",
+                "queryParameters": {
+                    "valuta": [
+                        "USD"
+                    ]
+                }
+            },
+            "type": "httpClient/v1/get"
+        },
+        {
+            "clusterElements": {},
+            "description": "",
+            "label": "Get EUR/USD Rate (2025)",
+            "maxRetries": 0,
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "uri": "STRING",
+                        "queryParameters.valuta": "ARRAY",
+                        "queryParameters.valuta[0]": "STRING",
+                        "queryParameters.datum-primjene": "ARRAY",
+                        "queryParameters.datum-primjene[0]": "STRING"
+                    }
+                }
+            },
+            "name": "httpClient_2",
+            "parameters": {
+                "uri": "${ccyRestResource}",
+                "responseType": "JSON",
+                "followRedirect": true,
+                "queryParameters": {
+                    "valuta": [
+                        "USD"
+                    ],
+                    "datum-primjene": [
+                        "2025-10-25"
+                    ]
+                }
+            },
+            "type": "httpClient/v1/get"
+        },
+        {
+            "clusterElements": {},
+            "description": "",
+            "label": "Compare growth",
+            "maxRetries": 0,
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {},
+                    "nodePosition": {
+                        "x": 517,
+                        "y": 525
+                    }
+                }
+            },
+            "name": "python_1",
+            "parameters": {
+                "input": {
+                    "exchangeRateResponse": "${httpClient_1}",
+                    "catalogHtml": "${httpClient_2}"
+                },
+                "script": "import re\n\ndef _safe_float(value):\n    if value is None:\n        return None\n    text = str(value).strip().replace('.', '').replace(',', '.')\n    match = re.search(r'[-+]?[0-9]*\\.?[0-9]+', text)\n    if not match:\n        return None\n    try:\n        return float(match.group(0))\n    except Exception:\n        return None\n\ndef _extract_rate(exchange_rate_response):\n    if hasattr(exchange_rate_response, 'root'):\n        exchange_rate_response = exchange_rate_response.root\n\n    if isinstance(exchange_rate_response, dict) and 'root' in exchange_rate_response:\n        exchange_rate_response = exchange_rate_response['root']\n\n    if isinstance(exchange_rate_response, dict) and 'rawExchangeRateResponse' in exchange_rate_response:\n        exchange_rate_response = exchange_rate_response['rawExchangeRateResponse']\n\n    if isinstance(exchange_rate_response, list) and exchange_rate_response:\n        first = exchange_rate_response[0]\n    else:\n        first = exchange_rate_response\n\n    if hasattr(first, 'root'):\n        first = first.root\n\n    if isinstance(first, dict) and 'root' in first:\n        first = first['root']\n\n    if isinstance(first, dict) and 'rawExchangeRateResponse' in first:\n        nested = first['rawExchangeRateResponse']\n        if isinstance(nested, list) and nested:\n            first = nested[0]\n        else:\n            first = nested\n\n    for key in ['srednji_tecaj', 'kupovni_tecaj', 'prodajni_tecaj']:\n        value = None\n        if isinstance(first, dict):\n            value = first.get(key)\n        elif hasattr(first, key):\n            value = getattr(first, key)\n        rate = _safe_float(value)\n        if rate is not None:\n            return rate\n\n    return None\n\ndef perform(input, context):\n    exchange_rate_response = input.exchangeRateResponse\n    catalog_html = input.catalogHtml\n\n    usd_per_eur_current = _extract_rate(exchange_rate_response)\n    if not usd_per_eur_current:\n        return {\n            'error': 'Could not extract USD exchange rate from HNB response.',\n            'rawExchangeRateResponse': exchange_rate_response\n        }\n    \n    usd_per_eur_2025 = _extract_rate(catalog_html)\n    if not usd_per_eur_2025:\n        return {\n            'error': 'Could not extract USD exchange rate from HNB response.',\n            'rawExchangeRateResponse': catalog_html\n        }\n\n    \n\n    return {\n        'usdPerEurCur': usd_per_eur_current,\n        'usdPerEur2025': usd_per_eur_2025,\n        'diff': usd_per_eur_current - usd_per_eur_2025\n    }\n"
+            },
+            "type": "script/v1/python"
+        },
+        {
+            "label": "Condition",
+            "name": "condition_1",
+            "parameters": {
+                "rawExpression": true,
+                "expression": "=${python_1.diff}>0",
+                "caseTrue": [
+                    {
+                        "label": "Logger",
+                        "name": "logger_1",
+                        "parameters": {
+                            "text": "Rate diff > 0 - do something!!"
+                        },
+                        "type": "logger/v1/info",
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {
+                                    "text": "STRING"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "type": "condition/v1",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "expression": "STRING"
+                    }
+                }
+            }
+        }
+    ]
+}

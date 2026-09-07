@@ -1,0 +1,31 @@
+{
+  "name": "Python - CCY Compare",
+  "category": "finance",
+  "description": "When currency rate between EUR and USD changes, action is invoked. Python Script is used to process data and apply arithmetic operations.",
+  "shortDescription": "Call for an action if currency rate between two currencies goes up.",
+  "author": {
+    "name": "Igor Beslic",
+    "email": "",
+    "role": "Engineer",
+    "socialLinks": "https://www.linkedin.com/in/igor-be%C5%A1li%C4%87-ab25632/"
+  },
+  "keyFeatures": [
+    "Manual Trigger",
+    "Http Client Component",
+    "Script Component - Python",
+    "Results logged with Logger",
+    "Condition-based logging"
+  ],
+  "prerequisites": [
+    "URL to REST endpoint for reading CCY"
+  ],
+  "idealFor": "Monithoring financial attributes and taking action on given expected results",
+  "steps": [
+    "Trigger: user invokes trigger manualy.",
+    "Get current CCY rate EUR/USD from and REST endpoint.",
+    "Get history value for same CCY EUR/USD rate from and REST endpoint.",
+    "Process inputs in Python Script and expose to workflow",
+    "Condition: if difference between today value and history value larger than 0 call for an action"
+  ],
+  "screenshot": "screenshot.png"
+}
