@@ -35,7 +35,7 @@ workflows/
 
 Get it working end to end in a real project first. A template that has never run is not a template,
 it is a draft. Note anything environment-specific you configure along the way (spreadsheet IDs, form
-IDs, label IDs, channel names, app IDs) — you will have to declare those in `prerequisites`.
+IDs, label IDs, channel names, app IDs). You will have to declare those in `prerequisites`.
 
 ## 2. Export the workflow definition
 
@@ -46,8 +46,8 @@ Then clean it up:
 
 - **Remove anything private.** Personal email addresses, internal channel names, credentials,
   customer data, real record IDs from a production account. Replace them with neutral placeholders
-  (`support@example.com`, `your-channel`). Connections are not part of the export — the importing
-  user picks their own — but resource IDs typed into parameters are. Leaving an ID that points at a
+  (`support@example.com`, `your-channel`). Connections are not part of the export, since the
+  importing user picks their own, but resource IDs typed into parameters are. Leaving an ID that points at a
   throwaway demo resource is fine, as long as `prerequisites` says what to swap out.
 - **Give it a meaningful `label` and `description`.** Both are shown to users on the template's
   detail page, so they are not internal notes. Keep them consistent with `name` and `description` in
@@ -123,18 +123,18 @@ Create `workflows/<your_folder>/meta.json` using two-space indentation:
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `name` | string | Title of the template card. **Must not be blank** — a template without a name is skipped entirely. Keep it consistent with the definition's `label`. |
+| `name` | string | Title of the template card. **Must not be blank**: a template without a name is skipped entirely. Keep it consistent with the definition's `label`. |
 | `category` | string | Exactly one ID from the [category list](#categories). |
 | `description` | string | Description on the template card, and one of the two fields users can search on. Two to four sentences saying what the workflow does, concretely. The card shows about two lines, so front-load the meaning. |
 | `shortDescription` | string | One-sentence tagline. |
 | `author` | object | `name`, `email`, `role`, `socialLinks`, all strings. The block must be present; leave the fields as empty strings if you would rather not be credited. |
 | `keyFeatures` | string[] | Capability bullets ("AI urgency classification of the incoming email"). |
-| `prerequisites` | string[] | Everything a user must have before importing: each connection, each API key, and each resource that must already exist (a spreadsheet, a Gmail label, a database table). Be specific — this is the field that decides whether an imported template actually runs. |
+| `prerequisites` | string[] | Everything a user must have before importing: each connection, each API key, and each resource that must already exist (a spreadsheet, a Gmail label, a database table). Be specific. This is the field that decides whether an imported template actually runs. |
 | `idealFor` | string | One sentence naming the audience: "Recruiters and hiring teams that want to pre-screen incoming job applications automatically." |
 | `steps` | string[] | The workflow narrated step by step, one sentence per step, in execution order. Start with `"Trigger: ..."` when the workflow has a trigger. |
 | `screenshot` | string | Always `"screenshot.png"`. |
 
-Every field is expected in a submission. Do not add component names or the trigger — those are taken
+Every field is expected in a submission. Do not add component names or the trigger. Those are taken
 from the workflow definition automatically.
 
 ### Categories
