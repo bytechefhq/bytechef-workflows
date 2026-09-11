@@ -1,13 +1,17 @@
-# ByteChef Workflow Templates
+# ByteChef Templates
 
-A collection of example workflows for use with the [ByteChef](https://github.com/bytechefhq/bytechef)
-platform. Every folder under [`workflows/`](workflows) is published as a pre-built workflow template
-that users can preview and import into their own projects.
+A collection of example workflows and projects for use with the
+[ByteChef](https://github.com/bytechefhq/bytechef) platform. Every folder under
+[`workflows/`](workflows) is published as a pre-built workflow template that users can preview and
+import into their own projects, and every zip under [`projects/`](projects) is published as a
+pre-built project template that users can import as a whole project with all of its workflows.
 
-This README describes how to submit one.
+This README describes how to submit one of each:
 
-> **Project templates** are not supported by this repository yet. For now, only workflow templates
-> can be submitted.
+- [Workflow templates](#workflow-templates)
+- [Project templates](#project-templates)
+
+# Workflow templates
 
 ## What a template folder contains
 
@@ -172,3 +176,80 @@ ran it successfully. Before opening it, check:
 - [ ] `steps` narrates the workflow in execution order.
 - [ ] No credentials, personal email addresses, internal channel names or customer data anywhere in the definition.
 - [ ] The workflow was actually run end to end in ByteChef.
+
+# Project templates
+
+A project template is a single zip file under `projects/`: the zip that ByteChef produces when you
+export a project, cleaned up. It carries the project and every workflow in it. Unlike workflow
+templates, nothing is unpacked into folders in this repository: the zip is stored and served as-is.
+
+## What a project template contains
+
+```
+projects/
+  customer_onboarding.zip
+    project.json               <- project name and description
+    workflow-<uuid>.json       <- one per workflow
+```
+
+- One zip per template, directly under `projects/`. Every file under `projects/` is read as a
+  template zip, so put nothing else there.
+- All files sit at the root of the zip, exactly as ByteChef exported them. A zip that wraps them in a
+  folder is skipped, because the files are matched by exact name.
+- The zip **must** contain `project.json` and at least one `workflow-*.json`. If either is missing,
+  the template is skipped and never appears.
+- Name the zip in `lower_snake_case`: no spaces, no dashes. Examples: `customer_onboarding.zip`,
+  `invoice_processing.zip`. The file name becomes the template's permanent identifier and part of its
+  URL. Renaming it later breaks every existing link, so choose it carefully the first time.
+
+## 1. Build and test the project in ByteChef
+
+Get every workflow in the project working end to end first. Note anything environment-specific you
+configure along the way (spreadsheet IDs, form IDs, label IDs, channel names, app IDs) so you can
+replace it with a placeholder before submitting.
+
+## 2. Export the project
+
+Open the project's settings menu in ByteChef and choose **Export**. You get a zip containing
+`project.json` and one `workflow-<uuid>.json` per workflow.
+
+`project.json` holds the project's `name` and `description`. Both are shown to users on the
+template card, so make them meaningful before you export: the description should say in two to four
+sentences what the project does, concretely.
+
+Unzip the export and clean the workflow files up the same way as for a workflow template:
+
+- **Remove anything private.** Personal email addresses, internal channel names, credentials,
+  customer data, real record IDs from a production account. Replace them with neutral placeholders.
+- **Keep the exported formatting.** Each `workflow-<uuid>.json` is the workflow definition exactly as
+  ByteChef exported it. Edit values inside it, but do not reformat or rename the file.
+- **Check `label` and `description`** of every workflow. They are shown on the template's detail
+  page.
+
+Do not add component names or triggers anywhere. Those are taken from the workflow definitions
+automatically.
+
+## 3. Zip it
+
+Zip `project.json` and the `workflow-*.json` files so that they are at the root of the archive, and
+save it as `projects/<lower_snake_case_name>.zip`:
+
+```
+cd <unzipped export>
+zip ../customer_onboarding.zip project.json workflow-*.json
+```
+
+Screenshots are not part of a project template. Attach them to the pull request instead.
+
+## 4. Open a pull request
+
+One template per pull request. In the description, say what the project automates, which
+[categories](#categories) it belongs to, how you want to be credited (name, role, a GitHub, LinkedIn
+or X link), and confirm you ran every workflow successfully. Before opening it, check:
+
+- [ ] The file is `projects/<lower_snake_case_name>.zip`, directly under `projects/`.
+- [ ] The zip contains `project.json` and at least one `workflow-*.json`, all at the root of the archive.
+- [ ] `project.json` parses (`python3 -m json.tool project.json` or an editor that validates JSON) and has a non-blank `name` and a real `description`.
+- [ ] Every workflow has a meaningful `label` and `description`.
+- [ ] No credentials, personal email addresses, internal channel names or customer data anywhere in the workflow definitions.
+- [ ] Every workflow in the project was actually run end to end in ByteChef.
