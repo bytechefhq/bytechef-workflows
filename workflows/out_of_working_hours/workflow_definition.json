@@ -1,5 +1,5 @@
 {
-    "label" : "Out of Working Hours Email Triage",
+    "label" : "Triage after-hours Gmail emails with OpenAI and auto-reply or alert Slack",
     "description" : "Out-of-hours Gmail auto-response with AI urgency triage + log to Google Sheets",
     "inputs" : [ ],
     "triggers" : [

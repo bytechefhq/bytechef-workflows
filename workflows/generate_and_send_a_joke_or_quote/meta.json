@@ -1,5 +1,5 @@
 {
-	"name": "Generate and send a joke or quote",
+	"name": "Generate a daily quote or joke with OpenAI and email it",
 	"category": "ai",
 	"description": "This workflow prompts OpenAI for an inspirational quote on weekdays and a joke on the weekends. The quote is enriched with some context. Afterwards, the joke or the quote is sent via email.",
 	"shortDescription": "Use AI to generate a daily quote with context on weekdays and a joke on weekends, then email it.",

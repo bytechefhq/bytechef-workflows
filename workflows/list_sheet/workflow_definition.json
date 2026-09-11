@@ -1,5 +1,5 @@
 {
-    "label" : "List Sheets",
+    "label" : "List all sheets in a Google Sheets spreadsheet",
     "description" : "Lists all sheets and logs them.",
     "inputs" : [ ],
     "triggers" : [ ],
