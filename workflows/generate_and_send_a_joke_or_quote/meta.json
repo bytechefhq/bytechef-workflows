@@ -18,7 +18,7 @@
 		"Gmail email delivery with dynamic subject and body from AI response"
 	],
 	"prerequisites": ["OpenAI API key", "Google Mail (Gmail) connection"],
-	"idealFor": "Anyone who wants a daily AI-generated email — a contextual inspirational quote during the week and a fresh joke on weekends.",
+	"idealFor": "Anyone who wants a daily AI-generated email: a contextual inspirational quote during the week and a fresh joke on weekends.",
 	"steps": [
 		"Trigger: the workflow fires every day at 08:00 Europe/London.",
 		"Check if it's the weekend using the dateHelper isWeekend component with the trigger timestamp.",

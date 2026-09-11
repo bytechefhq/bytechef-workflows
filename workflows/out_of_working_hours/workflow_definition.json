@@ -1,5 +1,5 @@
 {
-    "label" : "out of working hours",
+    "label" : "Out of Working Hours Email Triage",
     "description" : "Out-of-hours Gmail auto-response with AI urgency triage + log to Google Sheets",
     "inputs" : [ ],
     "triggers" : [

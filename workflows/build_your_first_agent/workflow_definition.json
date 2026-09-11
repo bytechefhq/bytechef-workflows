@@ -1,0 +1,66 @@
+{
+  "label": "Build your first agent",
+  "description": "An AI agent that calls a tool. It fetches a random quote through the HTTP Client tool, explains it in one sentence, and logs the answer. Runs on a manual trigger, so click Run after importing.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Explain a quote",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are a friendly assistant. Always call the Get a random quote tool first. Then reply with the quote, its author, and one sentence explaining what the quote means. Do not invent quotes.",
+        "userPrompt": "Fetch a random quote and explain it.",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get a random quote",
+            "name": "httpClient_1",
+            "type": "httpClient/v1/get",
+            "parameters": {
+              "uri": "https://dummyjson.com/quotes/random",
+              "allowUnauthorizedCerts": false,
+              "responseType": "JSON",
+              "fullResponse": false,
+              "followAllRedirects": false,
+              "followRedirect": false,
+              "ignoreResponseCode": false,
+              "timeout": 10000
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Log the answer",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "${aiAgent_1}"
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    }
+  ]
+}

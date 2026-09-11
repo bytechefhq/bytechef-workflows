@@ -1,0 +1,28 @@
+{
+  "name": "Build your first agent",
+  "category": "getting-started",
+  "description": "Your first AI agent in ByteChef. The agent uses an OpenAI model and one tool, the HTTP Client, to fetch a random quote from a public API, then explains the quote in one sentence and logs the answer. It runs on a manual trigger, so after importing it you connect your OpenAI API key, click Run and watch the tool call in the execution log.",
+  "shortDescription": "An OpenAI agent that calls one tool to fetch a quote and explains it, in one click.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent component with an OpenAI model",
+    "One tool, the HTTP Client, that the agent decides to call",
+    "System prompt that tells the agent when to use the tool",
+    "Logger step that shows the agent's answer in the execution log"
+  ],
+  "prerequisites": [
+    "OpenAI API key",
+    "Internet access to reach the public quotes API"
+  ],
+  "idealFor": "Anyone who has run their first workflow and wants to see an agent pick and call a tool, with a single connection to set up.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Explain a quote: the AI Agent calls the Get a random quote tool, an HTTP GET on dummyjson.com/quotes/random, and writes a one-sentence explanation.",
+    "Log the answer: the Logger step prints the agent's reply to the execution log."
+  ]
+}
