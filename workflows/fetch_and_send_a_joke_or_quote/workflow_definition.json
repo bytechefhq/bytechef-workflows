@@ -1,5 +1,5 @@
 {
-	"label": "Fetch and send a joke or quote",
+	"label": "Email yourself a daily quote on weekdays and a joke on weekends",
 	"description": "This workflow fetches an inspirational quote on weekdays, and a joke on the weekends and then sends it to the email address you specify.",
 	"inputs": [],
 	"triggers": [

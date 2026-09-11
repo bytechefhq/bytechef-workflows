@@ -1,5 +1,5 @@
 {
-  "name": "Python - CCY Compare",
+  "name": "Compare USD exchange rates with a Python script and act when the rate rises",
   "category": "finance",
   "description": "When currency rate between EUR and USD changes, action is invoked. Python Script is used to process data and apply arithmetic operations.",
   "shortDescription": "Call for an action if currency rate between two currencies goes up.",

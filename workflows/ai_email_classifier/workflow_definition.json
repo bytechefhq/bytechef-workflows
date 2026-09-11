@@ -1,5 +1,5 @@
 {
-    "label" : "AI Email Classifier",
+    "label" : "Classify Gmail emails with OpenAI and forward them to the right team",
     "description" : "",
     "inputs" : [ ],
     "triggers" : [

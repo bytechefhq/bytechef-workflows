@@ -1,5 +1,5 @@
 {
-  "label" : "Fill vector database",
+  "label" : "Load a folder of Markdown files into Pinecone for RAG",
   "description" : "Takes all files located in directory '/home/user/IdeaProjects/bytechef/docs/src/content/docs' and uploads them to a vector database.",
   "inputs" : [ ],
   "triggers" : [ ],

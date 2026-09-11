@@ -1,5 +1,5 @@
 {
-    "label" : "Delete Sheet",
+    "label" : "Delete a sheet from a Google Sheets spreadsheet",
     "description" : "Deletes a sheet and logs it.",
     "inputs" : [ ],
     "triggers" : [ ],

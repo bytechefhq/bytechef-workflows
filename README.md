@@ -90,7 +90,7 @@ Create `workflows/<your_folder>/meta.json` using two-space indentation:
 
 ```json
 {
-  "name": "AI Email Classifier",
+  "name": "Classify Gmail emails with OpenAI and forward them to the right team",
   "category": "ai",
   "description": "Polls Gmail for new emails and uses OpenAI to classify each one into a single department label (Sales, Support, Finance, Operations, HR, or URGENT). The matching Gmail label is applied, the department's recipient address is stored, and the original email is forwarded to the correct team.",
   "shortDescription": "Classify incoming Gmail messages with AI and route them to the right team.",

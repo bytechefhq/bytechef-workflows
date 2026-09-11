@@ -1,5 +1,5 @@
 {
-    "label": "Python Converts Prices to USD",
+    "label": "Compare USD exchange rates with a Python script and act when the rate rises",
     "description": "Fetches USD exchange rate from Source, scrapes a VARTA battery catalog page, and uses Python to convert scraped EUR prices to USD.",
     "inputs": [
         {

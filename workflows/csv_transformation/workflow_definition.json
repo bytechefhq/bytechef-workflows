@@ -1,5 +1,5 @@
 {
-    "label" : "CSV Transformation",
+    "label" : "Trim columns from a CSV file in AWS S3 and upload the result",
     "description" : "Every time a button is clicked, take an object called 'offices.csv' from AWS S3 with the key 'files/offices.csv'. Reduce number of columns in the csv file to ['F-NOM0103','F-COD0047','F-LOC0001','NUM0366']. Upload the file",
     "inputs" : [ ],
     "triggers" : [ ],
