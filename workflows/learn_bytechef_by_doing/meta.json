@@ -1,8 +1,8 @@
 {
 	"name": "Learn ByteChef by doing",
 	"category": "getting-started",
-	"description": "New to ByteChef? This simple workflow is the perfect way to get started. In just a few minutes, you'll build your first automation that runs on a schedule, fetches a random quote from the internet and logs it.",
-	"shortDescription": "Build your first ByteChef automation: fetch a random quote daily and log it.",
+	"description": "New to ByteChef? This simple workflow is the perfect way to get started. In just a few minutes, you'll build your first automation: it fetches a random quote from the internet and logs it. It uses a manual trigger, so after importing it you click Run and see the result immediately. Swap in a Schedule trigger when you want it to run on its own.",
+	"shortDescription": "Build your first ByteChef automation: fetch a random quote and log it, with one click.",
 	"author": {
 		"name": "",
 		"email": "",
@@ -10,15 +10,15 @@
 		"socialLinks": ""
 	},
 	"keyFeatures": [
-		"Daily schedule trigger — no manual intervention needed",
+		"Manual trigger: runs the moment you click Run, no waiting and no credentials",
 		"HTTP GET request to a public API with JSON response parsing",
 		"Data reference between tasks using ByteChef expression syntax",
 		"Logger step for inspecting output without extra integrations"
 	],
 	"prerequisites": ["A running ByteChef instance", "Internet access to reach the public quotes API"],
-	"idealFor": "Anyone new to ByteChef who wants a zero-configuration first workflow that demonstrates triggers, HTTP calls, and task chaining.",
+	"idealFor": "Anyone new to ByteChef who wants a zero-configuration first workflow that demonstrates HTTP calls and task chaining, and runs immediately.",
 	"steps": [
-		"Trigger: the workflow fires once every day at midnight.",
+		"Trigger: the workflow starts when you click Run in the workflow editor.",
 		"Get a random quote: HTTP GET request to dummyjson.com/quotes/random returns a JSON object.",
 		"Log the quote: the Logger step prints the quote field from the HTTP response to the execution log."
 	],

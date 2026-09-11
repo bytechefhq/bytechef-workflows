@@ -1,19 +1,8 @@
 {
 	"label": "Learn ByteChef by doing",
-	"description": "New to ByteChef? This simple workflow is the perfect way to get started. In just a few minutes, you’ll build your first automation that runs on a schedule, fetches a random quote from the internet and logs it.",
+	"description": "New to ByteChef? This simple workflow is the perfect way to get started. In just a few minutes, you’ll build your first automation: it fetches a random quote from the internet and logs it, and you run it with one click.",
 	"inputs": [],
-	"triggers": [
-		{
-			"description": "",
-			"label": "Daily",
-			"name": "trigger_1",
-			"parameters": {
-				"hour": 0,
-				"minute": 0
-			},
-			"type": "schedule/v1/everyDay"
-		}
-	],
+	"triggers" : [ ],
 	"tasks": [
 		{
 			"clusterElements": {},

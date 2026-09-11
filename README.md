@@ -20,7 +20,7 @@ workflows/
   ai_email_classifier/
     meta.json                  <- template metadata (required)
     workflow_definition.json   <- the workflow itself (required)
-    screenshot.png             <- image of the workflow canvas
+    screenshot.png             <- optional image of the workflow canvas
 ```
 
 - One folder per template, directly under `workflows/`. Nothing is read from a subfolder.
@@ -132,7 +132,7 @@ Create `workflows/<your_folder>/meta.json` using two-space indentation:
 | `prerequisites` | string[] | Everything a user must have before importing: each connection, each API key, and each resource that must already exist (a spreadsheet, a Gmail label, a database table). Be specific. This is the field that decides whether an imported template actually runs. |
 | `idealFor` | string | One sentence naming the audience: "Recruiters and hiring teams that want to pre-screen incoming job applications automatically." |
 | `steps` | string[] | The workflow narrated step by step, one sentence per step, in execution order. Start with `"Trigger: ..."` when the workflow has a trigger. |
-| `screenshot` | string | Always `"screenshot.png"`. |
+| `screenshot` | string | `"screenshot.png"` when the folder has one, otherwise omit the field. The site draws the canvas from the workflow definition, so the image is not published. |
 
 Every field is expected in a submission. Do not add component names or the trigger. Those are taken
 from the workflow definition automatically.
@@ -155,11 +155,11 @@ from the workflow definition automatically.
 Note the exact spelling of `documentOps` (camelCase). An ID outside this list never matches a filter,
 which leaves the template unreachable by category.
 
-## 4. Add `screenshot.png`
+## 4. Add `screenshot.png` (optional)
 
-Add a `screenshot.png` image of the workflow canvas to the folder, and keep `"screenshot"` in
-`meta.json` set to `"screenshot.png"`. Some of the older templates still carry an empty placeholder
-file; new submissions should include a real image.
+The template page renders the workflow canvas from `workflow_definition.json`, so a screenshot is not
+required and is not shown on the site. If you add one anyway, name it `screenshot.png` and keep
+`"screenshot"` in `meta.json` set to `"screenshot.png"`; otherwise leave the field out.
 
 ## 5. Open a pull request
 
