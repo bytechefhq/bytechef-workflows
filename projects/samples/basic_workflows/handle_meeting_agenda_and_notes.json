@@ -1,0 +1,256 @@
+{
+    "label" : "Handle meeting agenda and notes",
+    "description" : "",
+    "inputs" : [ ],
+    "triggers" : [
+        {
+            "label" : "Schedule",
+            "name" : "trigger_1",
+            "parameters" : {
+                "hour" : 11,
+                "minute" : 30,
+                "dayOfWeek" : [
+                    2,
+                    5
+                ],
+                "timezone" : "Etc/GMT+0"
+            },
+            "type" : "schedule/v1/everyDay"
+        }
+    ],
+    "tasks" : [
+        {
+            "label" : "Date Helper",
+            "name" : "dateHelper_1",
+            "parameters" : {
+                "timeZone" : "Europe/Zagreb",
+                "dateFormat" : "dd-MM-yyyy"
+            },
+            "type" : "dateHelper/v1/getCurrentDate",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : { }
+                }
+            }
+        },
+        {
+            "description" : "",
+            "label" : "Notion",
+            "name" : "notion_1",
+            "parameters" : {
+                "id" : "3498601b-ca35-807a-a4cc-c38d13e2959f",
+                "title" : "${dateHelper_1}"
+            },
+            "type" : "notion/v1/createPage",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "title" : "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label" : "Var",
+            "name" : "var_1",
+            "parameters" : {
+                "type" : "STRING",
+                "value" : "34b8601b-ca35-80bd-bb68-000b45be54bb"
+            },
+            "type" : "var/v1/set"
+        },
+        {
+            "label" : "Notion",
+            "name" : "notion_2",
+            "parameters" : {
+                "id" : "${var_1}"
+            },
+            "type" : "notion/v1/getDatabase",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "id" : "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label" : "Notion",
+            "name" : "notion_3",
+            "parameters" : {
+                "id" : "${notion_1.id}",
+                "children" : [
+                    {
+                        "type" : "bookmark",
+                        "url" : "${notion_2.url}",
+                        "caption" : [
+                            {
+                                "type" : "text",
+                                "text" : {
+                                    "content" : "Table with created tasks"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "type" : "notion/v1/addBlockToPage"
+        },
+        {
+            "label" : "Data Storage",
+            "name" : "dataStorage_1",
+            "parameters" : {
+                "key" : "last_meeting",
+                "scope" : "PRINCIPAL",
+                "type" : "STRING"
+            },
+            "type" : "dataStorage/v1/getValue",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : { }
+                }
+            }
+        },
+        {
+            "label" : "Condition",
+            "name" : "condition_1",
+            "parameters" : {
+                "rawExpression" : true,
+                "expression" : "= ${dataStorage_1} != null",
+                "caseTrue" : [
+                    {
+                        "label" : "Notion",
+                        "name" : "notion_4",
+                        "type" : "notion/v1/getPageOrBlockChildren",
+                        "parameters" : {
+                            "id" : "${dataStorage_1}"
+                        },
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "id" : "STRING"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label" : "OpenAI",
+                        "name" : "openAi_1",
+                        "parameters" : {
+                            "format" : "SIMPLE",
+                            "response" : {
+                                "responseFormat" : "TEXT"
+                            },
+                            "n" : 1,
+                            "temperature" : 1,
+                            "topP" : 1,
+                            "frequencyPenalty" : 0,
+                            "presencePenalty" : 0,
+                            "model" : "gpt-4o-mini",
+                            "userPrompt" : "The input is a JSON array of Notion blocks.\n\nYour job:\n- Extract only meaningful human-written content\n- Ignore link to a database TASKS\n- Ignore empty or irrelevant blocks\n\nFocus only on:\n- paragraphs\n- headings\n- bullet lists\n- numbered lists\n- to-do items (only text, ignore checked state unless relevant)\n\nDo NOT hallucinate missing information.Do NOT interpret database content. Do NOT include raw JSON in your response. Produce a clean, structured summary.",
+                            "systemPrompt" : "Analyze the following Notion meeting notes and produce a structured summary: ${notion_4}"
+                        },
+                        "type" : "openAi/v1/ask",
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "userPrompt" : "STRING",
+                                    "systemPrompt" : "STRING"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label" : "Notion",
+                        "name" : "notion_5",
+                        "parameters" : {
+                            "id" : "${notion_1.id}",
+                            "children" : [
+                                {
+                                    "type" : "paragraph",
+                                    "rich_text" : [
+                                        {
+                                            "type" : "text",
+                                            "text" : {
+                                                "content" : "${openAi_1}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "type" : "notion/v1/addBlockToPage",
+                        "metadata" : {
+                            "ui" : {
+                                "dynamicPropertyTypes" : {
+                                    "children[0].rich_text[0].text.content" : "STRING"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "type" : "condition/v1"
+        },
+        {
+            "label" : "Data Storage",
+            "name" : "dataStorage_2",
+            "parameters" : {
+                "key" : "last_meeting",
+                "scope" : "PRINCIPAL",
+                "type" : "STRING",
+                "value" : "${notion_1.id}"
+            },
+            "type" : "dataStorage/v1/setValue",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "key" : "STRING",
+                        "value" : "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label" : "Google Calendar",
+            "name" : "googleCalendar_1",
+            "parameters" : {
+                "maxResults" : 250,
+                "calendarId" : "marija.horvat@bitnaprednost.hr",
+                "q" : "Team meeting",
+                "dateRange" : {
+                    "from" : "${trigger_1.datetime}",
+                    "to" : null
+                }
+            },
+            "type" : "googleCalendar/v1/getEvents",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "q" : "STRING",
+                        "dateRange.from" : "DATE_TIME",
+                        "dateRange.to" : "DATE_TIME"
+                    }
+                }
+            }
+        },
+        {
+            "label" : "Google Calendar",
+            "name" : "googleCalendar_2",
+            "parameters" : {
+                "calendarId" : "marija.horvat@bitnaprednost.hr",
+                "eventId" : "${googleCalendar_1[0].id}",
+                "description" : "${notion_1.url}"
+            },
+            "type" : "googleCalendar/v1/updateEvent",
+            "metadata" : {
+                "ui" : {
+                    "dynamicPropertyTypes" : {
+                        "eventId" : "STRING",
+                        "description" : "STRING"
+                    }
+                }
+            }
+        }
+    ]
+}
