@@ -1,0 +1,155 @@
+{
+  "label": "error-handler",
+  "description": "",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Chat",
+      "name": "trigger_1",
+      "parameters": {
+        "mode": 1
+      },
+      "type": "chat/v1/newChatRequest"
+    }
+  ],
+  "tasks": [
+    {
+      "clusterElements": {
+        "model": {
+          "label": "Anthropic",
+          "metadata": {},
+          "name": "anthropic_1",
+          "parameters": {
+            "topK": 1
+          },
+          "type": "anthropic/v1/model"
+        },
+        "chatMemory": {
+          "label": "In Memory Chat Memory",
+          "metadata": {
+            "ui": {
+              "dynamicPropertyTypes": {
+                "conversationId": "STRING"
+              },
+              "fromAi": []
+            }
+          },
+          "name": "inMemoryChatMemory_1",
+          "parameters": {
+            "conversationId": "${trigger_1.conversationId}"
+          },
+          "type": "inMemoryChatMemory/v1/chatMemory"
+        },
+        "rag": {
+          "clusterElements": {
+            "documentJoiner": {
+              "label": "Document Joiner",
+              "metadata": {},
+              "name": "documentJoiner_1",
+              "parameters": {},
+              "type": "documentJoiner/v1/concatenationDocumentJoiner"
+            },
+            "documentRetriever": {
+              "clusterElements": {
+                "vectorStore": {
+                  "clusterElements": {},
+                  "label": "Knowledge Base",
+                  "metadata": {},
+                  "name": "knowledgeBase_1",
+                  "parameters": {},
+                  "type": "knowledgeBase/v1/vectorStore"
+                }
+              },
+              "label": "Vector Store Document Retriever",
+              "metadata": {},
+              "name": "vectorStoreDocumentRetriever_1",
+              "parameters": {
+                "similarityThreshold": 0,
+                "topK": 4
+              },
+              "type": "vectorStoreDocumentRetriever/v1/documentRetriever"
+            },
+            "queryAugmenter": {
+              "label": "Query Augmenter",
+              "metadata": {},
+              "name": "queryAugmenter_1",
+              "parameters": {},
+              "type": "queryAugmenter/v1/contextualQueryAugmenter"
+            },
+            "queryExpander": {
+              "clusterElements": {
+                "model": {
+                  "label": "MistralAI",
+                  "metadata": {},
+                  "name": "mistral_1",
+                  "parameters": {
+                    "temperature": 1,
+                    "topP": 1,
+                    "safePrompt": true
+                  },
+                  "type": "mistral/v1/model"
+                }
+              },
+              "label": "Query Expander",
+              "metadata": {},
+              "name": "queryExpander_1",
+              "parameters": {
+                "includeOriginal": true,
+                "numberOfQueries": 3
+              },
+              "type": "queryExpander/v1/multiQueryExpander"
+            },
+            "queryTransformer": [
+              {
+                "clusterElements": {
+                  "model": {
+                    "label": "Amazon Bedrock",
+                    "metadata": {},
+                    "name": "amazonBedrock_1",
+                    "parameters": {
+                      "response": {
+                        "responseFormat": "TEXT"
+                      },
+                      "temperature": 1,
+                      "topP": 1
+                    },
+                    "type": "amazonBedrock/v1/model"
+                  }
+                },
+                "label": "Query Transformer",
+                "metadata": {},
+                "name": "queryTransformer_1",
+                "parameters": {},
+                "type": "queryTransformer/v1/compressionQueryTransformer"
+              }
+            ]
+          },
+          "label": "Modular RAG",
+          "metadata": {},
+          "name": "modularRag_1",
+          "parameters": {},
+          "type": "modularRag/v1/rag"
+        },
+        "guardrails": [],
+        "tools": []
+      },
+      "label": "AI Agent",
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {
+            "userPrompt": "STRING"
+          }
+        }
+      },
+      "name": "aiAgent_1",
+      "parameters": {
+        "format": "SIMPLE",
+        "response": {
+          "responseFormat": "TEXT"
+        },
+        "userPrompt": "${trigger_1.message}"
+      },
+      "type": "aiAgent/v1/chat"
+    }
+  ]
+}
