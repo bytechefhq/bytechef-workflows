@@ -1,0 +1,220 @@
+{
+    "label": "send_personalized_email",
+    "description": "",
+    "inputs": [],
+    "triggers": [
+        {
+            "description": "",
+            "label": "Receive data from Liferay",
+            "name": "trigger_1",
+            "parameters": {},
+            "type": "webhook/v1/autoRespondWithHTTP200"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Data Storage",
+            "name": "dataStorage_1",
+            "parameters": {
+                "key": "radionice",
+                "scope": "CURRENT_EXECUTION",
+                "type": "ARRAY",
+                "value": [
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.dovradionica1.name}",
+                        "naziv": "Mudro upravljanje novcem: štednja kao temelj financijske otpornosti"
+                    },
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.radionica2.name}",
+                        "naziv": "CSI – Euro: „Forenzika novca“"
+                    },
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.radionica3.name}",
+                        "naziv": "Moneterrapija"
+                    },
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.radionica4.name}",
+                        "naziv": "Razgledavanje okrugle dvorane uz stručno vodstvo"
+                    },
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.radionica5.name}",
+                        "naziv": "Razgledavanje okrugle dvorane bez stručnog vodstva"
+                    },
+                    {
+                        "vrijeme": "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.radionica6.name}",
+                        "naziv": "Moneterra kviz"
+                    }
+                ]
+            },
+            "type": "dataStorage/v1/setValue",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "key": "STRING",
+                        "value[0].vrijeme": "STRING",
+                        "value[0].naziv": "STRING",
+                        "value[1].vrijeme": "STRING",
+                        "value[1].naziv": "STRING",
+                        "value[2].vrijeme": "STRING",
+                        "value[2].naziv": "STRING",
+                        "value[3].vrijeme": "STRING",
+                        "value[3].naziv": "STRING",
+                        "value[4].vrijeme": "STRING",
+                        "value[4].naziv": "STRING",
+                        "value[5].vrijeme": "STRING",
+                        "value[5].naziv": "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Data Storage",
+            "name": "dataStorage_2",
+            "parameters": {
+                "key": "radionice",
+                "scope": "CURRENT_EXECUTION",
+                "type": "ARRAY"
+            },
+            "type": "dataStorage/v1/getValue",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "key": "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "clusterElements": {},
+            "description": "",
+            "label": "Loop through Liferay data",
+            "maxRetries": 0,
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "items": "ARRAY"
+                    }
+                }
+            },
+            "name": "loop_1",
+            "parameters": {
+                "loopForever": false,
+                "items": "${dataStorage_2}",
+                "iteratee": [
+                    {
+                        "label": "Condition",
+                        "name": "condition_1",
+                        "parameters": {
+                            "rawExpression": false,
+                            "expression": "=",
+                            "conditions": [
+                                [
+                                    {
+                                        "type": "string",
+                                        "value1": "${loop_1.item.vrijeme}",
+                                        "operation": "STARTS_WITH",
+                                        "value2": "$"
+                                    }
+                                ]
+                            ],
+                            "caseFalse": [
+                                {
+                                    "label": "Build personalized email ",
+                                    "name": "dataStorage_4",
+                                    "parameters": {
+                                        "scope": "CURRENT_EXECUTION",
+                                        "key": "email",
+                                        "type": "STRING",
+                                        "value": "\"${loop_1.item.naziv}\" u terminu ${loop_1.item.vrijeme}",
+                                        "appendListAsSingleItem": true
+                                    },
+                                    "type": "dataStorage/v1/appendValueToList",
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {
+                                                "key": "STRING",
+                                                "value": "STRING"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "type": "condition/v1",
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {
+                                    "conditions[0]": "ARRAY",
+                                    "conditions[0][0].value1": "STRING",
+                                    "conditions[0][0].value2": "STRING"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "type": "loop/v1"
+        },
+        {
+            "label": "Data Storage",
+            "name": "dataStorage_5",
+            "parameters": {
+                "key": "email",
+                "scope": "CURRENT_EXECUTION",
+                "type": "ARRAY"
+            },
+            "type": "dataStorage/v1/getValue",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "key": "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Text Helper",
+            "name": "textHelper_1",
+            "parameters": {
+                "texts": "${dataStorage_5}",
+                "separator": ",<br>"
+            },
+            "type": "textHelper/v1/concatenate",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "texts": "ARRAY",
+                        "separator": "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "clusterElements": {},
+            "description": "",
+            "label": "Send personalized email",
+            "maxRetries": 0,
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "to[0]": "STRING",
+                        "from": "STRING",
+                        "subject": "STRING",
+                        "content": "STRING"
+                    }
+                }
+            },
+            "name": "email_1",
+            "parameters": {
+                "port": 587,
+                "to": [
+                    "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.email}"
+                ],
+                "from": "email@email.com",
+                "subject": "Subject",
+                "content": "${textHelper_1}"
+            },
+            "type": "email/v1/send"
+        }
+    ]
+}
