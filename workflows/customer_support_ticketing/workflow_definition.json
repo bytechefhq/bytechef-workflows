@@ -45,17 +45,15 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
-        "messages": [
-          {
-            "role": "USER",
-            "content": "Analyze the following customer support ticket and rewrite it in clear, concise, and organized format.\n\nEnsure the rewritten version includes:\n\nCustomer Issue:\nClearly state the problem or question raised by the customer.\n\nBackground Information: \nSummarize any context or details provided by the customer.\n\nRequested Action: Highlight what the customer wants or needs from support.\n\n\nTone: Use a professional and empathetic tone while simplifying the original text.\n\nOriginal ticket: ${hubspot_1.body.properties.content}, ${hubspot_1.body.properties.subject}\n\nTicket priority: ${hubspot_1.body.properties.hs_ticket_priority}"
-          }
-        ]
+        "format": "SIMPLE",
+        "userPrompt": "Rewrite ticket content to improve its quality without losing any important information. Prioritize removing irrelevant text and fluff. Make sure to not invent new information. When you are not sure, leave the text as is."
       },
       "type": "openAi/v1/ask",
       "metadata": {
         "ui": {
-          "dynamicPropertyTypes": {}
+          "dynamicPropertyTypes": {
+            "userPrompt": "STRING"
+          }
         }
       },
       "description": "Use OpenAI to rewrite the ticket for clarity."
@@ -74,17 +72,15 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
-        "messages": [
-          {
-            "role": "user",
-            "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or customer support. \n\nTicket: ${hubspot_1.body.properties.subject}, ${hubspot_1.body.properties.content}"
-          }
-        ]
+        "format": "SIMPLE",
+        "userPrompt": "Categorize the ticket as either \"tech\" or \"customer\" support. Make sure you output it as JSON with a \"category\" property that has the value of the category."
       },
       "type": "openAi/v1/ask",
       "metadata": {
         "ui": {
-          "dynamicPropertyTypes": {}
+          "dynamicPropertyTypes": {
+            "userPrompt": "STRING"
+          }
         }
       },
       "description": "Use OpenAI to categorize the ticket as either tech or customer support."
@@ -103,7 +99,7 @@
               "channel": "C08803FUJ7P",
               "text": "Hey #sales-team,\n\nA new customer support ticket has been assigned to your team. Please review the details below and assist the customer as soon as possible.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendMessage",
+            "type": "slack/v1/sendChannelMessage",
             "metadata": {
               "ui": {
                 "dynamicPropertyTypes": {}
@@ -119,7 +115,7 @@
               "channel": "C0882TX7MJ6",
               "text": "Hey #tech-team\n\nA new technical support ticket has been assigned to your team. Please review the details below and address the issue promptly.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendMessage",
+            "type": "slack/v1/sendChannelMessage",
             "metadata": {
               "ui": {
                 "dynamicPropertyTypes": {}
@@ -136,5 +132,10 @@
         }
       }
     }
-  ]
+  ],
+  "metadata": {
+    "ui": {
+      "layoutDirection": "LR"
+    }
+  }
 }
