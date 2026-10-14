@@ -45,6 +45,7 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
+        "format": "ADVANCED",
         "messages": [
           {
             "role": "USER",
@@ -74,9 +75,10 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
+        "format": "ADVANCED",
         "messages": [
           {
-            "role": "user",
+            "role": "USER",
             "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or customer support. \n\nTicket: ${hubspot_1.body.properties.subject}, ${hubspot_1.body.properties.content}"
           }
         ]
@@ -103,7 +105,7 @@
               "channel": "C08803FUJ7P",
               "text": "Hey #sales-team,\n\nA new customer support ticket has been assigned to your team. Please review the details below and assist the customer as soon as possible.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendMessage",
+            "type": "slack/v1/sendChannelMessage",
             "metadata": {
               "ui": {
                 "dynamicPropertyTypes": {}
@@ -119,7 +121,7 @@
               "channel": "C0882TX7MJ6",
               "text": "Hey #tech-team\n\nA new technical support ticket has been assigned to your team. Please review the details below and address the issue promptly.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendMessage",
+            "type": "slack/v1/sendChannelMessage",
             "metadata": {
               "ui": {
                 "dynamicPropertyTypes": {}
