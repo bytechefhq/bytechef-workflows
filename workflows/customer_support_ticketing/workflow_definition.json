@@ -49,14 +49,16 @@
         "messages": [
           {
             "role": "USER",
-            "content": "Analyze the following customer support ticket and rewrite it in clear, concise, and organized format.\n\nEnsure the rewritten version includes:\n\nCustomer Issue:\nClearly state the problem or question raised by the customer.\n\nBackground Information: \nSummarize any context or details provided by the customer.\n\nRequested Action: Highlight what the customer wants or needs from support.\n\n\nTone: Use a professional and empathetic tone while simplifying the original text.\n\nOriginal ticket: ${hubspot_1.body.properties.content}, ${hubspot_1.body.properties.subject}\n\nTicket priority: ${hubspot_1.body.properties.hs_ticket_priority}"
+            "content": "Analyze the following customer support ticket and rewrite it in clear, concise, and organized format.\n\nEnsure the rewritten version includes:\n\nCustomer Issue:\nClearly state the problem or question raised by the customer.\n\nBackground Information: \nSummarize any context or details provided by the customer.\n\nRequested Action: Highlight what the customer wants or needs from support.\n\n\nTone: Use a professional and empathetic tone while simplifying the original text.\n\nOriginal ticket: \n${hubspot_1.properties.content}${hubspot_1.properties.subject}\n\nTicket priority: \n${hubspot_1.properties.hs_ticket_priority}"
           }
         ]
       },
       "type": "openAi/v1/ask",
       "metadata": {
         "ui": {
-          "dynamicPropertyTypes": {}
+          "dynamicPropertyTypes": {
+            "messages[0].content": "STRING"
+          }
         }
       },
       "description": "Use OpenAI to rewrite the ticket for clarity."
@@ -66,8 +68,7 @@
       "name": "openAi_2",
       "parameters": {
         "response": {
-          "responseFormat": "JSON",
-          "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"category\":{\"type\":\"string\",\"title\":\"category\"}},\"required\":[],\"type\":\"object\",\"title\":\"ticket\"}"
+          "responseFormat": "TEXT"
         },
         "n": 1,
         "temperature": 1,
@@ -79,14 +80,16 @@
         "messages": [
           {
             "role": "USER",
-            "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or customer support. \n\nTicket: ${hubspot_1.body.properties.subject}, ${hubspot_1.body.properties.content}"
+            "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or customer support. \n\nTicket: ${hubspot_1.properties.subject}, ${hubspot_1.properties.content}"
           }
         ]
       },
       "type": "openAi/v1/ask",
       "metadata": {
         "ui": {
-          "dynamicPropertyTypes": {}
+          "dynamicPropertyTypes": {
+            "messages[0].content": "STRING"
+          }
         }
       },
       "description": "Use OpenAI to categorize the ticket as either tech or customer support."
@@ -105,12 +108,7 @@
               "channel": "C08803FUJ7P",
               "text": "Hey #sales-team,\n\nA new customer support ticket has been assigned to your team. Please review the details below and assist the customer as soon as possible.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendChannelMessage",
-            "metadata": {
-              "ui": {
-                "dynamicPropertyTypes": {}
-              }
-            }
+            "type": "slack/v1/sendChannelMessage"
           }
         ],
         "caseTrue": [
@@ -121,20 +119,17 @@
               "channel": "C0882TX7MJ6",
               "text": "Hey #tech-team\n\nA new technical support ticket has been assigned to your team. Please review the details below and address the issue promptly.\n\nRewritten Ticket Details:\n${openAi_1}"
             },
-            "type": "slack/v1/sendChannelMessage",
-            "metadata": {
-              "ui": {
-                "dynamicPropertyTypes": {}
-              }
-            }
+            "type": "slack/v1/sendChannelMessage"
           }
         ],
-        "expression": "'${openAi_2.category}'=='tech'"
+        "expression": "='${openAi_2}'=='tech'"
       },
       "type": "condition/v1",
       "metadata": {
         "ui": {
-          "dynamicPropertyTypes": {}
+          "dynamicPropertyTypes": {
+            "expression": "STRING"
+          }
         }
       }
     }
