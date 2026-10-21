@@ -33,7 +33,6 @@
             "name" : "dateHelper_1",
             "type" : "dateHelper/v1/isBusinessHours",
             "parameters" : {
-                "inputDate" : "${dateHelper_2}",
                 "businessWeekStart" : 1,
                 "businessWeekEnd" : 5,
                 "businessHoursStart" : "09:00:00",
