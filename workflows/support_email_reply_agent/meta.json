@@ -1,0 +1,32 @@
+{
+  "name": "Draft Gmail support replies with an AI agent and send them after approval",
+  "category": "support",
+  "description": "For each new email in Gmail, an AI agent reads the full thread and earlier emails from the same customer with the Gmail tools, decides whether it needs a reply, and drafts one. A person edits and approves the draft in an approval form, and only then is the reply sent in the original thread. Newsletters and automated emails are logged and skipped.",
+  "shortDescription": "An AI agent drafts replies to support emails, and nothing is sent until a person approves.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with two Gmail tools, Get thread and Search email, for conversation context",
+    "Structured JSON response that flags emails that do not need a reply",
+    "Approval step after the agent, with the draft reply editable in the form",
+    "Reply sent in the original Gmail thread only after approval"
+  ],
+  "prerequisites": [
+    "Google Mail (Gmail) connection for the support inbox",
+    "OpenAI API key",
+    "Server public URL configured, so the approval form link can be generated"
+  ],
+  "idealFor": "Small support teams that want AI-drafted replies to incoming email while keeping a person in charge of what is sent.",
+  "steps": [
+    "Trigger: poll Gmail for a new email.",
+    "Draft a reply: the AI Agent reads the thread and the sender's earlier emails with its Gmail tools and returns a summary, a draft reply and whether a reply is needed.",
+    "Needs a reply: if not, log the summary and stop.",
+    "Approve reply: the run pauses on an approval form where the reviewer can edit the draft.",
+    "Approved: send the approved reply in the original thread. Rejected: log the rejection and the reviewer's note."
+  ],
+  "screenshot": "screenshot.png"
+}
