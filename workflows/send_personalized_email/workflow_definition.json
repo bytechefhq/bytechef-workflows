@@ -1,6 +1,6 @@
 {
-    "label": "send_personalized_email",
-    "description": "",
+    "label": "Email Liferay form sign-ups a personalized list of their workshops",
+    "description": "When a Liferay form entry is posted to the webhook, the workshops the person signed up for are collected with their time slots and sent to them in one personalized email.",
     "inputs": [],
     "triggers": [
         {
@@ -13,7 +13,7 @@
     ],
     "tasks": [
         {
-            "label": "Data Storage",
+            "label": "Map form fields to workshops",
             "name": "dataStorage_1",
             "parameters": {
                 "key": "radionice",
@@ -68,7 +68,7 @@
             }
         },
         {
-            "label": "Data Storage",
+            "label": "Get workshops",
             "name": "dataStorage_2",
             "parameters": {
                 "key": "radionice",
@@ -102,7 +102,7 @@
                 "items": "${dataStorage_2}",
                 "iteratee": [
                     {
-                        "label": "Condition",
+                        "label": "Workshop chosen?",
                         "name": "condition_1",
                         "parameters": {
                             "rawExpression": false,
@@ -119,7 +119,7 @@
                             ],
                             "caseFalse": [
                                 {
-                                    "label": "Build personalized email ",
+                                    "label": "Add workshop to email",
                                     "name": "dataStorage_4",
                                     "parameters": {
                                         "scope": "CURRENT_EXECUTION",
@@ -156,7 +156,7 @@
             "type": "loop/v1"
         },
         {
-            "label": "Data Storage",
+            "label": "Get chosen workshops",
             "name": "dataStorage_5",
             "parameters": {
                 "key": "email",
@@ -173,7 +173,7 @@
             }
         },
         {
-            "label": "Text Helper",
+            "label": "Join into email text",
             "name": "textHelper_1",
             "parameters": {
                 "texts": "${dataStorage_5}",
@@ -210,8 +210,8 @@
                 "to": [
                     "${trigger_1.body.objectEntryDTOOtvorenaVrata.properties.email}"
                 ],
-                "from": "email@email.com",
-                "subject": "Subject",
+                "from": "events@example.com",
+                "subject": "Your workshop schedule",
                 "content": "${textHelper_1}"
             },
             "type": "email/v1/send"
