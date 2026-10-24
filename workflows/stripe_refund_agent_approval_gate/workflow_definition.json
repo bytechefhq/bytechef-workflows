@@ -1,0 +1,111 @@
+{
+  "label": "Let an AI agent refund Stripe payments behind an approval gate",
+  "description": "A refund request arrives on a webhook. An AI agent checks the payment with the Stripe tools and calls Create Refund itself when the request fits the policy. The refund tool sits behind an approval gate, so a person approves the exact amount before any money moves.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Refund request",
+      "name": "trigger_1",
+      "type": "webhook/v1/autoRespondWithHTTP200",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Handle the request",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You handle refund requests under a simple policy: refunds are allowed within 30 days of the payment, only up to the amount not already refunded, and never for a payment that did not succeed. Always call the Get payment intent tool and the List refunds tool before deciding. Amounts are in the smallest currency unit, as Stripe returns them. If the request fits the policy, call the Create refund tool once with the amount to refund and a short summary for the reviewer. A person approves every refund before it is made, so do not ask for permission in text. If the result says the refund was denied, do not call Create refund again; report the reviewer's reason. If the request does not fit the policy, do not call Create refund at all. Finish with the outcome, the amount actually refunded (0 if none), the currency, the refund ID if one was created, and a two or three sentence explanation.",
+        "userPrompt": "Refund request.\n\nPayment intent: ${trigger_1.body.paymentIntentId}\nCustomer email: ${trigger_1.body.customerEmail}\nRequested amount: ${trigger_1.body.amount}\nReason: ${trigger_1.body.reason}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"outcome\":{\"type\":\"string\",\"enum\":[\"REFUNDED\",\"REJECTED_BY_REVIEWER\",\"OUT_OF_POLICY\",\"FAILED\"]},\"amount\":{\"type\":\"integer\"},\"currency\":{\"type\":\"string\"},\"refundId\":{\"type\":\"string\"},\"explanation\":{\"type\":\"string\"}},\"required\":[\"outcome\",\"amount\",\"currency\",\"refundId\",\"explanation\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get payment intent",
+            "name": "stripe_1",
+            "type": "stripe/v1/getPaymentIntent",
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
+          },
+          {
+            "label": "List refunds",
+            "name": "stripe_2",
+            "type": "stripe/v1/listRefunds",
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
+          },
+          {
+            "label": "Refund gate",
+            "name": "approvalGate_1",
+            "type": "aiAgentUtils/v1/approvalGate",
+            "parameters": {
+              "name": "Refunds",
+              "approvalExpiresIn": 2,
+              "approvalExpiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "approvalChannels": [
+                {
+                  "label": "Approval Task",
+                  "name": "approvalTask_1",
+                  "type": "approvalTask/v1/approvalTask",
+                  "parameters": {}
+                }
+              ],
+              "tools": [
+                {
+                  "label": "Create refund",
+                  "name": "stripe_3",
+                  "type": "stripe/v1/createRefund",
+                  "parameters": {
+                    "payment_intent": "${trigger_1.body.paymentIntentId}",
+                    "amount": "=fromAi('amount', 'INTEGER', {'description': 'Amount to refund in the smallest currency unit, at most the amount not already refunded', 'required': true})",
+                    "reason": "requested_by_customer",
+                    "metadata": {
+                      "customerEmail": "${trigger_1.body.customerEmail}",
+                      "agentSummary": "=fromAi('summary', 'STRING', {'description': 'One or two sentences for the reviewer: what was paid, what was already refunded, and why this refund fits the policy', 'required': true})"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Log outcome",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Refund request for ${trigger_1.body.paymentIntentId} (${trigger_1.body.customerEmail}): ${aiAgent_1.outcome}, ${aiAgent_1.amount} ${aiAgent_1.currency} ${aiAgent_1.refundId}. ${aiAgent_1.explanation}"
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    }
+  ]
+}

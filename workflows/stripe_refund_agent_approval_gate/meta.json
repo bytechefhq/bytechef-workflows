@@ -1,0 +1,35 @@
+{
+  "name": "Let an AI agent refund Stripe payments behind an approval gate",
+  "category": "finance",
+  "description": "A refund request is posted to a webhook. An AI agent checks the payment and its earlier refunds with the Stripe tools and, when the request fits the refund policy, calls the Create Refund tool itself. That tool sits behind an approval gate, so the call stops and waits for a person to approve the exact amount the agent chose. Nothing is refunded until they do, and a denial goes back to the agent instead of failing the run.",
+  "shortDescription": "An AI agent decides and issues Stripe refunds, and an approval gate holds every refund until a person approves it.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with Get Payment Intent and List Refunds tools for the facts, and Create Refund as a tool it can call",
+    "Create Refund placed under an Approval Gate, so every refund call suspends the run until a person approves it",
+    "The payment intent is pinned to the request in every Stripe tool, so the agent can only choose the amount",
+    "The agent's justification is shown to the reviewer and stored on the refund as Stripe metadata",
+    "A denied refund is returned to the agent as a denial with the reviewer's reason, and the run still finishes with a logged outcome"
+  ],
+  "prerequisites": [
+    "Stripe connection (start with a test mode secret key)",
+    "OpenAI API key",
+    "A system that posts refund requests to the workflow's webhook URL as JSON with paymentIntentId, customerEmail, amount and reason",
+    "Someone who answers approvals in the Approval Tasks inbox, or swap the gate's Approval Task channel for Slack, email or another channel",
+    "Server public URL configured, so the webhook and the approval links can be reached"
+  ],
+  "idealFor": "E-commerce and finance teams that want an AI agent to handle refund requests end to end while a person signs off on every refund it issues.",
+  "steps": [
+    "Trigger: a refund request is posted to the webhook.",
+    "Handle the request: the AI Agent reads the payment and its earlier refunds with the Stripe tools and checks them against the refund policy.",
+    "Refund gate: when the agent calls Create Refund, the approval gate raises an approval task with the amount and the agent's justification, and the run pauses.",
+    "Approved: the refund is created in Stripe with the arguments the reviewer saw, and the agent reports it. Denied: the agent gets the reviewer's reason and refunds nothing.",
+    "Log outcome: the agent's result, refunded, rejected by the reviewer or out of policy, is logged."
+  ],
+  "screenshot": "screenshot.png"
+}
