@@ -1,0 +1,35 @@
+{
+  "name": "Create Notion meeting notes with an AI recap and link them in Calendar",
+  "category": "documentOps",
+  "description": "On each meeting day, a new Notion page named after the date is created for the meeting and linked to your tasks database. If there was an earlier meeting, OpenAI summarizes its notes and the recap is added to the new page. The page link is then added to the next Team meeting event in Google Calendar, so everyone opens the agenda from the invite.",
+  "shortDescription": "Prepare a Notion page for every team meeting with an AI recap of the last one, linked from the calendar invite.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Scheduled run on the meeting days, with a page per meeting named after the date",
+    "OpenAI recap of the previous meeting's Notion notes added to the new page",
+    "The previous page is remembered between runs with Data Storage",
+    "The page link is written into the next Team meeting event's description"
+  ],
+  "prerequisites": [
+    "Notion connection with access to the parent page and the tasks database",
+    "OpenAI API key",
+    "Google Calendar connection",
+    "The Notion parent page ID and tasks database ID set in the workflow (replace your-notion-parent-page-id and your-notion-tasks-database-id)",
+    "Recurring Google Calendar events titled Team meeting, in the calendar set in both Calendar steps (primary by default)",
+    "The schedule days, time and time zones adjusted to your meetings"
+  ],
+  "idealFor": "Teams with a recurring meeting who keep notes in Notion and want each agenda ready, with a recap of last time, before the meeting starts.",
+  "steps": [
+    "Trigger: run on the scheduled meeting days.",
+    "Create a Notion page for the meeting, named after today's date, and link the tasks database on it.",
+    "If a previous meeting page exists, read its notes, summarize them with OpenAI and add the recap to the new page.",
+    "Remember the new page for the next run.",
+    "Find the next Team meeting in Google Calendar and add the page link to its description."
+  ],
+  "screenshot": "screenshot.png"
+}
