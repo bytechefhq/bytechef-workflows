@@ -38,13 +38,17 @@
             "label": "Get payment intent",
             "name": "stripe_1",
             "type": "stripe/v1/getPaymentIntent",
-            "parameters": {}
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
           },
           {
             "label": "List refunds",
             "name": "stripe_2",
             "type": "stripe/v1/listRefunds",
-            "parameters": {}
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
           }
         ]
       },
