@@ -1,0 +1,30 @@
+{
+  "name": "Protect a chat AI agent with jailbreak, PII and secret key guardrails",
+  "category": "ai",
+  "description": "A streaming chat AI agent wrapped in two layers of guardrails. The first blocks jailbreak and prompt-injection attempts, off-topic requests and custom regex matches. The second masks personal data, secret keys, blocked keywords and URLs in both the user's message and the agent's answer.",
+  "shortDescription": "A chat AI agent that blocks jailbreaks and off-topic requests and masks PII and secrets.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Jailbreak and topical alignment checks judged by OpenAI, plus a custom regex check",
+    "Sanitizers for personal data, secret keys, keywords and URLs, run by Gemini",
+    "Guardrails applied to both the input and the output",
+    "Streaming answers from a Groq model with chat memory"
+  ],
+  "prerequisites": [
+    "Groq API key for the agent's model",
+    "OpenAI API key for the violation checks",
+    "Google Gemini API key for the sanitizers",
+    "The allowed topic, regex patterns and blocked keywords set in their guardrail elements"
+  ],
+  "idealFor": "Teams putting a chat assistant in front of customers or employees who need it to resist prompt injection and never repeat personal data or secrets.",
+  "steps": [
+    "Trigger: a chat message arrives.",
+    "AI Agent: runs the violation checks and sanitizers on the message, answers with Groq and streams the reply, sanitizing the answer on the way out."
+  ],
+  "screenshot": "screenshot.png"
+}

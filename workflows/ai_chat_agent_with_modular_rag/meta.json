@@ -1,0 +1,28 @@
+{
+  "name": "Answer chat questions with an AI agent using modular RAG",
+  "category": "ai",
+  "description": "A chat AI agent that answers from your documents with a modular RAG pipeline. Each question is compressed with the conversation history, expanded into several search queries, matched against a vector store, and the retrieved passages are joined and added to the prompt before Anthropic answers.",
+  "shortDescription": "A chat AI agent with a configurable, multi-step RAG pipeline over your vector store.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Compression query transformer that folds the chat history into a standalone question",
+    "Multi-query expander that searches with three variations of the question plus the original",
+    "Vector store document retriever with a configurable top K and similarity threshold",
+    "Contextual query augmenter that adds the retrieved passages to the prompt"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "A vector store with your documents, attached to the Vector Store Document Retriever (the template leaves it empty)"
+  ],
+  "idealFor": "Developers who want to see each stage of a RAG pipeline and tune it, rather than use a single question-answer RAG element.",
+  "steps": [
+    "Trigger: a chat message arrives.",
+    "AI Agent: rewrites and expands the question, retrieves matching passages from the vector store, joins them into the prompt and answers with Anthropic, remembering the conversation."
+  ],
+  "screenshot": "screenshot.png"
+}
