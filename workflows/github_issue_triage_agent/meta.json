@@ -1,0 +1,34 @@
+{
+  "name": "Triage new GitHub issues with an AI agent and a human approval step",
+  "category": "it",
+  "description": "When a new GitHub issue is opened, an AI agent reads it, uses the GitHub tools to look for duplicates, and proposes labels, a priority and a comment for the author. A person reviews the proposal in an approval form and can edit the comment. Only approved triage is applied: the labels are added and the comment is posted; a rejection leaves the issue untouched.",
+  "shortDescription": "An AI agent proposes labels and a comment for each new GitHub issue, and a person approves before anything is written.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with two GitHub tools, List repository issues and Get issue, to find duplicates",
+    "Structured JSON response with labels, priority, duplicates, reasoning and a draft comment",
+    "Approval step after the agent, with the draft comment editable in the form",
+    "Nothing is written to GitHub unless a person approves"
+  ],
+  "prerequisites": [
+    "GitHub connection with access to the repository",
+    "OpenAI API key",
+    "The repository name set in the trigger, both tools and both GitHub steps (replace your-repository)",
+    "Labels bug, enhancement, question, documentation and duplicate created in the repository",
+    "Server public URL configured, so the approval form link can be generated"
+  ],
+  "idealFor": "Open source maintainers and engineering teams that want new issues triaged by AI without letting it label or comment on its own.",
+  "steps": [
+    "Trigger: poll GitHub for a newly opened issue.",
+    "Propose triage: the AI Agent searches open issues for duplicates with its GitHub tools and returns labels, a priority, duplicates, its reasoning and a draft comment.",
+    "Approve triage: the run pauses on an approval form that shows the proposal and lets the reviewer edit the comment.",
+    "Approved: add the proposed labels to the issue and post the approved comment.",
+    "Rejected: log the rejection and the reviewer's note, leaving the issue unchanged."
+  ],
+  "screenshot": "screenshot.png"
+}
