@@ -41,6 +41,7 @@
             "name": "github_1",
             "type": "github/v1/listRepositoryIssues",
             "parameters": {
+              "owner": "your-github-account",
               "repository": "your-repository"
             }
           },
@@ -49,7 +50,9 @@
             "name": "github_2",
             "type": "github/v1/getIssue",
             "parameters": {
-              "repository": "your-repository"
+              "owner": "your-github-account",
+              "repository": "your-repository",
+              "issue": "=fromAi('issue', 'STRING', {'description': 'Number of the issue to read, for example 42', 'required': true})"
             }
           }
         ]

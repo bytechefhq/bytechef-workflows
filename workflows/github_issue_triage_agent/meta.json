@@ -18,7 +18,7 @@
   "prerequisites": [
     "GitHub connection with access to the repository",
     "OpenAI API key",
-    "The repository name set in the trigger, both tools and both GitHub steps (replace your-repository)",
+    "The repository owner and name set in the trigger, both tools and both GitHub steps (replace your-github-account and your-repository)",
     "Labels bug, enhancement, question, documentation and duplicate created in the repository",
     "Server public URL configured, so the approval form link can be generated"
   ],
