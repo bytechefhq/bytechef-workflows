@@ -40,13 +40,19 @@
             "label": "Get thread",
             "name": "googleMail_1",
             "type": "googleMail/v1/getThread",
-            "parameters": {}
+            "parameters": {
+              "id": "${trigger_1.threadId}"
+            }
           },
           {
             "label": "Search email",
             "name": "googleMail_2",
             "type": "googleMail/v1/searchEmail",
-            "parameters": {}
+            "parameters": {
+              "from": "${trigger_1.from}",
+              "maxResults": 10,
+              "subject": "=fromAi('subject', 'STRING', {'description': 'Optional words from the subject to narrow the search; leave empty to list the sender''s recent emails', 'required': false})"
+            }
           }
         ]
       },
