@@ -1,6 +1,6 @@
 {
-  "label": "error-handler",
-  "description": "",
+  "label": "Answer chat questions with an AI agent using modular RAG",
+  "description": "A chat AI agent that answers from your documents with modular RAG: it rewrites and expands each question, retrieves matching passages from a vector store, joins them and adds them to the prompt.",
   "inputs": [],
   "triggers": [
     {

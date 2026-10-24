@@ -1,6 +1,6 @@
 {
-  "label": "ChatGPT 5 AI Agent",
-  "description": "A simple AI Agent powered by OpenAI GPT-5.",
+  "label": "Chat with an AI agent that uses web search, RAG, Gmail and guardrails",
+  "description": "A chat AI agent that answers from a knowledge base, searches the web with Brave, can send email with Gmail and runs agent skills. Guardrails check every message for personal data and unwanted URLs, and the conversation is remembered between messages.",
   "inputs": [],
   "triggers": [
     {

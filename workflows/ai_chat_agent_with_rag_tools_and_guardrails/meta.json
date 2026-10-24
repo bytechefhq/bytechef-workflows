@@ -1,0 +1,32 @@
+{
+  "name": "Chat with an AI agent that uses web search, RAG, Gmail and guardrails",
+  "category": "ai",
+  "description": "A chat AI agent that answers questions from your knowledge base, searches the web with Brave, can send an email with Gmail and runs agent skills. Before and after every answer, guardrails check the conversation for personal data and unwanted URLs, and chat memory keeps the context between messages.",
+  "shortDescription": "A chat AI agent with knowledge base RAG, web search, Gmail and guardrails in one workflow.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Question Answer RAG over a ByteChef knowledge base",
+    "Brave web search, Gmail send email and agent skills as tools",
+    "Guardrails that check input and output for personal data and URLs, judged by a separate model",
+    "Chat memory keyed by the conversation ID"
+  ],
+  "prerequisites": [
+    "A connection or API key for the agent's model (Nano GPT in the template; swap in any chat model)",
+    "Anthropic API key for the guardrails model",
+    "Brave Search API key",
+    "Google Mail (Gmail) connection",
+    "A knowledge base with your documents, selected in the Knowledge Base element (the template points at knowledge base 5)"
+  ],
+  "idealFor": "Teams building an internal assistant that should answer from their own documents, look things up on the web and act by email, with safety checks on every message.",
+  "steps": [
+    "Trigger: a chat message arrives.",
+    "AI Agent: checks the message with the guardrails, retrieves matching passages from the knowledge base and answers, calling web search, skills or Gmail when needed.",
+    "Chat: sends the agent's answer back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}

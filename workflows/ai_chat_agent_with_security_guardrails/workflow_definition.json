@@ -1,6 +1,6 @@
 {
-  "label": "mcp",
-  "description": "",
+  "label": "Protect a chat AI agent with jailbreak, PII and secret key guardrails",
+  "description": "A streaming chat AI agent wrapped in guardrails: messages are checked for jailbreak attempts, off-topic requests and custom patterns, and personal data, secret keys, blocked keywords and URLs are masked before and after the model sees them.",
   "inputs": [],
   "triggers": [
     {
