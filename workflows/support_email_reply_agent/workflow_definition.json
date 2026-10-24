@@ -1,5 +1,5 @@
 {
-  "label": "Draft Gmail support replies with an AI agent and send them after approval",
+  "label": "Draft Gmail support replies with an AI agent and send after approval",
   "description": "For each new support email, an AI agent reads the conversation and past emails from the same customer with the Gmail tools and drafts a reply. A person edits and approves the draft, and only then is the reply sent in the original thread.",
   "inputs": [],
   "triggers": [

@@ -1,5 +1,5 @@
 {
-  "name": "Draft Gmail support replies with an AI agent and send them after approval",
+  "name": "Draft Gmail support replies with an AI agent and send after approval",
   "category": "support",
   "description": "For each new email in Gmail, an AI agent reads the full thread and earlier emails from the same customer with the Gmail tools, decides whether it needs a reply, and drafts one. A person edits and approves the draft in an approval form, and only then is the reply sent in the original thread. Newsletters and automated emails are logged and skipped.",
   "shortDescription": "An AI agent drafts replies to support emails, and nothing is sent until a person approves.",
