@@ -1,5 +1,5 @@
 {
-  "name": "Review Stripe refund requests with an AI agent and refund after approval",
+  "name": "Review Stripe refund requests with an AI agent and refund on approval",
   "category": "finance",
   "description": "A refund request is posted to a webhook with a payment intent ID, amount and reason. An AI agent looks up the payment and its earlier refunds with the Stripe tools, checks them against a simple refund policy and recommends an amount. A person reviews the recommendation in an approval form and can change the amount. Only an approved refund is created in Stripe.",
   "shortDescription": "An AI agent checks refund requests against Stripe, and a person approves before any money moves.",

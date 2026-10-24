@@ -1,5 +1,5 @@
 {
-  "label": "Review Stripe refund requests with an AI agent and refund after approval",
+  "label": "Review Stripe refund requests with an AI agent and refund on approval",
   "description": "A refund request arrives on a webhook. An AI agent checks the payment and its earlier refunds with the Stripe tools and recommends an amount. A person approves or rejects, and only an approved refund is created in Stripe.",
   "inputs": [],
   "triggers": [
