@@ -1,0 +1,37 @@
+{
+  "name": "Send AI-written follow-ups to sales leads who have not replied",
+  "category": "sales",
+  "description": "Every weekday morning, finds the leads in a Google Sheet that are due for a follow-up and lets an AI agent write the next touch: a new angle, a case study, a useful link or a check-in. The email goes out by Gmail and the next follow-up date is written back to the sheet. After five touches the agent stops and the lead is marked cold.",
+  "shortDescription": "Send AI-written follow-up emails to leads who have not replied, on a schedule kept in a Google Sheet.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Picks only leads whose status is contacted or nurturing and whose nextTouch date has arrived",
+    "A follow-up ladder by touch count: new angle, case study, useful article, personal check-in, then stop",
+    "Links only from an editable CONTENT LIBRARY block, so the agent never invents a URL",
+    "The agent returns send or stop as JSON, and a condition either emails and reschedules or marks the lead cold",
+    "Dates stored as yyyyMMdd numbers so the sheet's locale formatting cannot break the comparison",
+    "Part of a set of five sales templates that share one Google Sheet: prospecting, nurture, negotiation, booking and proposal."
+  ],
+  "prerequisites": [
+    "A Google Sheet with a Leads tab whose header row is: name, email, company, domain, linkedinUrl, phone, status, channel, offer, touchCount, nextTouch, lastMessage, notes; replace REPLACE_WITH_SPREADSHEET_ID with its ID. The prospecting template fills status, touchCount and nextTouch, or you can fill them yourself",
+    "Google Sheets connection",
+    "Gmail connection",
+    "OpenAI API key",
+    "Edit the OFFER and CONTENT LIBRARY blocks in the AI agent's system prompt, and change the schedule's timezone from UTC to yours"
+  ],
+  "idealFor": "Freelancers and small sales teams that lose deals to silence and want polite, varied follow-ups sent without a drip-campaign tool.",
+  "steps": [
+    "Trigger: every weekday at 8:30 UTC.",
+    "Read the Leads tab and loop over the rows.",
+    "Keep only leads that are contacted or nurturing, have an email and are due today or earlier.",
+    "The AI agent writes the next touch for the lead's touch count, or returns stop after five touches.",
+    "Send: email the follow-up with Gmail and write status nurturing, the new touchCount, the next date and the message to the row.",
+    "Stop: mark the lead cold and clear nextTouch."
+  ],
+  "screenshot": "screenshot.png"
+}
