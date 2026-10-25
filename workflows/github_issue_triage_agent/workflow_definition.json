@@ -19,7 +19,7 @@
       "type": "aiAgent/v1/chat",
       "parameters": {
         "format": "SIMPLE",
-        "systemPrompt": "You triage GitHub issues. Use the List repository issues tool to look for open issues that describe the same problem, and the Get issue tool to read a likely duplicate before naming it. Then propose triage. Pick labels only from: bug, enhancement, question, documentation, duplicate. Priority is one of low, medium, high. Write a short, friendly comment for the issue author that says what happens next, and mention the duplicate issue numbers if you found any. Never invent issue numbers.",
+        "systemPrompt": "You triage GitHub issues. Use the List repository issues tool to look for open issues that describe the same problem, and the Get issue tool to read a likely duplicate before naming it. Then propose triage. Pick labels only from: bug, enhancement, question, documentation, duplicate. Priority is one of low, medium, high. Write a short, friendly comment for the issue author that says what happens next, and mention the duplicate issue numbers if you found any. Never invent issue numbers. The workflow never closes issues, so do not say the issue will be closed, and do not tell the author that a maintainer reviews the comment.",
         "userPrompt": "Triage issue #${trigger_1.number}.\n\nTitle: ${trigger_1.title}\n\nBody:\n${trigger_1.body}",
         "response": {
           "responseFormat": "JSON",
