@@ -1,0 +1,29 @@
+{
+  "name": "Turn commit messages into release notes with an agent skill",
+  "category": "ai",
+  "description": "A chat agent with the Skills Tool. When you paste commit messages, it loads the release-notes skill, runs the skill's script to group conventional commits by type, and writes short, user-facing release notes with new features, fixes and performance changes. The skill's SKILL.md and script are in a note on the canvas, ready to upload.",
+  "shortDescription": "A chat agent loads a release-notes skill on demand and runs its script to write release notes.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the Skills Tool, which loads a skill only when a request matches it",
+    "Skill script that groups conventional commits by type in a sandbox",
+    "Canvas note with the full SKILL.md and script to create the skill",
+    "Chat Memory so you can refine the notes in follow-up messages"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "The release-notes skill created under Settings → AI → Skills, from the files in the canvas note"
+  ],
+  "idealFor": "Java and other software teams that want release notes drafted from their commit log, and anyone learning how agent skills work.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Write release notes: the AI Agent loads the release-notes skill, calls its group_commits script tool and writes the notes.",
+    "Reply: the agent's answer is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
