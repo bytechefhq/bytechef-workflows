@@ -12,7 +12,7 @@
   "keyFeatures": [
     "AI Agent with two GitHub tools, List repository issues and Get issue, to find duplicates",
     "Structured JSON response with labels, priority, duplicates, reasoning and a draft comment",
-    "Approval step after the agent, with the draft comment editable in the form",
+    "Approval step after the agent, delivered to the Approval Tasks inbox, with the draft comment editable in the form",
     "Nothing is written to GitHub unless a person approves"
   ],
   "prerequisites": [
@@ -20,13 +20,14 @@
     "OpenAI API key",
     "The repository owner and name set in the trigger, both tools and both GitHub steps (replace your-github-account and your-repository)",
     "Labels bug, enhancement, question, documentation and duplicate created in the repository",
+    "Someone who answers requests in the Approval Tasks inbox, or swap the Approval Task channel for Slack, email or another channel",
     "Server public URL configured, so the approval form link can be generated"
   ],
   "idealFor": "Open source maintainers and engineering teams that want new issues triaged by AI without letting it label or comment on its own.",
   "steps": [
     "Trigger: poll GitHub for a newly opened issue.",
     "Propose triage: the AI Agent searches open issues for duplicates with its GitHub tools and returns labels, a priority, duplicates, its reasoning and a draft comment.",
-    "Approve triage: the run pauses on an approval form that shows the proposal and lets the reviewer edit the comment.",
+    "Approve triage: the run pauses and sends an approval request to the Approval Tasks inbox, with a form that shows the proposal and lets the reviewer edit the comment.",
     "Approved: add the proposed labels to the issue and post the approved comment.",
     "Rejected: log the rejection and the reviewer's note, leaving the issue unchanged."
   ],

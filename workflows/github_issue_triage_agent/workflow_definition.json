@@ -78,6 +78,18 @@
             "defaultValue": "${aiAgent_1.comment}",
             "required": true
           }
+        ],
+        "expiresIn": 2,
+        "expiresInUnit": "DAYS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Approval Task",
+            "name": "approvalTask_1",
+            "type": "approvalTask/v1/approvalTask",
+            "parameters": {}
+          }
         ]
       },
       "metadata": {
@@ -114,6 +126,7 @@
             "name": "github_4",
             "type": "github/v1/createCommentOnIssue",
             "parameters": {
+              "owner": "your-github-account",
               "repository": "your-repository",
               "issue": "${trigger_1.number}",
               "body": "${approval_1.issueComment}"
