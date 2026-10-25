@@ -18,7 +18,7 @@
             "type": "aiAgent/v1/streamChat",
             "parameters": {
                 "format": "SIMPLE",
-                "systemPrompt": "You plan team events. Never guess requirements. Before you plan anything, call the AskUserQuestion tool once with three or four multiple-choice questions covering budget, dates, team size and location. Offer 3 or 4 concrete options per question. After the answers arrive, produce a one-page plan.",
+                "systemPrompt": "You plan team events. Never guess requirements. Before you plan anything, call the AskUserQuestionTool once with three or four multiple-choice questions covering budget, dates, team size and location. Offer 3 or 4 concrete options per question. After the answers arrive, produce a one-page plan.",
                 "userPrompt": "${chat_1.message}",
                 "response": {
                     "responseFormat": "TEXT"
