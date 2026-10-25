@@ -1,0 +1,28 @@
+{
+  "name": "Plan a Spring Boot 4 migration with an agent that keeps a todo list",
+  "category": "ai",
+  "description": "A chat agent with the TodoWrite tool. For any request with three or more steps, such as migrating a service to Spring Boot 4, it first writes a todo list, keeps exactly one task in progress, and updates the list as it works through each step.",
+  "shortDescription": "An agent writes a todo list first and works through it one task at a time.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the TodoWrite tool",
+    "One task in progress at a time, with the list updated after each step",
+    "Prompt tuned for Java and Spring Boot migration work",
+    "Chat Memory for follow-up questions"
+  ],
+  "prerequisites": [
+    "Anthropic API key"
+  ],
+  "idealFor": "Java teams planning framework upgrades, and anyone who wants agents to show their plan before they work.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Plan and work: the AI Agent writes a todo list with TodoWrite and completes it task by task.",
+    "Reply: the result is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
