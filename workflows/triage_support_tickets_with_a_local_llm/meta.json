@@ -1,0 +1,28 @@
+{
+  "name": "Triage support tickets offline with Qwen3 on Ollama",
+  "category": "ai",
+  "description": "Classifies a support ticket with Qwen3 8B running locally in Ollama, so the ticket text never leaves your network. A JSON schema constrains the answer to a category (Billing, Technical or Sales), a priority (Low, Medium or High) and a one-sentence summary that later steps can route on.",
+  "shortDescription": "Classify support tickets with a local LLM, without sending them to a hosted AI API.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Runs on a local Qwen3 8B model through Ollama, so no ticket data leaves your network",
+    "Structured output: a JSON schema limits the answer to fixed categories and priorities",
+    "Takes the ticket as a workflow input, so it can be called from any other workflow or an API"
+  ],
+  "prerequisites": [
+    "Ollama installed and running (https://ollama.com), reachable from ByteChef",
+    "The qwen3:8b model pulled with `ollama pull qwen3:8b` (about 5 GB on disk, about 10 GB of memory while loaded)",
+    "An Ollama connection in ByteChef whose URL points at the Ollama server (http://localhost:11434 by default, http://host.docker.internal:11434 when ByteChef runs in Docker)"
+  ],
+  "idealFor": "Support teams that want AI ticket triage but cannot send customer messages to a hosted model API.",
+  "steps": [
+    "Trigger: run on demand with the ticket text as the Ticket input.",
+    "Classify the ticket with Qwen3 8B in Ollama into a category, a priority and a one-sentence summary."
+  ],
+  "screenshot": "screenshot.png"
+}
