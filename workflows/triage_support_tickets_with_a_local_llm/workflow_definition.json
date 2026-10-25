@@ -1,0 +1,49 @@
+{
+    "label": "Triage support tickets offline with Qwen3 on Ollama",
+    "description": "Classifies a support ticket with Qwen3 8B running locally in Ollama, so the ticket text never leaves your network. A JSON schema constrains the answer to a category (Billing, Technical or Sales), a priority (Low, Medium or High) and a one-sentence summary that later steps can route on.",
+    "inputs": [
+        {
+            "internalOnly": false,
+            "label": "Ticket",
+            "name": "ticket",
+            "required": true,
+            "type": "string"
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Classify ticket",
+            "name": "ollama_1",
+            "parameters": {
+                "format": "SIMPLE",
+                "response": {
+                    "responseFormat": "JSON",
+                    "responseSchema": "{\"type\":\"object\",\"properties\":{\"category\":{\"type\":\"string\",\"enum\":[\"BILLING\",\"TECHNICAL\",\"SALES\"]},\"priority\":{\"type\":\"string\",\"enum\":[\"LOW\",\"MEDIUM\",\"HIGH\"]},\"summary\":{\"type\":\"string\"}},\"required\":[\"category\",\"priority\",\"summary\"]}"
+                },
+                "temperature": 1,
+                "topP": 1,
+                "topK": 1,
+                "frequencyPenalty": 0,
+                "presencePenalty": 0,
+                "thinking": false,
+                "reasoningEffort": "medium",
+                "model": "qwen3:8b",
+                "systemPrompt": "You triage customer support tickets. Pick the category and priority, and write a one-sentence summary.",
+                "userPrompt": "${ticket}"
+            },
+            "type": "ollama/v1/ask",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ]
+}
