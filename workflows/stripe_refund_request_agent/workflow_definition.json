@@ -1,0 +1,151 @@
+{
+  "label": "Review Stripe refund requests with an AI agent and refund on approval",
+  "description": "A refund request arrives on a webhook. An AI agent checks the payment and its earlier refunds with the Stripe tools and recommends an amount. A person approves or rejects, and only an approved refund is created in Stripe.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Refund request",
+      "name": "trigger_1",
+      "type": "webhook/v1/autoRespondWithHTTP200",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Review the request",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You review refund requests against a simple policy: refunds are allowed within 30 days of the payment, only up to the amount not already refunded, and never for a payment that did not succeed. Always call the Get payment intent tool and the List refunds tool for the payment intent before deciding. Amounts are in the smallest currency unit, as Stripe returns them. Recommend APPROVE or DENY, the amount to refund (0 when denying), and explain your decision in two or three sentences a reviewer can check against the tool results.",
+        "userPrompt": "Refund request.\n\nPayment intent: ${trigger_1.body.paymentIntentId}\nCustomer email: ${trigger_1.body.customerEmail}\nRequested amount: ${trigger_1.body.amount}\nReason: ${trigger_1.body.reason}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"recommendation\":{\"type\":\"string\",\"enum\":[\"APPROVE\",\"DENY\"]},\"amount\":{\"type\":\"integer\"},\"currency\":{\"type\":\"string\"},\"explanation\":{\"type\":\"string\"}},\"required\":[\"recommendation\",\"amount\",\"currency\",\"explanation\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get payment intent",
+            "name": "stripe_1",
+            "type": "stripe/v1/getPaymentIntent",
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
+          },
+          {
+            "label": "List refunds",
+            "name": "stripe_2",
+            "type": "stripe/v1/listRefunds",
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Approve refund",
+      "name": "approval_1",
+      "type": "approval/v1/requestApproval",
+      "parameters": {
+        "formTitle": "Refund for ${trigger_1.body.customerEmail}",
+        "formDescription": "Payment intent: ${trigger_1.body.paymentIntentId}\nCustomer reason: ${trigger_1.body.reason}\n\nAgent recommends: ${aiAgent_1.recommendation} ${aiAgent_1.amount} ${aiAgent_1.currency}\n${aiAgent_1.explanation}\n\nAdjust the amount (smallest currency unit) if needed, then approve to refund it in Stripe, or reject to refund nothing.",
+        "inputs": [
+          {
+            "fieldType": 9,
+            "fieldLabel": "Amount to refund",
+            "fieldName": "amount",
+            "defaultValue": "${aiAgent_1.amount}",
+            "required": true
+          }
+        ],
+        "expiresIn": 2,
+        "expiresInUnit": "DAYS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Approval Task",
+            "name": "approvalTask_1",
+            "type": "approvalTask/v1/approvalTask",
+            "parameters": {}
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Approved?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "${approval_1.approved}",
+        "caseTrue": [
+          {
+            "label": "Create refund",
+            "name": "stripe_3",
+            "type": "stripe/v1/createRefund",
+            "parameters": {
+              "payment_intent": "${trigger_1.body.paymentIntentId}",
+              "amount": "${approval_1.amount}",
+              "reason": "requested_by_customer"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          },
+          {
+            "label": "Log refund",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+              "text": "Refund ${stripe_3.id} created: ${stripe_3.amount} ${stripe_3.currency}, status ${stripe_3.status}."
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Log rejection",
+            "name": "logger_2",
+            "type": "logger/v1/info",
+            "parameters": {
+              "text": "Refund for ${trigger_1.body.paymentIntentId} was rejected. ${approval_1.comment}"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

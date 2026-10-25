@@ -1,0 +1,34 @@
+{
+  "name": "Review Stripe refund requests with an AI agent and refund on approval",
+  "category": "finance",
+  "description": "A refund request is posted to a webhook with a payment intent ID, amount and reason. An AI agent looks up the payment and its earlier refunds with the Stripe tools, checks them against a simple refund policy and recommends an amount. A person reviews the recommendation in an approval form and can change the amount. Only an approved refund is created in Stripe.",
+  "shortDescription": "An AI agent checks refund requests against Stripe, and a person approves before any money moves.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with two Stripe tools, Get Payment Intent and List Refunds",
+    "Refund policy in the system prompt, easy to replace with your own",
+    "Approval step after the agent, delivered to the Approval Tasks inbox, with the refund amount editable in the form",
+    "Refund created with the Stripe Create Refund action only after approval"
+  ],
+  "prerequisites": [
+    "Stripe connection (start with a test mode secret key)",
+    "OpenAI API key",
+    "A system that posts refund requests to the workflow's webhook URL as JSON with paymentIntentId, customerEmail, amount and reason",
+    "Someone who answers requests in the Approval Tasks inbox, or swap the Approval Task channel for Slack, email or another channel",
+    "Server public URL configured, so the webhook and the approval form link can be reached"
+  ],
+  "idealFor": "E-commerce and finance teams that want refund requests pre-checked by AI while a person signs off on every refund.",
+  "steps": [
+    "Trigger: a refund request is posted to the webhook.",
+    "Review the request: the AI Agent calls the Stripe Get Payment Intent and List Refunds tools and returns a recommendation, an amount and an explanation.",
+    "Approve refund: the run pauses and sends an approval request to the Approval Tasks inbox, with a form that shows the recommendation and lets the reviewer change the amount.",
+    "Approved: create the refund in Stripe for the approved amount and log it.",
+    "Rejected: log the rejection and the reviewer's note, and refund nothing."
+  ],
+  "screenshot": "screenshot.png"
+}
