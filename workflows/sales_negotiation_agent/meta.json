@@ -1,0 +1,42 @@
+{
+  "name": "Negotiate sales deals by Gmail with an AI agent and Telegram approval",
+  "category": "sales",
+  "description": "When a lead from your Google Sheet replies by Gmail, an AI agent answers within your price ranges and floors. Every reply and every new deal sits behind an approval gate: you approve or deny it from Telegram, and a denial with a note such as offer 1800 sends the agent back to rewrite. When the client accepts, the agent sends your booking link and records the deal in the Deals sheet.",
+  "shortDescription": "An AI agent negotiates lead replies by email within your price floors, and you approve every reply and deal from Telegram.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Matches the sender against the Leads tab first, so only real leads reach the AI agent",
+    "Editable OFFER, PRICE RANGES with floors and BOOKING LINK blocks in the prompt",
+    "Reply to the lead and Record the deal tools placed under an Approval Gate with a Telegram channel",
+    "A denial returns the reviewer's reason to the agent, which rewrites and asks again, up to three times",
+    "Update the lead tool with the row number pinned by the workflow, so the model chooses the values but never the row",
+    "Handles not now, not interested and out-of-office replies by updating the lead instead of negotiating",
+    "Part of a set of five sales templates that share one Google Sheet: prospecting, nurture, negotiation, booking and proposal."
+  ],
+  "prerequisites": [
+    "A Google Sheet with a Leads tab whose header row is: name, email, company, domain, linkedinUrl, phone, status, channel, offer, touchCount, nextTouch, lastMessage, notes; replace REPLACE_WITH_SPREADSHEET_ID with its ID",
+    "A Deals tab in the same spreadsheet whose header row is: email, name, company, engagement, details, price, status, date",
+    "Gmail connection for the inbox the leads reply to",
+    "Google Sheets connection",
+    "OpenAI API key",
+    "Telegram connection (bot token) for the approval channel; replace REPLACE_WITH_TELEGRAM_CHAT_ID with the chat where you approve",
+    "Edit the OFFER, PRICE RANGES and BOOKING LINK blocks in the AI agent's system prompt; replace https://calendly.com/REPLACE_WITH_YOUR_LINK with your booking link",
+    "Server public URL configured, so webhooks and the approval links can reach ByteChef"
+  ],
+  "idealFor": "Consultants and freelancers who want an AI agent to handle price negotiation by email while they approve every message and price it sends.",
+  "steps": [
+    "Trigger: a new email arrives in Gmail.",
+    "Read the Leads tab and loop over the rows.",
+    "Continue only for the lead whose email matches the sender and whose status is not won or lost.",
+    "The AI agent classifies the reply and negotiates within the price ranges and floors.",
+    "Approval gate: each Reply to the lead or Record the deal call waits for your approval in Telegram. Approved, it runs. Denied, the agent gets your reason and tries again.",
+    "On acceptance the agent replies with the booking link and records the deal in the Deals tab.",
+    "The agent updates the lead's status, next follow-up date and a note with the last price offered."
+  ],
+  "screenshot": "screenshot.png"
+}
