@@ -1,0 +1,107 @@
+{
+    "label": "Chat that compacts its history",
+    "description": "A chat agent with session-based Chat Memory v2 and a small turn window, so older turns are compacted, plus conversation search to recall anything from the full log.",
+    "inputs": [],
+    "triggers": [
+        {
+            "name": "chat_1",
+            "type": "chat/v1/newChatRequest",
+            "parameters": {
+                "mode": 1
+            },
+            "label": "New Chat Request"
+        }
+    ],
+    "tasks": [
+        {
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/streamChat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a friendly assistant. Your visible history is short. If the user asks about something said earlier that you no longer see, use the conversation search tool to find it, and say that you searched.",
+                "userPrompt": "${chat_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "chatMemory": {
+                    "name": "chatMemory_1",
+                    "type": "chatMemory/v2/chatMemory",
+                    "parameters": {
+                        "conversationId": "${chat_1.conversationId}",
+                        "compactionStrategy": "TURN_WINDOW",
+                        "maxTurns": 3,
+                        "enableConversationSearch": true,
+                        "maxEvents": 20,
+                        "maxTokens": 4000,
+                        "maxEventsToKeep": 10,
+                        "overlapSize": 2
+                    },
+                    "clusterElements": {
+                        "model": {
+                            "name": "anthropic_2",
+                            "type": "anthropic/v1/model",
+                            "parameters": {
+                                "model": "claude-haiku-4-5",
+                                "maxTokens": 16000
+                            },
+                            "connections": {
+                                "anthropic_2": {
+                                    "componentName": "anthropic",
+                                    "componentVersion": 1
+                                }
+                            },
+                            "metadata": {
+                                "ui": {
+                                    "dynamicPropertyTypes": {},
+                                    "fromAi": []
+                                }
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                }
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "chat/v1/responseToRequest",
+            "parameters": {
+                "message": "${aiAgent_1}"
+            },
+            "label": "Reply"
+        }
+    ]
+}
