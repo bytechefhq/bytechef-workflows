@@ -1,8 +1,8 @@
 {
   "name": "Keep long chats short with history compaction and recall search",
   "category": "ai",
-  "description": "A chat agent with session-based Chat Memory v2. A small turn window keeps only the last few turns in the prompt and a Claude Haiku model compacts older turns, while conversation search lets the agent look up anything said earlier in the full log.",
-  "shortDescription": "A chat agent compacts older turns and searches the full log to recall them.",
+  "description": "A chat agent with session-based Chat Memory v2. A small turn window keeps only the last few turns in the prompt and archives older ones, while conversation search lets the agent look up anything said earlier in the full log. A Claude Haiku model is attached for the Recursive summarization strategy, if you switch to it.",
+  "shortDescription": "A chat agent keeps a short history and searches the full log to recall older turns.",
   "author": {
     "name": "",
     "email": "",
@@ -11,7 +11,7 @@
   },
   "keyFeatures": [
     "Chat Memory v2 with a turn window compaction strategy",
-    "Separate, cheaper model for compaction",
+    "Cheaper Claude Haiku model ready for the Recursive summarization strategy",
     "Conversation search over the full session log",
     "Small limits so compaction is easy to see in a demo"
   ],
