@@ -1,0 +1,79 @@
+{
+    "label": "Offsite planner that asks before it plans",
+    "description": "A chat agent that asks three or four multiple-choice questions with the Ask User Question tool before it plans a team offsite. The run pauses until the user answers.",
+    "inputs": [],
+    "triggers": [
+        {
+            "name": "chat_1",
+            "type": "chat/v1/newChatRequest",
+            "parameters": {
+                "mode": 1
+            },
+            "label": "New Chat Request"
+        }
+    ],
+    "tasks": [
+        {
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/streamChat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You plan team events. Never guess requirements. Before you plan anything, call the AskUserQuestion tool once with three or four multiple-choice questions covering budget, dates, team size and location. Offer 3 or 4 concrete options per question. After the answers arrive, produce a one-page plan.",
+                "userPrompt": "${chat_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 128000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "chatMemory": {
+                    "name": "chatMemory_1",
+                    "type": "chatMemory/v1/chatMemory",
+                    "parameters": {
+                        "conversationId": "${chat_1.conversationId}"
+                    }
+                },
+                "tools": [
+                    {
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/askUserQuestionTool",
+                        "parameters": {}
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "chat/v1/responseToRequest",
+            "parameters": {
+                "message": "${aiAgent_1}"
+            },
+            "label": "Reply"
+        }
+    ]
+}
