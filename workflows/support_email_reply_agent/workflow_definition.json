@@ -76,7 +76,7 @@
             "type": "approval/v1/requestApproval",
             "parameters": {
               "formTitle": "Reply to ${trigger_1.from}: ${trigger_1.subject}",
-              "formDescription": "Summary: ${aiAgent_1.summary}<br><br>Customer wrote:<br>${trigger_1.bodyPlain}<br><br>Edit the draft below, then approve to send it in the original thread, or reject to send nothing.",
+              "formDescription": "Summary: ${aiAgent_1.summary}\n\nCustomer wrote:\n${trigger_1.bodyPlain}\n\nEdit the draft below, then approve to send it in the original thread, or reject to send nothing.",
               "inputs": [
                 {
                   "fieldType": 5,
