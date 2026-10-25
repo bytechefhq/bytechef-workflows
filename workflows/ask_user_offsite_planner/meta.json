@@ -1,0 +1,28 @@
+{
+  "name": "Plan a team offsite with an agent that asks before it plans",
+  "category": "ai",
+  "description": "A chat agent with the Ask User Question tool. Before planning a team event, it asks three or four multiple-choice questions about budget, location, dates and activities. The run pauses until you answer in the chat, and then the agent writes a plan that fits your answers.",
+  "shortDescription": "An agent asks multiple-choice questions and waits for your answers before it plans.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the Ask User Question tool",
+    "Run pauses while the user answers, then resumes",
+    "System prompt that forbids guessing requirements",
+    "Chat Memory for follow-up changes to the plan"
+  ],
+  "prerequisites": [
+    "Anthropic API key"
+  ],
+  "idealFor": "Anyone building agents that must collect requirements from a person before acting.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Ask, then plan: the AI Agent calls Ask User Question, the run pauses for the answers, and the agent writes the plan.",
+    "Reply: the plan is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
