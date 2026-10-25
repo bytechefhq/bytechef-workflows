@@ -64,7 +64,7 @@
       "type": "approval/v1/requestApproval",
       "parameters": {
         "formTitle": "Refund for ${trigger_1.body.customerEmail}",
-        "formDescription": "Payment intent: ${trigger_1.body.paymentIntentId}<br>Customer reason: ${trigger_1.body.reason}<br><br>Agent recommends: ${aiAgent_1.recommendation} ${aiAgent_1.amount} ${aiAgent_1.currency}<br>${aiAgent_1.explanation}<br><br>Adjust the amount (smallest currency unit) if needed, then approve to refund it in Stripe, or reject to refund nothing.",
+        "formDescription": "Payment intent: ${trigger_1.body.paymentIntentId}\nCustomer reason: ${trigger_1.body.reason}\n\nAgent recommends: ${aiAgent_1.recommendation} ${aiAgent_1.amount} ${aiAgent_1.currency}\n${aiAgent_1.explanation}\n\nAdjust the amount (smallest currency unit) if needed, then approve to refund it in Stripe, or reject to refund nothing.",
         "inputs": [
           {
             "fieldType": 9,
