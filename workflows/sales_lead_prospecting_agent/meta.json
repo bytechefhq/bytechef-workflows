@@ -1,0 +1,42 @@
+{
+  "name": "Enrich new sales leads and send AI-written first messages",
+  "category": "sales",
+  "description": "Every weekday morning, picks up the leads marked new in a Google Sheet, enriches each one with Apollo and Hunter, and lets an AI agent choose the channel and the offer and write a short first message. The message goes out by Gmail or WhatsApp, or comes to you on Telegram to send on LinkedIn by hand, and the lead row is marked contacted with a follow-up date for the nurture workflow.",
+  "shortDescription": "Enrich new sales leads with Apollo and Hunter and send each an AI-written first message on the right channel.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Apollo person enrichment and Hunter company enrichment before anything is written",
+    "AI agent with a JSON response schema that picks one channel, one offer and writes a message of at most 90 words",
+    "Branch that sends by Gmail, by WhatsApp, or hands LinkedIn messages to you on Telegram, since LinkedIn has no messaging API",
+    "Editable OFFER block in the prompt for what you sell",
+    "Writes status, channel, offer, touchCount and a yyyyMMdd nextTouch back to the sheet for the follow-up workflow",
+    "Part of a set of five sales templates that share one Google Sheet: prospecting, nurture, negotiation, booking and proposal."
+  ],
+  "prerequisites": [
+    "A Google Sheet with a Leads tab whose header row is: name, email, company, domain, linkedinUrl, phone, status, channel, offer, touchCount, nextTouch, lastMessage, notes; replace REPLACE_WITH_SPREADSHEET_ID with its ID. Set status to new on the rows to contact",
+    "Google Sheets connection",
+    "Gmail connection",
+    "Apollo API key",
+    "Hunter API key",
+    "OpenAI API key",
+    "Telegram connection (bot token); replace REPLACE_WITH_TELEGRAM_CHAT_ID with the chat that should receive messages",
+    "WhatsApp connection, only if you use the WhatsApp branch. Meta delivers free-form WhatsApp messages only within 24 hours of the lead's last message, so the prompt picks WhatsApp only when your notes say the lead messaged you in the last day",
+    "Edit the OFFER block in the AI agent's system prompt, and change the schedule's timezone from UTC to yours"
+  ],
+  "idealFor": "Freelancers, consultants and small sales teams that want new leads researched and contacted every morning without writing each first message by hand.",
+  "steps": [
+    "Trigger: every weekday at 9:00 UTC.",
+    "Read the Leads tab and loop over the rows.",
+    "Skip any row whose status is not new.",
+    "Enrich the person with Apollo and the company with Hunter.",
+    "The AI agent picks the channel and the offer and writes the message and, for email, the subject.",
+    "Send it by Gmail or WhatsApp, or send it to your Telegram to post on LinkedIn by hand.",
+    "Update the row: status contacted, channel, offer, touchCount 1, nextTouch in four days and the message text."
+  ],
+  "screenshot": "screenshot.png"
+}
