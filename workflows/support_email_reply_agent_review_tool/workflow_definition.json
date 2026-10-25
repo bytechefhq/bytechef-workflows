@@ -62,7 +62,7 @@
               "toolName": "request_review",
               "toolDescription": "Asks a human reviewer to review your draft reply. The run pauses until they answer. The result has approved (true or false), comment (the reviewer's note) and reply (the reply text as the reviewer approved it, possibly edited).",
               "formTitle": "Reply to ${trigger_1.from}: ${trigger_1.subject}",
-              "formDescription": "=fromAi('notes', 'STRING', {'description': 'For the reviewer: a one line summary of the customer''s request, what changed since the last review if this is a revision, and any question you need answered. Plain text or simple HTML with <br> line breaks', 'required': true})",
+              "formDescription": "=fromAi('notes', 'STRING', {'description': 'For the reviewer: a one line summary of the customer''s request, what changed since the last review if this is a revision, and any question you need answered. Plain text, with a new line between parts', 'required': true})",
               "inputs": [
                 {
                   "fieldType": 5,
