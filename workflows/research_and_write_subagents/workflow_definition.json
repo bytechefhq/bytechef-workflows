@@ -1,0 +1,156 @@
+{
+    "label": "Research and write with subagents",
+    "description": "A chat agent that delegates fact gathering to a fast researcher subagent and the final answer to a stronger writer subagent, each with its own model.",
+    "inputs": [],
+    "triggers": [
+        {
+            "name": "chat_1",
+            "type": "chat/v1/newChatRequest",
+            "parameters": {
+                "mode": 1
+            },
+            "label": "New Chat Request"
+        }
+    ],
+    "tasks": [
+        {
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/streamChat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are an orchestrator. Do not answer research questions yourself. Delegate fact gathering to the researcher subagent, then pass its findings to the writer subagent, and return the writer's answer.",
+                "userPrompt": "${chat_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "chatMemory": {
+                    "name": "chatMemory_1",
+                    "type": "chatMemory/v1/chatMemory",
+                    "parameters": {
+                        "conversationId": "${chat_1.conversationId}"
+                    }
+                },
+                "tools": [
+                    {
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/taskTool",
+                        "parameters": {
+                            "response": {
+                                "responseFormat": "TEXT"
+                            }
+                        },
+                        "clusterElements": {
+                            "model": null,
+                            "subagent": [
+                                {
+                                    "name": "aiAgentUtils_2",
+                                    "type": "aiAgentUtils/v1/subagentTool",
+                                    "parameters": {
+                                        "subagentName": "researcher",
+                                        "description": "Use to gather facts and compare options before anything is written. Returns findings only, as short bullets.",
+                                        "instructions": "You are a fast, precise researcher. Collect the key facts needed to answer the task. Return 5 to 10 short bullets with no introduction and no conclusion. If you are unsure of a fact, say so."
+                                    },
+                                    "clusterElements": {
+                                        "model": {
+                                            "name": "anthropic_3",
+                                            "type": "anthropic/v1/model",
+                                            "parameters": {
+                                                "model": "claude-haiku-4-5",
+                                                "maxTokens": 16000
+                                            },
+                                            "connections": {
+                                                "anthropic_3": {
+                                                    "componentName": "anthropic",
+                                                    "componentVersion": 1
+                                                }
+                                            },
+                                            "metadata": {
+                                                "ui": {
+                                                    "dynamicPropertyTypes": {},
+                                                    "fromAi": []
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "aiAgentUtils_3",
+                                    "type": "aiAgentUtils/v1/subagentTool",
+                                    "parameters": {
+                                        "subagentName": "writer",
+                                        "description": "Use after research is done, to turn findings into the final answer for the user.",
+                                        "instructions": "You turn research findings into a clear answer for Java developers. Short sentences, concrete, no marketing language. End with a one-line recommendation."
+                                    },
+                                    "clusterElements": {
+                                        "model": {
+                                            "name": "anthropic_4",
+                                            "type": "anthropic/v1/model",
+                                            "parameters": {
+                                                "model": "claude-sonnet-5-5",
+                                                "maxTokens": 16000
+                                            },
+                                            "connections": {
+                                                "anthropic_4": {
+                                                    "componentName": "anthropic",
+                                                    "componentVersion": 1
+                                                }
+                                            },
+                                            "metadata": {
+                                                "ui": {
+                                                    "dynamicPropertyTypes": {},
+                                                    "fromAi": []
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "fromAi": []
+                            }
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "chat/v1/responseToRequest",
+            "parameters": {
+                "message": "${aiAgent_1}"
+            },
+            "label": "Reply"
+        }
+    ]
+}

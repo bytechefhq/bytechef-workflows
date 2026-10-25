@@ -1,0 +1,28 @@
+{
+  "name": "Research and write answers with two subagents on different models",
+  "category": "ai",
+  "description": "An orchestrator agent with the Task Tool and two subagents. A researcher subagent on Claude Haiku gathers facts as short bullets, and a writer subagent on Claude Sonnet turns them into a clear answer for Java developers. The orchestrator never answers research questions itself.",
+  "shortDescription": "An orchestrator delegates research to a cheap subagent and writing to a stronger one.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the Task Tool and two Subagent Tools",
+    "Each subagent has its own model and instructions",
+    "Cheap model for research, stronger model for the final answer",
+    "Chat Memory for follow-up questions"
+  ],
+  "prerequisites": [
+    "Anthropic API key"
+  ],
+  "idealFor": "Teams that want to split agent work by cost and quality, and anyone learning multi-agent patterns.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Research and write: the orchestrator calls the researcher subagent, then passes its findings to the writer subagent.",
+    "Reply: the writer's answer is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
