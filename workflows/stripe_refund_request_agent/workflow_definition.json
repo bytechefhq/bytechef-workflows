@@ -73,6 +73,18 @@
             "defaultValue": "${aiAgent_1.amount}",
             "required": true
           }
+        ],
+        "expiresIn": 2,
+        "expiresInUnit": "DAYS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Approval Task",
+            "name": "approvalTask_1",
+            "type": "approvalTask/v1/approvalTask",
+            "parameters": {}
+          }
         ]
       },
       "metadata": {
