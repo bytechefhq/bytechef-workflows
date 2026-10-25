@@ -1,0 +1,40 @@
+{
+  "name": "Log Calendly bookings from won deals in HubSpot and Google Calendar",
+  "category": "sales",
+  "description": "When a client from your Deals sheet books a date through Calendly, creates the contact and a closed-won deal in HubSpot, adds the engagement to Google Calendar with reminders a week, a day and an hour before, marks the deal as booked in the sheet and sends you a Telegram message. Bookings from anyone who is not a won deal are ignored.",
+  "shortDescription": "Turn a Calendly booking from a won deal into a HubSpot deal and a Google Calendar event with reminders.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Only acts when the invitee's email matches a won deal in the Deals tab",
+    "Creates the HubSpot contact and a closed-won deal with the agreed amount",
+    "Google Calendar event at the booked time with the details, the contact and the price, plus three reminders",
+    "Marks the deal booked with the date in the sheet",
+    "Telegram notification with what, who, when and how much",
+    "Part of a set of five sales templates that share one Google Sheet: prospecting, nurture, negotiation, booking and proposal."
+  ],
+  "prerequisites": [
+    "A Deals tab in the same spreadsheet whose header row is: email, name, company, engagement, details, price, status, date; replace REPLACE_WITH_SPREADSHEET_ID with the spreadsheet's ID",
+    "Calendly connection",
+    "Google Sheets connection",
+    "HubSpot connection; the deal uses the default pipeline and the closedwon stage",
+    "Google Calendar connection",
+    "Telegram connection (bot token); replace REPLACE_WITH_TELEGRAM_CHAT_ID with the chat that should receive messages",
+    "Server public URL configured, so webhooks and the approval links can reach ByteChef"
+  ],
+  "idealFor": "Freelancers and small teams who close deals in a spreadsheet and want every booked engagement in their CRM and calendar without copying it by hand.",
+  "steps": [
+    "Trigger: an invitee books an event in Calendly.",
+    "Read the Deals tab and loop over the rows.",
+    "Continue only for the won deal whose email matches the invitee.",
+    "Create the contact and a closed-won deal in HubSpot.",
+    "Add the event to Google Calendar with email reminders a week and a day before and a popup an hour before.",
+    "Mark the deal booked with the date in the sheet.",
+    "Send a Telegram message with the booking."
+  ],
+  "screenshot": "screenshot.png"
+}

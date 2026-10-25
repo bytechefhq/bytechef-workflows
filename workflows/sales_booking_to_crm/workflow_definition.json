@@ -1,0 +1,145 @@
+{
+  "label": "Log Calendly bookings from won deals in HubSpot and Google Calendar",
+  "description": "When a client from your Deals sheet books a date through Calendly, creates the contact and a closed-won deal in HubSpot, adds the engagement to Google Calendar with reminders a week, a day and an hour before, marks the deal as booked in the sheet and sends you a Telegram message. Bookings from anyone who is not a won deal are ignored.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Invitee Created",
+      "name": "trigger_1",
+      "type": "calendly/v1/inviteeCreated",
+      "parameters": {
+        "scope": "user"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the Deals sheet",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+        "sheetName": "Deals",
+        "isTheFirstRowHeader": true
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "For each deal",
+      "name": "loop_1",
+      "type": "loop/v1",
+      "parameters": {
+        "items": "${googleSheets_1}",
+        "iteratee": [
+          {
+            "label": "Did this client book?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": true,
+              "expression": "=${loop_1.item.email}.equalsIgnoreCase(${trigger_1.payload.email}) and ${loop_1.item.status} == 'won'",
+              "caseTrue": [
+                {
+                  "label": "Create the HubSpot contact",
+                  "name": "hubspot_1",
+                  "type": "hubspot/v1/createContact",
+                  "parameters": {
+                    "properties": {
+                      "firstname": "${loop_1.item.name}",
+                      "email": "${loop_1.item.email}",
+                      "company": "${loop_1.item.company}"
+                    }
+                  }
+                },
+                {
+                  "label": "Create the closed-won deal",
+                  "name": "hubspot_2",
+                  "type": "hubspot/v1/createDeal",
+                  "parameters": {
+                    "properties": {
+                      "dealname": "${loop_1.item.engagement} - ${loop_1.item.company}",
+                      "amount": "${loop_1.item.price}",
+                      "pipeline": "default",
+                      "dealstage": "closedwon"
+                    }
+                  }
+                },
+                {
+                  "label": "Add it to the calendar",
+                  "name": "googleCalendar_1",
+                  "type": "googleCalendar/v1/createEvent",
+                  "parameters": {
+                    "calendarId": "primary",
+                    "summary": "${loop_1.item.engagement} - ${loop_1.item.company}",
+                    "allDay": false,
+                    "start": "${trigger_1.payload.scheduled_event.start_time}",
+                    "end": "${trigger_1.payload.scheduled_event.end_time}",
+                    "description": "${loop_1.item.details}\nContact: ${loop_1.item.name} <${loop_1.item.email}>\nPrice: ${loop_1.item.price} EUR",
+                    "useDefault": false,
+                    "reminders": [
+                      {
+                        "method": "email",
+                        "minutes": 10080
+                      },
+                      {
+                        "method": "email",
+                        "minutes": 1440
+                      },
+                      {
+                        "method": "popup",
+                        "minutes": 60
+                      }
+                    ]
+                  }
+                },
+                {
+                  "label": "Mark the deal as booked",
+                  "name": "googleSheets_2",
+                  "type": "googleSheets/v1/updateRow",
+                  "parameters": {
+                    "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                    "sheetName": "Deals",
+                    "rowNumber": "=${loop_1.index} + 2",
+                    "isTheFirstRowHeader": true,
+                    "updateWholeRow": false,
+                    "row": {
+                      "values": [
+                        {
+                          "column": "status",
+                          "value": "booked"
+                        },
+                        {
+                          "column": "date",
+                          "value": "${trigger_1.payload.scheduled_event.start_time}"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                },
+                {
+                  "label": "Tell me on Telegram",
+                  "name": "telegram_1",
+                  "type": "telegram/v1/sendMessage",
+                  "parameters": {
+                    "chat_id": "REPLACE_WITH_TELEGRAM_CHAT_ID",
+                    "text": "New date booked: ${trigger_1.payload.scheduled_event.start_time}\n${loop_1.item.engagement}, ${loop_1.item.company}\n${loop_1.item.price} EUR. It is in HubSpot and in your calendar."
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
