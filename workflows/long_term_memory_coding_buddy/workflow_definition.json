@@ -1,0 +1,98 @@
+{
+    "label": "Coding buddy with long-term memory",
+    "description": "A chat agent that saves your preferences with the Auto Memory tool and recalls them in later conversations. Works only in a deployed run, not in editor test runs.",
+    "inputs": [],
+    "triggers": [
+        {
+            "name": "chat_1",
+            "type": "chat/v1/newChatRequest",
+            "parameters": {
+                "mode": 1
+            },
+            "label": "New Chat Request"
+        }
+    ],
+    "tasks": [
+        {
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/streamChat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a coding buddy for a Java developer. At the start of every conversation, read your memory index and any relevant memory files. When the user states a lasting preference (build tool, Java version, testing style, answer length), save it as a memory right away and say that you saved it. Apply remembered preferences without being asked.",
+                "userPrompt": "${chat_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "chatMemory": {
+                    "name": "chatMemory_1",
+                    "type": "chatMemory/v1/chatMemory",
+                    "parameters": {
+                        "conversationId": "${chat_1.conversationId}"
+                    }
+                },
+                "tools": [
+                    {
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/autoMemoryTool",
+                        "parameters": {}
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "chat/v1/responseToRequest",
+            "parameters": {
+                "message": "${aiAgent_1}"
+            },
+            "label": "Reply"
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "green",
+                    "content": "## Setup: deploy to use long-term memory\n\nThe **Auto Memory Tool** keeps memory per project deployment and environment, so it works only in a deployed run. In an editor test run the agent replies that memory is unavailable.\n\n1. Add your Anthropic connection to the model.\n2. Deploy the project, and enable this workflow in the deployment.\n3. Open the deployed workflow's chat and state a preference, for example *I always use Gradle with the Kotlin DSL and Java 25*.\n4. Start a new conversation and ask for a build file. The agent reads its memory first and uses your preference.\n\nStored memories are listed under **Settings → AI → Memories**, where you can review or delete them.\n",
+                    "id": "setup-note-long-term-memory-coding-buddy",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 400,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}

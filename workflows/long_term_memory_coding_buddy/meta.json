@@ -1,0 +1,29 @@
+{
+  "name": "Remember coding preferences across chats with long-term memory",
+  "category": "ai",
+  "description": "A coding buddy for Java developers with the Auto Memory tool. When you state a lasting preference, such as your build tool or Java version, the agent saves it to memory, and in later conversations it reads its memory first and follows your preferences. Memory is kept per project deployment and environment, so it works in deployed runs only.",
+  "shortDescription": "An agent saves your preferences and recalls them in later conversations.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the Auto Memory tool",
+    "Memory kept per project deployment and environment",
+    "Memories visible and removable under Settings → AI → Memories",
+    "Canvas note with the deployment steps"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "A project deployment, since long-term memory is not available in editor test runs"
+  ],
+  "idealFor": "Anyone building assistants that should remember users across conversations.",
+  "steps": [
+    "Trigger: a message arrives in the deployed workflow chat.",
+    "Remember and answer: the AI Agent reads its memory, saves any new preference and answers.",
+    "Reply: the answer is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
