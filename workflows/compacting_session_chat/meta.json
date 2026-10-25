@@ -1,0 +1,28 @@
+{
+  "name": "Keep long chats short with history compaction and recall search",
+  "category": "ai",
+  "description": "A chat agent with session-based Chat Memory v2. A small turn window keeps only the last few turns in the prompt and a Claude Haiku model compacts older turns, while conversation search lets the agent look up anything said earlier in the full log.",
+  "shortDescription": "A chat agent compacts older turns and searches the full log to recall them.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Chat Memory v2 with a turn window compaction strategy",
+    "Separate, cheaper model for compaction",
+    "Conversation search over the full session log",
+    "Small limits so compaction is easy to see in a demo"
+  ],
+  "prerequisites": [
+    "Anthropic API key"
+  ],
+  "idealFor": "Anyone running long conversations who wants to cap prompt size without losing what was said.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Answer: the AI Agent answers from its short history and searches the conversation when it needs older turns.",
+    "Reply: the answer is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
