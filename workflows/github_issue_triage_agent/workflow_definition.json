@@ -69,7 +69,7 @@
       "type": "approval/v1/requestApproval",
       "parameters": {
         "formTitle": "Triage for issue #${trigger_1.number}: ${trigger_1.title}",
-        "formDescription": "Labels: ${aiAgent_1.labels}<br>Priority: ${aiAgent_1.priority}<br>Possible duplicates: ${aiAgent_1.duplicates}<br><br>Why: ${aiAgent_1.reasoning}<br><br>Edit the comment below if needed, then approve to apply the labels and post it, or reject to leave the issue untouched.",
+        "formDescription": "Labels: ${aiAgent_1.labels}\nPriority: ${aiAgent_1.priority}\nPossible duplicates: ${aiAgent_1.duplicates}\n\nWhy: ${aiAgent_1.reasoning}\n\nEdit the comment below if needed, then approve to apply the labels and post it, or reject to leave the issue untouched.",
         "inputs": [
           {
             "fieldType": 5,
