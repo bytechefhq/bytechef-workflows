@@ -1,0 +1,30 @@
+{
+  "name": "Serve a Java release expert agent to other agents over A2A",
+  "category": "ai",
+  "description": "An AI agent that answers questions about Java and Spring release history: versions, release dates, headline features and migration notes. The workflow starts from a workflow call, so you can add it to a ByteChef A2A Server and other agents can delegate questions to it over the Agent2Agent protocol. Pair it with the Tech lead agent template.",
+  "shortDescription": "An agent workflow exposed to other agents through a ByteChef A2A Server.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent that answers Java and Spring release questions",
+    "Workflow call trigger and response, ready for an A2A Server",
+    "Canvas note with the A2A Server setup steps",
+    "Pairs with the Tech lead agent template as its A2A client"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "A ByteChef A2A Server with this workflow added, see the canvas note",
+    "Server public URL configured if agents outside this ByteChef instance call it"
+  ],
+  "idealFor": "Teams that want to share one specialist agent with many other agents over A2A.",
+  "steps": [
+    "Trigger: an A2A message arrives as a workflow call with a message input.",
+    "Answer: the AI Agent answers the Java or Spring release question.",
+    "Respond: the answer is returned to the calling agent."
+  ],
+  "screenshot": "screenshot.png"
+}
