@@ -1,0 +1,108 @@
+{
+    "label": "Tech lead agent that calls a remote A2A agent",
+    "description": "A chat agent that delegates Java and Spring release questions to a remote agent over A2A with the A2A Agent Tool, such as the Java release expert template.",
+    "inputs": [],
+    "triggers": [
+        {
+            "name": "chat_1",
+            "type": "chat/v1/newChatRequest",
+            "parameters": {
+                "mode": 1
+            },
+            "label": "New Chat Request"
+        }
+    ],
+    "tasks": [
+        {
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/streamChat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a tech lead helping a team plan upgrades. For any question about Java or Spring versions, release dates or features, delegate to the remote Java Release Expert with the agent client tool and build your answer on its reply. Say that you asked the remote agent.",
+                "userPrompt": "${chat_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "chatMemory": {
+                    "name": "chatMemory_1",
+                    "type": "chatMemory/v1/chatMemory",
+                    "parameters": {
+                        "conversationId": "${chat_1.conversationId}"
+                    }
+                },
+                "tools": [
+                    {
+                        "name": "a2a_1",
+                        "type": "a2a/v1/agentTool",
+                        "parameters": {
+                            "agentUrl": "https://your-bytechef-host/api/automation/a2a/your-a2a-server-key"
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {
+                                    "agentUrl": "STRING"
+                                },
+                                "fromAi": []
+                            }
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "chat/v1/responseToRequest",
+            "parameters": {
+                "message": "${aiAgent_1}"
+            },
+            "label": "Reply"
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "blue",
+                    "content": "## Setup: point the tool at a remote A2A agent\n\nThe **A2A Agent Tool** under the AI Agent needs the URL of a remote A2A agent.\n\n1. Set up the remote agent first. The *Java release expert served over A2A* template is built for this one: import it, add it to a ByteChef **A2A Server** and deploy it (its note has the steps).\n2. Open the server's **Connect** tab and copy the **Endpoint URL**.\n3. Open the **A2A Agent Tool** in this workflow and paste it into **Agent URL**, replacing `https://your-bytechef-host/api/automation/a2a/your-a2a-server-key`.\n4. If the server has **Require authentication** on, add an A2A connection to the tool with the server's key.\n5. Add your Anthropic connection to the model, then ask something like *Which Spring Boot version first required Java 17?*\n",
+                    "id": "setup-note-a2a-client-tech-lead-agent",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 420,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}

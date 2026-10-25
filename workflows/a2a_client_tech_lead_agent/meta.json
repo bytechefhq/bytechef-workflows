@@ -1,0 +1,30 @@
+{
+  "name": "Delegate questions to a remote agent over A2A from a tech lead agent",
+  "category": "ai",
+  "description": "A chat agent that helps a team plan upgrades. For questions about Java or Spring versions, release dates or features, it delegates to a remote agent over the Agent2Agent protocol with the A2A Agent Tool, then combines the answer with its own advice. Built to call the Java release expert template, but works with any A2A agent.",
+  "shortDescription": "A chat agent delegates specialist questions to a remote agent over A2A.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the A2A Agent Tool",
+    "Reads the remote agent card and sends it tasks as a tool call",
+    "Canvas note with the steps to connect the remote agent",
+    "Chat Memory for follow-up questions"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "A remote A2A agent, for example the Java release expert template added to a ByteChef A2A Server",
+    "The remote agent's Endpoint URL pasted into the A2A Agent Tool"
+  ],
+  "idealFor": "Teams that connect agents across services or vendors with the A2A protocol.",
+  "steps": [
+    "Trigger: a message arrives in the workflow chat.",
+    "Delegate: the AI Agent sends release questions to the remote agent with the A2A Agent Tool and writes the answer.",
+    "Reply: the answer is sent back to the chat."
+  ],
+  "screenshot": "screenshot.png"
+}
