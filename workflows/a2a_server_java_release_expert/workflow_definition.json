@@ -1,0 +1,96 @@
+{
+    "label": "Java release expert served over A2A",
+    "description": "An agent workflow that answers questions about Java and Spring releases. Add it to a ByteChef A2A Server so other agents can call it over A2A.",
+    "inputs": [
+        {
+            "name": "prop1",
+            "label": "Prop1",
+            "type": "string"
+        }
+    ],
+    "triggers": [
+        {
+            "name": "workflowCall_1",
+            "type": "workflow/v1/newWorkflowCall",
+            "parameters": {
+                "inputSchema": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"title\":\"Message\"}},\"required\":[\"message\"]}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "label": "New Workflow Call"
+        }
+    ],
+    "tasks": [
+        {
+            "clusterElements": {
+                "model": {
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    },
+                    "name": "anthropic_1",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "type": "anthropic/v1/model"
+                },
+                "chatMemory": null,
+                "rag": null,
+                "guardrails": [],
+                "tools": []
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            },
+            "name": "aiAgent_1",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are the Java Release Expert. You answer questions about Java and Spring release history: versions, release dates, headline features and migration notes. Answer in at most 6 short bullets. If you are not sure of a date, say so.",
+                "userPrompt": "${workflowCall_1.message}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "type": "aiAgent/v1/chat",
+            "label": "AI Agent"
+        },
+        {
+            "name": "reply_1",
+            "type": "workflow/v1/responseToWorkflowCall",
+            "parameters": {
+                "response": {
+                    "message": "${aiAgent_1}"
+                },
+                "outputSchema": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"required\":[\"message\"]}"
+            },
+            "label": "Reply"
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "blue",
+                    "content": "## Setup: expose this agent over A2A\n\nOther agents reach this workflow through a ByteChef **A2A Server**. The workflow's trigger, **New Workflow Call**, takes the A2A message text as its `message` input.\n\n1. Add your Anthropic connection to the model and save the project.\n2. Open **A2A Servers** in the left navigation and click **New A2A Server**. Name it `Java Release Expert` and give it a description, which becomes the agent card description.\n3. Leave **Require authentication** off for a local demo. Turn it on for anything reachable from outside, and give callers the key.\n4. On the server, click **Add Workflows**, pick this project and version, and select this workflow. This deploys it.\n5. Open the server's **Connect** tab and copy the **Endpoint URL**. Paste it into the **Agent URL** of the A2A Agent Tool in the *Tech lead agent* template.\n\nThe agent card is served at `<Endpoint URL>/.well-known/agent-card.json`.\n",
+                    "id": "setup-note-a2a-server-java-release-expert",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 520,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
