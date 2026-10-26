@@ -1,0 +1,124 @@
+{
+  "label": "Draft Gmail support replies with an AI agent that asks for review",
+  "description": "For each new support email, an AI agent drafts a reply and asks a person to review it with the Request Approval tool. It sends the approved text, or revises the draft from the reviewer's note and asks again.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Email",
+      "name": "trigger_1",
+      "type": "googleMail/v1/newEmailPolling",
+      "parameters": {
+        "format": "SIMPLE"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Draft and review",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are a support agent who works with a human reviewer. Use the Get thread tool to read the whole conversation and the Search earlier emails tool for context from the same sender. If the email is not a support request (newsletter, spam, automated notification), do nothing and finish. Otherwise draft a concise, polite plain text reply signed by the support team. Do not promise refunds, discounts or dates; if the reply depends on facts you do not have, write your question to the reviewer in the notes. Then call the Request review tool with your draft and notes. Never call Send reply before a review comes back approved. When it comes back approved, call Send reply once with the reply field from the review result exactly as the reviewer left it. When it comes back rejected with a comment, rewrite the draft using the comment and request review again, at most three reviews in total. When it is rejected without a comment, do not send anything. Finish with the outcome, the number of reviews and a one sentence summary.",
+        "userPrompt": "New email.\n\nFrom: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"outcome\":{\"type\":\"string\",\"enum\":[\"REPLIED\",\"NOT_SENT\",\"NO_REPLY_NEEDED\"]},\"reviews\":{\"type\":\"integer\"},\"summary\":{\"type\":\"string\"}},\"required\":[\"outcome\",\"reviews\",\"summary\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get thread",
+            "name": "googleMail_1",
+            "type": "googleMail/v1/getThread",
+            "parameters": {
+              "id": "${trigger_1.threadId}"
+            }
+          },
+          {
+            "label": "Search earlier emails",
+            "name": "googleMail_2",
+            "type": "googleMail/v1/searchEmail",
+            "parameters": {
+              "from": "${trigger_1.from}",
+              "maxResults": 10,
+              "subject": "=fromAi('subject', 'STRING', {'description': 'Optional words from the subject to narrow the search; leave empty to list the sender''s recent emails', 'required': false})"
+            }
+          },
+          {
+            "label": "Request review",
+            "name": "approval_1",
+            "type": "approval/v1/requestApproval",
+            "parameters": {
+              "toolName": "request_review",
+              "toolDescription": "Asks a human reviewer to review your draft reply. The run pauses until they answer. The result has approved (true or false), comment (the reviewer's note) and reply (the reply text as the reviewer approved it, possibly edited).",
+              "formTitle": "Reply to ${trigger_1.from}: ${trigger_1.subject}",
+              "formDescription": "=fromAi('notes', 'STRING', {'description': 'For the reviewer: a one line summary of the customer''s request, what changed since the last review if this is a revision, and any question you need answered. Plain text, with a new line between parts', 'required': true})",
+              "inputs": [
+                {
+                  "fieldType": 5,
+                  "fieldLabel": "Reply",
+                  "fieldName": "reply",
+                  "defaultValue": "=fromAi('draft', 'STRING', {'description': 'Your full draft reply, in plain text', 'required': true})",
+                  "required": true
+                }
+              ],
+              "expiresIn": 2,
+              "expiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "approvalChannels": [
+                {
+                  "label": "Approval Task",
+                  "name": "approvalTask_1",
+                  "type": "approvalTask/v1/approvalTask",
+                  "parameters": {}
+                }
+              ]
+            }
+          },
+          {
+            "label": "Send reply",
+            "name": "googleMail_3",
+            "type": "googleMail/v1/replyToEmail",
+            "parameters": {
+              "id": "${trigger_1.id}",
+              "to": [
+                "${trigger_1.from}"
+              ],
+              "bodyType": "plain",
+              "body": "=fromAi('body', 'STRING', {'description': 'The full plain text reply to send to the customer', 'required': true})"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Log outcome",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Email from ${trigger_1.from} about \"${trigger_1.subject}\": ${aiAgent_1.outcome} after ${aiAgent_1.reviews} review(s). ${aiAgent_1.summary}"
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    }
+  ]
+}
