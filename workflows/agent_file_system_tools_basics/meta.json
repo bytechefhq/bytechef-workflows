@@ -1,0 +1,28 @@
+{
+  "name": "Check the agent file system, glob, grep and list directory tools",
+  "category": "ai",
+  "description": "An AI agent with the File System, List Directory, Glob and Grep tools writes three files in its workspace, reads and edits them, lists, globs and greps them, and checks two error cases. It reports every step in a PASS/FAIL table, so you can see how the tools behave on your server.",
+  "shortDescription": "An agent exercises the four file tools in its workspace and reports PASS/FAIL per step.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "File System Tools for reading, writing and editing files",
+    "List Directory, Glob and Grep tools sharing one workspace",
+    "Error cases for a missing file and a failed edit",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent writes, reads, edits, lists, globs and greps files in its /workspace.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}

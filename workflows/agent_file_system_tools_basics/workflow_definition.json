@@ -1,0 +1,107 @@
+{
+    "label": "Check the agent file system, glob, grep and list directory tools",
+    "description": "An AI agent writes, reads and edits files in its workspace, then lists, globs and greps them, and reports each result in a PASS/FAIL table. All four tools share the default workspace.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. Write src/app/Main.java containing a class Main with a main method that prints \"hello\".\n2. Write src/app/Util.java containing a class Util with a static method greet() returning \"hi\" and a comment TODO_MARKER.\n3. Write docs/notes.md with three lines: alpha, beta, gamma.\n4. Read src/app/Main.java and confirm the content.\n5. Edit src/app/Main.java: replace \"hello\" with \"hello world\". Read it again to confirm.\n6. Edit docs/notes.md with an old string that does not exist (\"delta\") and report the error.\n7. List the workspace root recursively.\n8. Glob **/*.java (expect 2 files) and **/*.md (expect 1 file).\n9. Grep TODO_MARKER (expect only Util.java) and grep the regex gam+a (expect docs/notes.md).\n10. Read a file that does not exist, missing.txt, and report the error.\n11. Report the workspace path shown in the tool descriptions (expect /workspace).",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "File System Tools",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/fileSystemTools",
+                        "parameters": {}
+                    },
+                    {
+                        "label": "List Directory Tool",
+                        "name": "aiAgentUtils_2",
+                        "type": "aiAgentUtils/v1/listDirectoryTool",
+                        "parameters": {}
+                    },
+                    {
+                        "label": "Glob Tool",
+                        "name": "aiAgentUtils_3",
+                        "type": "aiAgentUtils/v1/globTool",
+                        "parameters": {}
+                    },
+                    {
+                        "label": "Grep Tool",
+                        "name": "aiAgentUtils_4",
+                        "type": "aiAgentUtils/v1/grepTool",
+                        "parameters": {}
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe File System, Glob, Grep and List Directory tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      file-system:\n        enabled: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED=true\n```\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run**. The agent reports every check in a PASS/FAIL table in the execution log.\n",
+                    "id": "setup-note-agent-file-system-tools-basics",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
