@@ -1,0 +1,29 @@
+{
+  "name": "Check that Claude Code runs on your ByteChef server",
+  "category": "ai",
+  "description": "Initializes Claude Code on your ByteChef server, then asks the agent to run five read-only checks (working directory, CLI version, operating system, directory listing and a shell command) and report them in a PASS/FAIL table, so you can confirm the Claude Code component works before you build on it.",
+  "shortDescription": "Confirm that the Claude Code component runs on your server with a PASS/FAIL report.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Initialize Claude Code connectivity check that answers ready",
+    "Read-only checks run by the Claude Code agent on the server",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Server setting bytechef.component.claude-code.enabled=true (BYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED), which registers the Claude Code component",
+    "Claude Code CLI installed on the ByteChef server, on the PATH of the user that runs ByteChef",
+    "Anthropic API key in the ANTHROPIC_API_KEY environment variable of ByteChef, or a logged-in Claude Code CLI"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who enabled the Claude Code component and want to check the setup before workflow builders use it.",
+  "steps": [
+    "Trigger: the workflow starts when you click Test in the workflow editor.",
+    "Initialize Claude Code: start the agent once and expect the answer ready.",
+    "Run the checks: the Claude Code agent runs five read-only checks on the server and answers with a PASS/FAIL table.",
+    "Log the report: the Logger step prints the table to the execution log."
+  ]
+}
