@@ -1,0 +1,78 @@
+{
+    "label": "Diagnose failing CI builds with Claude Code and the GitHub MCP server",
+    "description": "When your CI reports a failed build to the webhook, Claude Code reads the failing job's log and the commit's diff through the GitHub MCP server, and a short diagnosis with the likely cause and the file to change is posted to a Slack channel.",
+    "inputs": [
+        {
+            "name": "githubToken",
+            "label": "GitHub token (read-only)",
+            "type": "string",
+            "required": true
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Build failed",
+            "name": "trigger_1",
+            "type": "webhook/v1/autoRespondWithHTTP200"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Add GitHub MCP server",
+            "name": "claudeCode_1",
+            "type": "claudeCode/v1/addMCP",
+            "parameters": {
+                "label": "github",
+                "url": "https://api.githubcopilot.com/mcp/",
+                "authenticationType": 1,
+                "Authentication": "${githubToken}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "Authentication": "STRING"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Diagnose the failure",
+            "name": "claudeCode_2",
+            "type": "claudeCode/v1/chat",
+            "parameters": {
+                "script": "The CI run ${trigger_1.body.runUrl} for the repository ${trigger_1.body.repository} failed on commit ${trigger_1.body.sha}. Use the github tools to read the failing job's log and the commit's diff. Do not push, comment, open issues or change anything on GitHub.\n\nReply in at most 10 lines with:\n- the failing test or step,\n- the most likely cause, in one paragraph,\n- the file and line you would change, and how.",
+                "mcpServers": [
+                    "${claudeCode_1}"
+                ]
+            }
+        },
+        {
+            "label": "Post the diagnosis to Slack",
+            "name": "slack_1",
+            "type": "slack/v1/sendChannelMessage",
+            "parameters": {
+                "channel": "your-channel-id",
+                "text": "Build failed: ${trigger_1.body.runUrl}\n\n${claudeCode_2}"
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable Claude Code on the server\n\nThe Claude Code component is disabled by default, because its agent runs with full permissions on the server. Enable it only on a server you trust. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  component:\n    claude-code:\n      enabled: true\n```\n\nOr set the environment variable:\n\n```\nBYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED=true\n```\n\nThe server also needs:\n\n- the Claude Code CLI on the PATH of the user that runs ByteChef:\n\n```\ncurl -fsSL https://claude.ai/install.sh | bash\n```\n\n- an Anthropic API key in the ANTHROPIC_API_KEY environment variable of ByteChef (or a logged-in CLI).\n\n### Connect your CI\n\n1. Set the **GitHub token** input to a fine-grained GitHub token with read-only access to the repository (Actions and Contents). It is the agent's real limit on GitHub.\n2. Pick your Slack connection and channel in the last step.\n3. Deploy the workflow and make your CI POST JSON to the webhook URL when a build fails:\n\n```json\n{\n  \"repository\": \"owner/repo\",\n  \"runUrl\": \"https://github.com/owner/repo/actions/runs/123\",\n  \"sha\": \"abc1234\"\n}\n```\n",
+                    "id": "setup-note-claude-code-ci-diagnosis",
+                    "position": {
+                        "x": 1097,
+                        "y": -166.125
+                    },
+                    "size": {
+                        "height": 1000,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}

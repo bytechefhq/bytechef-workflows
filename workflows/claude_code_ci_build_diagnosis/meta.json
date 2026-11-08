@@ -1,0 +1,33 @@
+{
+  "name": "Diagnose failing CI builds with Claude Code and the GitHub MCP server",
+  "category": "it",
+  "description": "When your CI reports a failed build to the webhook, Claude Code reads the failing job's log and the commit's diff through the GitHub MCP server, and posts a short diagnosis with the failing step, the likely cause and the file to change to a Slack channel.",
+  "shortDescription": "Claude Code diagnoses failed CI builds with the GitHub MCP server and posts the cause to Slack.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Webhook trigger your CI calls when a build fails",
+    "GitHub MCP server scoped to one run with a read-only token",
+    "Claude Code agent that reads the job log and the commit diff",
+    "Diagnosis posted to a Slack channel"
+  ],
+  "prerequisites": [
+    "Server setting bytechef.component.claude-code.enabled=true (BYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED), which registers the Claude Code component",
+    "Claude Code CLI installed on the ByteChef server, on the PATH of the user that runs ByteChef",
+    "Anthropic API key in the ANTHROPIC_API_KEY environment variable of ByteChef, or a logged-in Claude Code CLI",
+    "Fine-grained GitHub token with read-only access to the repository's Actions and Contents, set as the githubToken input",
+    "Slack connection and the ID of the channel to post to",
+    "A CI step that POSTs repository, runUrl and sha as JSON to the workflow's webhook URL when a build fails"
+  ],
+  "idealFor": "Engineering teams on self-hosted ByteChef who want a first diagnosis of every failed build in Slack before a person looks at it.",
+  "steps": [
+    "Trigger: your CI POSTs the repository, run URL and commit SHA of a failed build to the webhook.",
+    "Add GitHub MCP server: describe the GitHub MCP server with the read-only token for this run.",
+    "Diagnose the failure: Claude Code reads the failing job's log and the commit's diff through the GitHub tools and writes a short diagnosis.",
+    "Post the diagnosis to Slack: send the run URL and the diagnosis to the channel."
+  ]
+}
