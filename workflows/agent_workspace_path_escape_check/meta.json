@@ -1,0 +1,28 @@
+{
+  "name": "Check that agent file tools cannot reach outside the workspace",
+  "category": "ai",
+  "description": "An AI agent tries to reach files outside its workspace with absolute paths, ../ traversal, and Glob and Grep searches of /etc. Every attempt must be refused, and a control write inside the workspace must succeed. Run it after upgrading ByteChef to confirm the workspace still confines the file tools.",
+  "shortDescription": "Confirms the file tools refuse absolute paths and ../ traversal out of the workspace.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Absolute path and ../ traversal attempts for every file tool",
+    "Glob and Grep searches outside the workspace",
+    "A control write inside the workspace",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent attempts seven escapes from its workspace and one allowed write.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}
