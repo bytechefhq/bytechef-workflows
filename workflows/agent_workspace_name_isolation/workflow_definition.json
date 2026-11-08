@@ -1,0 +1,107 @@
+{
+    "label": "Check that agent tools in different workspaces do not share files",
+    "description": "File System Tools and Glob Tool use the workspace alpha, List Directory Tool uses beta. A file written to alpha must not appear in beta.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. Write secret-alpha.txt with content \"alpha only\".\n2. Glob *.txt (alpha workspace, expect secret-alpha.txt).\n3. List the root of the List Directory tool's workspace (beta, expect secret-alpha.txt to be ABSENT).\n4. Report the workspace path each tool's description mentions (expect /workspace for all of them, since every workspace appears to the agent as /workspace).",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "File System Tools (alpha)",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/fileSystemTools",
+                        "parameters": {
+                            "workspaceName": "alpha"
+                        }
+                    },
+                    {
+                        "label": "Glob Tool (alpha)",
+                        "name": "aiAgentUtils_2",
+                        "type": "aiAgentUtils/v1/globTool",
+                        "parameters": {
+                            "workspaceName": "alpha"
+                        }
+                    },
+                    {
+                        "label": "List Directory Tool (beta)",
+                        "name": "aiAgentUtils_3",
+                        "type": "aiAgentUtils/v1/listDirectoryTool",
+                        "parameters": {
+                            "workspaceName": "beta"
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe File System, Glob, Grep and List Directory tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      file-system:\n        enabled: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED=true\n```\n\nEach tool's advanced **Workspace Name** option picks its workspace. Tools with the same name share files; tools with different names do not.\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run**. The agent reports every check in a PASS/FAIL table in the execution log.\n",
+                    "id": "setup-note-agent-workspace-name-isolation",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}

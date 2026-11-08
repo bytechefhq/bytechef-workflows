@@ -1,0 +1,27 @@
+{
+  "name": "Check that agent tools in different workspaces do not share files",
+  "category": "ai",
+  "description": "An AI agent writes a file with File System Tools in the workspace alpha, finds it with a Glob Tool in alpha, and checks that a List Directory Tool in the workspace beta cannot see it. It shows how the Workspace Name option keeps tool files apart.",
+  "shortDescription": "Shows that the Workspace Name option keeps the files of agent tools apart.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Workspace Name option on each Agent Utils tool",
+    "Two workspaces, alpha and beta, in one agent",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent writes a file in alpha and looks for it from alpha and from beta.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}
