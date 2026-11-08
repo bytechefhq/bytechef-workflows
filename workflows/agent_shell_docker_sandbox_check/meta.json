@@ -1,0 +1,28 @@
+{
+  "name": "Check that agent shell commands in Docker see only the workspace",
+  "category": "ai",
+  "description": "An AI agent inspects its shell container: the mounts, the root and parent directories, host paths, the environment and the processes. It confirms that only the agent workspace is mounted from the host and that no host home or other tenant folders are visible.",
+  "shortDescription": "Confirms the Docker shell container mounts only the agent workspace from the host.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Shell Tools with the Docker execution backend",
+    "Mount, environment and process inspection",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.shell.enabled=true (BYTECHEF_AI_AGENT_UTILS_SHELL_ENABLED), which turns on Shell Tools",
+    "Docker or Podman CLI on the ByteChef server's PATH"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent runs eight inspection commands in its shell container.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}
