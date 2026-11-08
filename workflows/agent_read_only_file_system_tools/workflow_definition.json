@@ -1,0 +1,97 @@
+{
+    "label": "Check that read-only agent file system tools cannot write",
+    "description": "An AI agent with File System Tools in Read Only mode tries to create a file and confirms that it cannot.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. List the names of every tool you were given.\n2. Try to create the file notes.txt with content \"should not exist\" using any tool you have.\n3. List the workspace root and confirm notes.txt is absent.\nExpected: no Write or Edit tool exists, so step 2 cannot be done.",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "File System Tools (read only)",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/fileSystemTools",
+                        "parameters": {
+                            "readOnly": true
+                        }
+                    },
+                    {
+                        "label": "List Directory Tool",
+                        "name": "aiAgentUtils_2",
+                        "type": "aiAgentUtils/v1/listDirectoryTool",
+                        "parameters": {}
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe File System, Glob, Grep and List Directory tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      file-system:\n        enabled: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED=true\n```\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run**. The agent reports every check in a PASS/FAIL table in the execution log.\n",
+                    "id": "setup-note-agent-read-only-file-system-tools",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
