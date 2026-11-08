@@ -1,7 +1,7 @@
 {
   "name": "Check that Claude Code runs on your ByteChef server",
   "category": "ai",
-  "description": "Initializes Claude Code on your ByteChef server, then asks the agent to run five read-only checks (working directory, CLI version, operating system, directory listing and a shell command) and report them in a PASS/FAIL table, so you can confirm the Claude Code component works before you build on it.",
+  "description": "Asks Claude Code to run five read-only checks on your ByteChef server (working directory, CLI version, operating system, directory listing and a shell command) and report them in a PASS/FAIL table, so you can confirm the Claude Code component works before you build on it.",
   "shortDescription": "Confirm that the Claude Code component runs on your server with a PASS/FAIL report.",
   "author": {
     "name": "",
@@ -10,9 +10,9 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "Initialize Claude Code connectivity check that answers ready",
-    "Read-only checks run by the Claude Code agent on the server",
-    "PASS/FAIL report in the execution log"
+    "Read-only checks run by the Claude Code agent in its own temporary workspace on the server",
+    "PASS/FAIL report in the execution log",
+    "A Chat step with empty MCP Servers and Skills slots, ready for your MCP servers and skills"
   ],
   "prerequisites": [
     "Server setting bytechef.component.claude-code.enabled=true (BYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED), which registers the Claude Code component",
@@ -22,8 +22,7 @@
   "idealFor": "Administrators of self-hosted ByteChef who enabled the Claude Code component and want to check the setup before workflow builders use it.",
   "steps": [
     "Trigger: the workflow starts when you click Test in the workflow editor.",
-    "Initialize Claude Code: start the agent once and expect the answer ready.",
-    "Run the checks: the Claude Code agent runs five read-only checks on the server and answers with a PASS/FAIL table.",
+    "Run the checks: the Claude Code agent runs five read-only checks on the server and answers with a PASS/FAIL table. If the Claude Code CLI is missing, the step fails with a setup message.",
     "Log the report: the Logger step prints the table to the execution log."
   ]
 }
