@@ -12,7 +12,7 @@
   "keyFeatures": [
     "Read-only checks run by the Claude Code agent in its own temporary workspace on the server",
     "PASS/FAIL report in the execution log",
-    "A Chat step with empty MCP Servers and Skills slots, ready for your MCP servers and skills"
+    "A Chat step with an empty MCP Servers slot and a Skills property, ready for your MCP servers and skills"
   ],
   "prerequisites": [
     "Server setting bytechef.component.claude-code.enabled=true (BYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED), which registers the Claude Code component",
