@@ -16,7 +16,7 @@
     "Built on the Graph flow control, with a retry counter and a transition budget"
   ],
   "prerequisites": [
-    "A ByteChef version with the Graph flow control",
+    "A ByteChef version with the Graph flow control and the getOrDefault formula function",
     "A TypeSafe AI API key (https://typesafe.ai) in a TypeSafe AI connection",
     "An Anthropic connection for the cheap and the strong model"
   ],
