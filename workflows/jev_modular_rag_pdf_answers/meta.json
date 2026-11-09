@@ -1,0 +1,30 @@
+{
+  "name": "Answer questions about a PDF with Modular RAG and Jev",
+  "category": "ai",
+  "description": "Loads a PDF (the Hurricane Milton article from Wikipedia) into PGVector, then answers questions about it with an AI agent whose Modular RAG pipeline rewrites and expands the question, retrieves chunks, and lets TypeSafe Jev filter out irrelevant, evidence-free or prompt-injected chunks and rerank the rest before the model sees them.",
+  "shortDescription": "Modular RAG over a PDF, with TypeSafe Jev filtering and reranking the retrieved chunks.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Loads a PDF into PGVector page by page, split into 800-token chunks with OpenAI embeddings",
+    "Modular RAG: rewrites and expands the question before retrieval, so conversational questions find the right chunks",
+    "Jev Document Filter drops prompt-injected, irrelevant and evidence-free chunks; Jev Reranker keeps the 3 best",
+    "The model sees the original question with only the chunks that answer it"
+  ],
+  "prerequisites": [
+    "A PostgreSQL database with the pgvector extension, in a PGVector connection (Dimensions 1536, Initialize Schema on for the first load)",
+    "An OpenAI connection for the text-embedding-3-small embeddings",
+    "An Anthropic connection for the agent, the query rewriter and the query expander",
+    "A TypeSafe AI API key (https://typesafe.ai) in a TypeSafe AI connection for the Jev filter and reranker"
+  ],
+  "idealFor": "Developers building document Q&A who want retrieved context checked for relevance, evidence and prompt injection before it reaches the model.",
+  "steps": [
+    "Trigger: run on demand with a question, and with Load the PDF first on for the first run.",
+    "If loading: download the Hurricane Milton Wikipedia article as a PDF, split it into chunks, embed them with OpenAI and store them in PGVector.",
+    "Answer the question with an AI agent whose Modular RAG rewrites and expands the question, retrieves chunks from PGVector, filters them with Jev, reranks them with Jev and adds the best three to the prompt."
+  ]
+}
