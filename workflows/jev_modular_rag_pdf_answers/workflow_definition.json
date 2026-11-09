@@ -1,0 +1,341 @@
+{
+    "label": "Answer questions about a PDF with Modular RAG and Jev",
+    "description": "Loads a PDF (the Hurricane Milton article from Wikipedia) into PGVector, then answers questions about it with an AI agent whose Modular RAG pipeline rewrites and expands the question, retrieves chunks, and lets TypeSafe Jev filter out irrelevant, evidence-free or prompt-injected chunks and rerank the rest before the model sees them.",
+    "inputs": [
+        {
+            "internalOnly": false,
+            "label": "Question",
+            "name": "question",
+            "required": true,
+            "type": "string"
+        },
+        {
+            "internalOnly": false,
+            "label": "Load the PDF first",
+            "name": "loadDocument",
+            "required": false,
+            "type": "boolean"
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Load the PDF?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "parameters": {
+                "rawExpression": true,
+                "expression": "${loadDocument} == true",
+                "caseTrue": [
+                    {
+                        "label": "Download the PDF",
+                        "name": "httpClient_1",
+                        "type": "httpClient/v1/get",
+                        "parameters": {
+                            "uri": "https://en.wikipedia.org/api/rest_v1/page/pdf/Hurricane_Milton",
+                            "responseType": "BINARY",
+                            "responseContentType": "application/pdf",
+                            "responseFilename": "Hurricane_Milton.pdf",
+                            "headers": {
+                                "User-Agent": [
+                                    "ByteChefTemplates/1.0 (https://www.bytechef.io)"
+                                ]
+                            },
+                            "followRedirect": true,
+                            "timeout": 60000
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {}
+                            }
+                        }
+                    },
+                    {
+                        "label": "Split, embed and store the PDF",
+                        "name": "pgVector_1",
+                        "type": "pgVector/v1/load",
+                        "parameters": {},
+                        "clusterElements": {
+                            "documentReader": {
+                                "name": "documentReader_1",
+                                "type": "documentReader/v1/pagePdf",
+                                "parameters": {
+                                    "document": "${httpClient_1}"
+                                }
+                            },
+                            "documentTransformer": [
+                                {
+                                    "name": "documentSplitter_1",
+                                    "type": "documentSplitter/v1/tokenTextSplitter",
+                                    "parameters": {
+                                        "tokenTextSplitter": {
+                                            "defaultChunkSize": 800,
+                                            "minChunkSizeChars": 350,
+                                            "minChunkLengthToEmbed": 5,
+                                            "maxNumChunks": 10000,
+                                            "keepSeparator": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "embedding": {
+                                "name": "openAi_1",
+                                "type": "openAi/v1/embedding",
+                                "parameters": {
+                                    "model": "text-embedding-3-small"
+                                },
+                                "connections": {
+                                    "openAi_1": {
+                                        "componentName": "openAi",
+                                        "componentVersion": 1
+                                    }
+                                }
+                            }
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {}
+                            }
+                        }
+                    }
+                ],
+                "caseFalse": []
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Answer with Modular RAG",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "Answer the question using only the context you are given. Be specific: name places, dates and intensities when the context has them. If the context does not answer the question, say that you do not know.",
+                "userPrompt": "${question}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 2000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    },
+                    "metadata": {
+                        "ui": {
+                            "dynamicPropertyTypes": {},
+                            "fromAi": []
+                        }
+                    }
+                },
+                "rag": {
+                    "name": "modularRag_1",
+                    "type": "modularRag/v1/rag",
+                    "parameters": {},
+                    "clusterElements": {
+                        "queryTransformer": [
+                            {
+                                "name": "queryTransformer_1",
+                                "type": "queryTransformer/v1/rewriteQueryTransformer",
+                                "parameters": {},
+                                "clusterElements": {
+                                    "model": {
+                                        "name": "anthropic_2",
+                                        "type": "anthropic/v1/model",
+                                        "parameters": {
+                                            "model": "claude-haiku-4-5",
+                                            "maxTokens": 1000
+                                        },
+                                        "connections": {
+                                            "anthropic_2": {
+                                                "componentName": "anthropic",
+                                                "componentVersion": 1
+                                            }
+                                        },
+                                        "metadata": {
+                                            "ui": {
+                                                "dynamicPropertyTypes": {},
+                                                "fromAi": []
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "queryExpander": {
+                            "name": "queryExpander_1",
+                            "type": "queryExpander/v1/multiQueryExpander",
+                            "parameters": {
+                                "numberOfQueries": 3,
+                                "includeOriginal": true
+                            },
+                            "clusterElements": {
+                                "model": {
+                                    "name": "anthropic_3",
+                                    "type": "anthropic/v1/model",
+                                    "parameters": {
+                                        "model": "claude-haiku-4-5",
+                                        "maxTokens": 1000
+                                    },
+                                    "connections": {
+                                        "anthropic_3": {
+                                            "componentName": "anthropic",
+                                            "componentVersion": 1
+                                        }
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {},
+                                            "fromAi": []
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "documentRetriever": {
+                            "name": "vectorStoreDocumentRetriever_1",
+                            "type": "vectorStoreDocumentRetriever/v1/documentRetriever",
+                            "parameters": {
+                                "similarityThreshold": 0.5,
+                                "topK": 4
+                            },
+                            "clusterElements": {
+                                "vectorStore": {
+                                    "name": "pgVector_2",
+                                    "type": "pgVector/v1/vectorStore",
+                                    "parameters": {},
+                                    "connections": {
+                                        "pgVector_2": {
+                                            "componentName": "pgVector",
+                                            "componentVersion": 1
+                                        }
+                                    },
+                                    "clusterElements": {
+                                        "embedding": {
+                                            "name": "openAi_2",
+                                            "type": "openAi/v1/embedding",
+                                            "parameters": {
+                                                "model": "text-embedding-3-small"
+                                            },
+                                            "connections": {
+                                                "openAi_2": {
+                                                    "componentName": "openAi",
+                                                    "componentVersion": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "documentJoiner": {
+                            "name": "documentJoiner_1",
+                            "type": "documentJoiner/v1/concatenationDocumentJoiner",
+                            "parameters": {}
+                        },
+                        "documentPostProcessor": [
+                            {
+                                "name": "typesafe_1",
+                                "type": "typesafe/v1/jevDocumentFilter",
+                                "parameters": {
+                                    "model": "jev-latest",
+                                    "injectionThreshold": 0.7,
+                                    "contradictionThreshold": 0.7,
+                                    "relevanceThreshold": 0.45,
+                                    "evidenceThreshold": 0.55,
+                                    "concurrency": 4
+                                },
+                                "connections": {
+                                    "typesafe_1": {
+                                        "componentName": "typesafe",
+                                        "componentVersion": 1
+                                    }
+                                }
+                            },
+                            {
+                                "name": "typesafe_2",
+                                "type": "typesafe/v1/jevDocumentReranker",
+                                "parameters": {
+                                    "model": "jev-latest",
+                                    "topK": 3,
+                                    "minimumScore": 0.0,
+                                    "concurrency": 4
+                                },
+                                "connections": {
+                                    "typesafe_2": {
+                                        "componentName": "typesafe",
+                                        "componentVersion": 1
+                                    }
+                                }
+                            }
+                        ],
+                        "queryAugmenter": {
+                            "name": "queryAugmenter_1",
+                            "type": "queryAugmenter/v1/contextualQueryAugmenter",
+                            "parameters": {
+                                "allowEmptyContext": false,
+                                "promptTemplate": "Context information is below.\n\n---------------------\n{context}\n---------------------\n\nAnswer the query using only the context above, not your own knowledge. If the context does not contain the answer, say that you do not know.\n\nQuery: {query}\n\nAnswer:",
+                                "emptyContextPromptTemplate": "The document does not answer this question. Say that you do not know, in one sentence, and do not answer from your own knowledge."
+                            }
+                        }
+                    }
+                }
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "blue",
+                    "id": "setup-note-jev-modular-rag-pdf-answers",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 740,
+                        "width": 520
+                    },
+                    "content": "## Setup\n\n1. **PGVector connection.** Point it at a PostgreSQL database with the `vector` extension (`CREATE EXTENSION IF NOT EXISTS vector;`). Keep **Dimensions** at `1536` (it matches `text-embedding-3-small`) and turn **Initialize Schema** on for the first run so the `vector_store` table is created. Select the connection on **Split, embed and store the PDF** and on the **PGVector VectorStore** under the retriever.\n2. **OpenAI connection** for both embedding elements (the loader's and the retriever's must use the same model). The **PGVector VectorStore** under the retriever only needs its **Embedding**; leave its **Document Reader** slot empty.\n3. **Anthropic connection** for the agent's model and the models of the **Rewrite** query transformer and the **Multi Query** expander.\n4. **TypeSafe AI connection** (API key from [typesafe.ai](https://typesafe.ai)) for **Jev Document Filter** and **Jev Reranker** under **Modular RAG** > **Document Post-Processor**.\n5. **Load the PDF once.** Run the workflow with **Load the PDF first** on and any question. It downloads the Wikipedia article as a PDF and stores it page by page in 800-token chunks. Later runs leave it off, or the chunks are stored twice.\n6. **Ask.** Run it with a question such as *I'm a Florida resident and heard a lot about storms last fall. Did Milton actually make landfall in my state, and where?*\n\nTo use your own document, change the URL on **Download the PDF** (and the file name), or replace the download with your own file source."
+                },
+                {
+                    "color": "yellow",
+                    "id": "how-it-works-note-jev-modular-rag-pdf-answers",
+                    "position": {
+                        "x": 1010,
+                        "y": 930
+                    },
+                    "size": {
+                        "height": 560,
+                        "width": 520
+                    },
+                    "content": "## What each RAG stage does\n\n1. **Rewrite Query Transformer** turns the conversational question into a search query.\n2. **Multi Query Expander** adds three variants (plus the original).\n3. **Vector Store Document Retriever** fetches the top 4 chunks per query above similarity 0.5; the **Concatenation Document Joiner** merges and dedups them.\n4. **Jev Document Filter** asks four questions per chunk: drop it if it looks like a prompt injection (> 0.7) or is irrelevant (< 0.45), keep and tag it if it contradicts the question's premise (> 0.7), keep it only if it contains answer evidence (> 0.55). Reference lists and archive links that merely mention the topic are dropped here.\n5. **Jev Reranker** scores how well each surviving chunk answers the question and keeps the best 3.\n6. **Contextual Query Augmenter** puts the survivors into the prompt with the *original* question. Its **Prompt Template** says to answer only from the context, and **Allow Empty Context** is off: when the filter drops every chunk, the model is told the document does not answer the question instead of answering from memory. Leave it on for agents that should fall back to their tools.\n\nEach Jev element makes one call per chunk, four at a time (**Concurrency**). Filter first so the reranker sees fewer chunks."
+                }
+            ]
+        }
+    }
+}
