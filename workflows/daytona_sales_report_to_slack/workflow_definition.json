@@ -1,0 +1,135 @@
+{
+    "label": "Analyze sales data in a Daytona sandbox and post a weekly report to Slack",
+    "description": "Every Monday, downloads a sales CSV, uploads it into a Daytona sandbox and lets an AI agent analyze it with Python: revenue, cities, product lines, payment methods and the monthly trend. The agent's report is posted to a Slack channel and the sandbox is deleted.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Every Monday at 8:00",
+            "name": "trigger_1",
+            "type": "schedule/v1/everyWeek",
+            "parameters": {
+                "hour": 8,
+                "minute": 0,
+                "dayOfWeek": 2,
+                "timezone": "UTC"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Download the sales CSV",
+            "name": "httpClient_1",
+            "type": "httpClient/v1/get",
+            "parameters": {
+                "uri": "https://raw.githubusercontent.com/plotly/datasets/master/supermarket_Sales.csv",
+                "responseType": "BINARY",
+                "responseFilename": "sales.csv",
+                "timeout": 30000,
+                "responseContentType": "text/csv"
+            }
+        },
+        {
+            "label": "Create a sandbox",
+            "name": "daytona_1",
+            "type": "daytona/v1/createSandbox",
+            "parameters": {
+                "language": "python"
+            }
+        },
+        {
+            "label": "Upload the CSV to the sandbox",
+            "name": "daytona_2",
+            "type": "daytona/v1/uploadFile",
+            "parameters": {
+                "sandboxId": "${daytona_1.sandboxId}",
+                "path": "/home/daytona/sales.csv",
+                "file": "${httpClient_1}"
+            }
+        },
+        {
+            "label": "Sales analyst agent",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a retail sales analyst. The sales data is a CSV file at /home/daytona/sales.csv inside your sandbox. Columns: Invoice ID, Branch, City, Customer type, Gender, Product line, Unit price, Quantity, Tax 5%, Total, Date (M/D/YYYY), Time, Payment, Cost of goods sold, Gross margin percentage, Gross income, Customer stratification rating.\n\nUse the Run Python in the sandbox tool for every number you report. pandas is available. Start by loading the file and checking its shape. If code fails, fix it and run it again. Never estimate a number you did not compute.\n\nWrite the report for a Slack channel, in Slack mrkdwn (*bold*, bullet lists with \u2022, no Markdown tables, no headings with #). Keep it under 250 words. Reply with the report only, with no preamble or closing remarks.",
+                "userPrompt": "Write the sales report for the period the file covers, and put that date range in the title. Include: total revenue and gross income; revenue by city with each city's share; the best and worst product line by revenue; the most used payment method; revenue by month with the change from month to month; and two concrete, data-backed recommendations.",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 8000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "Run Python in the sandbox",
+                        "name": "daytona_3",
+                        "type": "daytona/v1/executeCode",
+                        "parameters": {
+                            "language": "python",
+                            "code": "=fromAi('code', 'STRING', {'description': 'Complete Python 3 program to run. Print every value you need; only printed output comes back.'})",
+                            "timeout": 120,
+                            "sandboxId": "${daytona_1.sandboxId}"
+                        },
+                        "connections": {
+                            "daytona_3": {
+                                "componentName": "daytona",
+                                "componentVersion": 1
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Delete the sandbox",
+            "name": "daytona_4",
+            "type": "daytona/v1/deleteSandbox",
+            "parameters": {
+                "sandboxId": "${daytona_1.sandboxId}"
+            }
+        },
+        {
+            "label": "Post the report to Slack",
+            "name": "slack_1",
+            "type": "slack/v1/sendChannelMessage",
+            "parameters": {
+                "channel": "your-channel-id",
+                "text": "${aiAgent_1}"
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: weekly sales report in a sandbox\n\nThe workflow downloads a sales CSV, creates a Daytona sandbox, uploads the file into it, and lets the agent analyze it with Python in that same sandbox. The tool's **Sandbox ID** is fixed to the sandbox from **Create a sandbox**; only the code comes from the model. The sandbox is deleted before the report goes to Slack.\n\n1. Add a **Daytona** connection (API key from https://app.daytona.io/dashboard/keys with `write:sandboxes` and `delete:sandboxes`) to the three Daytona steps and the tool.\n2. Add your **Anthropic** connection to the model.\n3. Add a **Slack** connection and pick the channel in **Post the report to Slack**.\n4. To use your own data, point **Download the sales CSV** at your export and update the column list in the agent's system prompt.\n5. Click **Test** to run it once, then deploy it to send the report every Monday at 8:00 UTC.\n",
+                    "id": "setup-note-daytona-sales-report",
+                    "position": {
+                        "x": -80,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 520,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}

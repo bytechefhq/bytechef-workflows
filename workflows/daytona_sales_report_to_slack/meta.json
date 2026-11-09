@@ -1,0 +1,36 @@
+{
+  "name": "Analyze sales data in a Daytona sandbox and post a weekly report to Slack",
+  "category": "sales",
+  "description": "Every Monday, downloads a sales CSV, uploads it into a Daytona sandbox and lets an AI agent analyze it with Python: revenue, cities, product lines, payment methods and the monthly trend. The agent's report is posted to a Slack channel and the sandbox is deleted.",
+  "shortDescription": "Analyze a sales CSV with Python in a Daytona sandbox and post the AI-written report to Slack.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Weekly schedule trigger",
+    "Daytona sandbox created per run, the CSV uploaded into it, and the sandbox deleted afterwards",
+    "AI agent that analyzes the data with pandas in the sandbox, with every number computed by code",
+    "Tool Sandbox ID pinned to the run's sandbox, so only the code comes from the model",
+    "Report formatted for Slack and posted to a channel"
+  ],
+  "prerequisites": [
+    "Daytona account and API key with the write:sandboxes and delete:sandboxes permissions",
+    "Anthropic API key",
+    "Slack connection and the channel to post the report to (replace your-channel-id in Post the report to Slack)",
+    "A sales CSV reachable over HTTP; the template uses a public sample, and the agent's system prompt lists its columns"
+  ],
+  "idealFor": "Sales and operations teams that want a weekly, data-backed sales summary in Slack without building a reporting pipeline.",
+  "steps": [
+    "Trigger: every Monday at 8:00 UTC.",
+    "Download the sales CSV.",
+    "Create a Daytona sandbox.",
+    "Upload the CSV into the sandbox.",
+    "The sales analyst agent analyzes the file with Python in that sandbox and writes the report.",
+    "Delete the sandbox.",
+    "Post the report to a Slack channel."
+  ],
+  "screenshot": "screenshot.png"
+}
