@@ -1,0 +1,31 @@
+{
+  "name": "Answer questions with a code interpreter agent that runs Python in Daytona",
+  "category": "ai",
+  "description": "An AI agent that answers questions needing exact calculations by writing Python and running it in an isolated Daytona sandbox. Each tool call gets a fresh sandbox that is deleted after the run.",
+  "shortDescription": "Give an AI agent a code interpreter that runs Python in an isolated Daytona sandbox.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the Daytona Execute Code tool as a code interpreter",
+    "The model writes the code; the tool runs it in an isolated, temporary Daytona sandbox",
+    "Exact answers for calculations, counting, hashing and data processing instead of guesses",
+    "The agent reads errors, fixes its code and runs it again"
+  ],
+  "prerequisites": [
+    "Daytona account and API key with the write:sandboxes and delete:sandboxes permissions",
+    "Anthropic API key"
+  ],
+  "idealFor": "Teams that want an AI agent to answer questions that need exact calculations or code, without running AI-generated code on their own servers.",
+  "steps": [
+    "Trigger: run the workflow manually with a question in the Question input.",
+    "The AI agent writes a Python program that answers the question.",
+    "The Run Python in Daytona tool runs the program in a new Daytona sandbox, returns the printed output and deletes the sandbox.",
+    "The agent answers from the output and explains how it computed the result.",
+    "Log the answer."
+  ],
+  "screenshot": "screenshot.png"
+}
