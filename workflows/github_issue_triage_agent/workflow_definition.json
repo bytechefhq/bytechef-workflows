@@ -1,0 +1,159 @@
+{
+  "label": "Triage new GitHub issues with an AI agent and a human approval step",
+  "description": "When a new issue is opened, an AI agent reads it, looks for duplicates with the GitHub tools and proposes labels and a triage comment. A person approves or rejects the proposal, and only approved triage is written back to the issue.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Issue",
+      "name": "trigger_1",
+      "type": "github/v1/newIssue",
+      "parameters": {
+        "repository": "your-repository"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Propose triage",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You triage GitHub issues. Use the List repository issues tool to look for open issues that describe the same problem, and the Get issue tool to read a likely duplicate before naming it. Then propose triage. Pick labels only from: bug, enhancement, question, documentation, duplicate. Priority is one of low, medium, high. Write a short, friendly comment for the issue author that says what happens next, and mention the duplicate issue numbers if you found any. Never invent issue numbers. The workflow never closes issues, so do not say the issue will be closed, and do not tell the author that a maintainer reviews the comment.",
+        "userPrompt": "Triage issue #${trigger_1.number}.\n\nTitle: ${trigger_1.title}\n\nBody:\n${trigger_1.body}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"labels\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"bug\",\"enhancement\",\"question\",\"documentation\",\"duplicate\"]}},\"priority\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\"]},\"duplicates\":{\"type\":\"array\",\"items\":{\"type\":\"integer\"}},\"reasoning\":{\"type\":\"string\"},\"comment\":{\"type\":\"string\"}},\"required\":[\"labels\",\"priority\",\"duplicates\",\"reasoning\",\"comment\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "List repository issues",
+            "name": "github_1",
+            "type": "github/v1/listRepositoryIssues",
+            "parameters": {
+              "owner": "your-github-account",
+              "repository": "your-repository"
+            }
+          },
+          {
+            "label": "Get issue",
+            "name": "github_2",
+            "type": "github/v1/getIssue",
+            "parameters": {
+              "owner": "your-github-account",
+              "repository": "your-repository",
+              "issue": "=fromAi('issue', 'STRING', {'description': 'Number of the issue to read, for example 42', 'required': true})"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Approve triage",
+      "name": "approval_1",
+      "type": "approval/v1/requestApproval",
+      "parameters": {
+        "formTitle": "Triage for issue #${trigger_1.number}: ${trigger_1.title}",
+        "formDescription": "Labels: ${aiAgent_1.labels}\nPriority: ${aiAgent_1.priority}\nPossible duplicates: ${aiAgent_1.duplicates}\n\nWhy: ${aiAgent_1.reasoning}\n\nEdit the comment below if needed, then approve to apply the labels and post it, or reject to leave the issue untouched.",
+        "inputs": [
+          {
+            "fieldType": 5,
+            "fieldLabel": "Comment to post",
+            "fieldName": "issueComment",
+            "defaultValue": "${aiAgent_1.comment}",
+            "required": true
+          }
+        ],
+        "expiresIn": 2,
+        "expiresInUnit": "DAYS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Approval Task",
+            "name": "approvalTask_1",
+            "type": "approvalTask/v1/approvalTask",
+            "parameters": {}
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Approved?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "${approval_1.approved}",
+        "caseTrue": [
+          {
+            "label": "Add labels",
+            "name": "github_3",
+            "type": "github/v1/addLabelsToIssue",
+            "parameters": {
+              "repository": "your-repository",
+              "issue": "${trigger_1.number}",
+              "labels": "${aiAgent_1.labels}"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          },
+          {
+            "label": "Post comment",
+            "name": "github_4",
+            "type": "github/v1/createCommentOnIssue",
+            "parameters": {
+              "owner": "your-github-account",
+              "repository": "your-repository",
+              "issue": "${trigger_1.number}",
+              "body": "${approval_1.issueComment}"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Log rejection",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+              "text": "Triage for issue #${trigger_1.number} was rejected. ${approval_1.comment}"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
