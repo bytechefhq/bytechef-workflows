@@ -1,0 +1,31 @@
+{
+  "name": "Self-refine and cascade answers with TypeSafe Jev",
+  "category": "ai",
+  "description": "A cheap model answers first and TypeSafe Jev judges every answer: does it answer the question, is it physically plausible, how helpful is it. A rejected answer goes back to the cheap model with Jev's feedback (self-refine); after two rejected attempts the question escalates to a stronger model (cascade). Built on the Graph flow control, which lets a step jump back to one that already ran.",
+  "shortDescription": "Judge every AI answer with TypeSafe Jev, retry with feedback, and escalate to a stronger model only when needed.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Self-refine: a rejected answer goes back to the model with Jev's feedback on what failed",
+    "Cascade: a cheap model answers first, a strong model only after two rejected attempts",
+    "One Jev call judges each answer on three typed questions: relevance, plausibility and helpfulness",
+    "Built on the Graph flow control, with a retry counter and a transition budget"
+  ],
+  "prerequisites": [
+    "A ByteChef version with the Graph flow control",
+    "A TypeSafe AI API key (https://typesafe.ai) in a TypeSafe AI connection",
+    "An Anthropic connection for the cheap and the strong model"
+  ],
+  "idealFor": "Teams that want AI answers checked before anyone sees them, without paying for the largest model on every request.",
+  "steps": [
+    "Trigger: run the workflow manually with a question.",
+    "Count the attempt and answer with the cheap model.",
+    "Ask TypeSafe Jev whether the answer addresses the question, is plausible and is helpful.",
+    "If it passes, keep the answer. If not, turn the verdict into feedback and let the cheap model try again.",
+    "After two rejected attempts, answer with the strong model, using the same feedback."
+  ]
+}

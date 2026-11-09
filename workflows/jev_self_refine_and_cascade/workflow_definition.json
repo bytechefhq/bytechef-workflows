@@ -1,0 +1,294 @@
+{
+    "label": "Self-refine and cascade answers with TypeSafe Jev",
+    "description": "A cheap model answers first and TypeSafe Jev judges every answer: does it answer the question, is it physically plausible, how helpful is it. A rejected answer goes back to the cheap model with Jev's feedback (self-refine); after two rejected attempts the question escalates to a stronger model (cascade). Built on the Graph flow control, which lets a step jump back to one that already ran.",
+    "inputs": [
+        {
+            "internalOnly": false,
+            "label": "Question",
+            "name": "question",
+            "required": true,
+            "type": "string"
+        },
+        {
+            "internalOnly": false,
+            "label": "Make the first answer wrong",
+            "name": "forceMistake",
+            "required": false,
+            "type": "boolean"
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Answer, judge, refine, escalate",
+            "name": "graph_1",
+            "type": "graph/v1",
+            "parameters": {
+                "startNode": "attempts",
+                "maxTransitions": 20,
+                "nodes": [
+                    {
+                        "label": "Count the attempt",
+                        "name": "attempts",
+                        "type": "var/v1/set",
+                        "parameters": {
+                            "type": "INTEGER",
+                            "value": "=(#root['attempts'] ?: 0) + 1"
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 0,
+                                    "y": 0
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label": "Answer with the cheap model",
+                        "name": "draft",
+                        "type": "aiAgent/v1/chat",
+                        "parameters": {
+                            "format": "SIMPLE",
+                            "systemPrompt": "=(#root['forceMistake'] == true && attempts == 1) ? 'Answer the question in two or three sentences, but for this demo make one deliberate, obviously impossible factual mistake, such as a temperature of -455 degrees Celsius.' : 'Answer the question in two or three sentences. Be concrete: give numbers with units where they help. If you are given feedback on a previous answer, fix exactly what it points out.'",
+                            "userPrompt": "=${question} + (#root['feedback'] ?: '')",
+                            "response": {
+                                "responseFormat": "TEXT"
+                            }
+                        },
+                        "clusterElements": {
+                            "model": {
+                                "name": "anthropic_1",
+                                "type": "anthropic/v1/model",
+                                "parameters": {
+                                    "model": "claude-haiku-4-5",
+                                    "maxTokens": 1000
+                                },
+                                "connections": {
+                                    "anthropic_1": {
+                                        "componentName": "anthropic",
+                                        "componentVersion": 1
+                                    }
+                                },
+                                "metadata": {
+                                    "ui": {
+                                        "dynamicPropertyTypes": {},
+                                        "fromAi": []
+                                    }
+                                }
+                            }
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 280,
+                                    "y": 0
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label": "Judge the answer with Jev",
+                        "name": "judge",
+                        "type": "typesafe/v1/askQuestions",
+                        "parameters": {
+                            "model": "jev-latest",
+                            "state": "Question: ${question}\nAnswer: ${draft}",
+                            "questions": [
+                                {
+                                    "name": "answers_question",
+                                    "type": "noul",
+                                    "instructions": "Does the answer address the question that was asked?",
+                                    "whenTrue": "The answer responds to what the question asks.",
+                                    "whenFalse": "The answer is about something else, or avoids the question.",
+                                    "threshold": 0.8
+                                },
+                                {
+                                    "name": "is_plausible",
+                                    "type": "noul",
+                                    "instructions": "Is everything the answer states physically and factually plausible?",
+                                    "whenTrue": "Every number and claim is possible in the real world.",
+                                    "whenFalse": "The answer states something impossible, such as a temperature below absolute zero.",
+                                    "threshold": 0.8
+                                },
+                                {
+                                    "name": "helpfulness",
+                                    "type": "score",
+                                    "instructions": "How helpful is the answer to the person who asked?",
+                                    "levels": [
+                                        "Not helpful",
+                                        "Somewhat helpful",
+                                        "Helpful",
+                                        "Very helpful"
+                                    ]
+                                }
+                            ]
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 560,
+                                    "y": 0
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label": "Keep the cheap answer",
+                        "name": "accepted",
+                        "type": "var/v1/set",
+                        "parameters": {
+                            "type": "STRING",
+                            "value": "${draft}"
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 840,
+                                    "y": 0
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label": "Turn Jev's verdict into feedback",
+                        "name": "feedback",
+                        "type": "var/v1/set",
+                        "parameters": {
+                            "type": "STRING",
+                            "value": "=' (Your previous answer was: ' + ${draft} + ' A reviewer rejected it.' + (${judge.answers.answers_question.isTrue} ? '' : ' It does not answer the question.') + (${judge.answers.is_plausible.isTrue} ? '' : ' It states something that is not plausible.') + (${judge.answers.helpfulness.score} >= 1.5 ? '' : ' It is not helpful enough.') + ' Answer again and fix this.)'"
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 560,
+                                    "y": 260
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "label": "Escalate to the strong model",
+                        "name": "strong",
+                        "type": "aiAgent/v1/chat",
+                        "parameters": {
+                            "format": "SIMPLE",
+                            "systemPrompt": "Answer the question in two or three sentences. Be concrete: give numbers with units where they help. If you are given feedback on a previous answer, fix exactly what it points out.",
+                            "userPrompt": "=${question} + (#root['feedback'] ?: '')",
+                            "response": {
+                                "responseFormat": "TEXT"
+                            }
+                        },
+                        "clusterElements": {
+                            "model": {
+                                "name": "anthropic_2",
+                                "type": "anthropic/v1/model",
+                                "parameters": {
+                                    "model": "claude-sonnet-5-5",
+                                    "maxTokens": 1000
+                                },
+                                "connections": {
+                                    "anthropic_2": {
+                                        "componentName": "anthropic",
+                                        "componentVersion": 1
+                                    }
+                                },
+                                "metadata": {
+                                    "ui": {
+                                        "dynamicPropertyTypes": {},
+                                        "fromAi": []
+                                    }
+                                }
+                            }
+                        },
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {},
+                                "nodePosition": {
+                                    "x": 840,
+                                    "y": 260
+                                }
+                            }
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "from": "attempts",
+                        "to": "draft"
+                    },
+                    {
+                        "from": "draft",
+                        "to": "judge"
+                    },
+                    {
+                        "from": "judge",
+                        "to": "accepted",
+                        "condition": "=${judge.answers.answers_question.isTrue} && ${judge.answers.is_plausible.isTrue} && ${judge.answers.helpfulness.score} >= 1.5"
+                    },
+                    {
+                        "from": "judge",
+                        "to": "feedback"
+                    },
+                    {
+                        "from": "feedback",
+                        "to": "attempts",
+                        "condition": "=attempts < 2"
+                    },
+                    {
+                        "from": "feedback",
+                        "to": "strong"
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "blue",
+                    "id": "setup-note-jev-self-refine-cascade",
+                    "position": {
+                        "x": 1500,
+                        "y": 100
+                    },
+                    "size": {
+                        "height": 560,
+                        "width": 500
+                    },
+                    "content": "## Setup\n\n> Needs the **Graph** flow control, which is not in a ByteChef release yet.\n\n1. **TypeSafe connection.** Create an API key at [typesafe.ai](https://typesafe.ai), add a **TypeSafe AI** connection and select it on **Judge the answer with Jev**.\n2. **Anthropic connection.** Select it on the **Model** of both agents: **Answer with the cheap model** (`claude-haiku-4-5`) and **Escalate to the strong model** (`claude-sonnet-5-5`). Any cheap and strong pair works, also from different providers.\n3. Click **Test** and enter a **Question**, for example *What is the weather usually like in Paris in July?*\n4. Turn on **Make the first answer wrong** to watch a retry: the first draft gets a deliberate mistake (for example -455 degrees Celsius), Jev rejects it, and the second draft is fixed with Jev's feedback. With it off, most questions pass on the first try.\n\nNo deployment is needed. The answer is the graph's output: `${graph_1}`."
+                },
+                {
+                    "color": "yellow",
+                    "id": "how-note-jev-self-refine-cascade",
+                    "position": {
+                        "x": 1500,
+                        "y": 700
+                    },
+                    "size": {
+                        "height": 680,
+                        "width": 500
+                    },
+                    "content": "## How it works\n\n**Self-refine.** **Judge the answer with Jev** asks three typed questions about the question and the answer in one call: `answers_question` and `is_plausible` (Noul, threshold 0.8) and `helpfulness` (Score, 0 to 3). An answer passes when both Nouls are true and helpfulness is at least 1.5. A rejected answer is turned into feedback, naming each failed check, and the cheap model tries again with it.\n\n**Cascade.** After two rejected attempts, **Escalate to the strong model** answers instead, with the same feedback. You pay for the strong model only when Jev finds a problem.\n\n**The graph.** Each step is a node; the arrows are transitions, checked in order after a node finishes. `feedback` jumps back to `attempts` while `attempts < 2`, otherwise it goes to `strong`. **Count the attempt** starts at 1 with `(#root['attempts'] ?: 0) + 1`, because `attempts` does not exist on the first pass. **Max Transitions** (20) stops a runaway loop.\n\n**Output.** The run ends at **Keep the cheap answer** or at **Escalate to the strong model**, so `${graph_1}` is the answer either way. `${judge}` still holds Jev's last verdict and `${attempts}` the number of cheap attempts."
+                }
+            ]
+        }
+    }
+}
