@@ -1,0 +1,29 @@
+{
+  "name": "Showcase the four TypeSafe Jev actions on a product review",
+  "category": "ai",
+  "description": "A small showcase of the TypeSafe AI component: one product review goes through each Jev action in turn. Noul answers a yes/no question with a truth value, Choice picks one label with probabilities and a confidence, Score places the review on a star rubric, and Ask Questions answers all three in a single call. Only a TypeSafe AI connection is needed; run it with Test and compare the outputs.",
+  "shortDescription": "Run one product review through the Noul, Choice, Score and Ask Questions actions of TypeSafe Jev.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Noul: a yes/no answer as a truth value, with isTrue against a threshold",
+    "Choice: one label from a fixed set, with probabilities and a confidence",
+    "Score: a position on an ordered rubric, with the nearest level's label",
+    "Ask Questions: all three typed questions about the same text in one call"
+  ],
+  "prerequisites": [
+    "A TypeSafe AI API key (https://typesafe.ai) in a TypeSafe AI connection, or a self-hosted System One server such as Laya on Ollama"
+  ],
+  "idealFor": "Anyone who wants to see what each TypeSafe Jev action returns before building it into a larger workflow.",
+  "steps": [
+    "Trigger: run the workflow manually with a product review as input.",
+    "Noul: ask whether the review is positive.",
+    "Choice: ask what the review is mainly about.",
+    "Score: ask how many stars the customer would give.",
+    "Ask Questions: ask all three questions in one call."
+  ]
+}
