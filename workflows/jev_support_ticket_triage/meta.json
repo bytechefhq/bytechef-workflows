@@ -1,0 +1,32 @@
+{
+  "name": "Triage support tickets with Jev and draft replies behind Jev guardrails",
+  "category": "support",
+  "description": "Asks TypeSafe Jev three typed questions about every incoming support ticket in one call - is it urgent, which team owns it, how frustrated is the customer - and routes it on the answers. An AI agent drafts the first reply behind Jev input and output guardrails, which stop prompt injection and unsafe answers without a second chat model. Urgent or angry tickets are also escalated.",
+  "shortDescription": "Classify, route and escalate support tickets with TypeSafe Jev, and draft guarded first replies.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "One TypeSafe Jev call answers three typed questions: urgency (Noul), team (Choice) and frustration (Score)",
+    "Routes on Jev's confidence: an unsure team choice goes to a person instead of the wrong queue",
+    "Jev input and output guardrails block prompt injection and unsafe drafts without a second chat model",
+    "Escalates urgent or very frustrated customers to a separate Slack channel"
+  ],
+  "prerequisites": [
+    "A TypeSafe AI API key (https://typesafe.ai) in a TypeSafe AI connection, used by the Ask Questions step and both Jev guardrails",
+    "An Anthropic connection for the agent's model",
+    "A Slack connection and five channels (billing, technical, sales, triage, escalations) with the ByteChef app invited; replace the placeholder channel names",
+    "A deployed project with this workflow enabled, so the webhook URL accepts tickets"
+  ],
+  "idealFor": "Support teams that want every ticket classified, routed and answered in seconds, with AI replies that cannot be hijacked by the ticket text.",
+  "steps": [
+    "Trigger: a webhook receives a ticket as JSON with ticket and customer.",
+    "Ask TypeSafe Jev whether the ticket is urgent, which team owns it and how frustrated the customer is, in one call.",
+    "Draft a first reply with an AI agent whose Jev input and output guardrails block injection attempts and unsafe answers.",
+    "If Jev is confident about the team, post the ticket, the answers and the draft to that team's Slack channel; otherwise ask a person in the triage channel.",
+    "If the ticket is urgent or the customer is very frustrated, also post it to the escalations channel."
+  ]
+}
