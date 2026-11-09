@@ -1,0 +1,97 @@
+{
+    "label": "Answer questions with a code interpreter agent that runs Python in Daytona",
+    "description": "An AI agent that answers questions needing exact calculations by writing Python and running it in an isolated Daytona sandbox. Each tool call gets a fresh sandbox that is deleted after the run.",
+    "inputs": [
+        {
+            "label": "Question",
+            "name": "question",
+            "type": "string",
+            "required": true
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Code interpreter agent",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a precise analyst with a code interpreter. Never do arithmetic, counting, hashing or data processing in your head: write a short Python 3 program and run it with the Run Python in Daytona tool, then answer from the printed output. If the code fails, read the error, fix the code and run it again. In the final answer, give each result clearly, and add a short note on how you computed it.",
+                "userPrompt": "${question}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 8000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "Run Python in Daytona",
+                        "name": "daytona_1",
+                        "type": "daytona/v1/executeCode",
+                        "parameters": {
+                            "language": "python",
+                            "code": "=fromAi('code', 'STRING', {'description': 'Complete Python 3 program to run. Print every value you need; only printed output comes back.'})",
+                            "timeout": 120,
+                            "keepSandbox": false
+                        },
+                        "connections": {
+                            "daytona_1": {
+                                "componentName": "daytona",
+                                "componentVersion": 1
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Log the answer",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: give the agent a code interpreter\n\nThe **Run Python in Daytona** tool runs the code the agent writes in an isolated Daytona sandbox. Each call gets a fresh sandbox, which is deleted when the call finishes.\n\n1. Create an API key on the Daytona dashboard (**Keys**, https://app.daytona.io/dashboard/keys) with the `write:sandboxes` and `delete:sandboxes` permissions.\n2. Add a **Daytona** connection to the tool with that key.\n3. Add your **Anthropic** connection to the model.\n4. Click **Test**, type a question in **Question** and run it. Try one the model cannot answer from memory, such as *How many primes are below 10,000,000 and what is their sum?*\n",
+                    "id": "setup-note-daytona-code-interpreter-agent",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 430,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
