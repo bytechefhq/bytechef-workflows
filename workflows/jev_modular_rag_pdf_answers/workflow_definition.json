@@ -290,7 +290,11 @@
                         "queryAugmenter": {
                             "name": "queryAugmenter_1",
                             "type": "queryAugmenter/v1/contextualQueryAugmenter",
-                            "parameters": {}
+                            "parameters": {
+                                "allowEmptyContext": false,
+                                "promptTemplate": "Context information is below.\n\n---------------------\n{context}\n---------------------\n\nAnswer the query using only the context above, not your own knowledge. If the context does not contain the answer, say that you do not know.\n\nQuery: {query}\n\nAnswer:",
+                                "emptyContextPromptTemplate": "The document does not answer this question. Say that you do not know, in one sentence, and do not answer from your own knowledge."
+                            }
                         }
                     }
                 }
@@ -329,7 +333,7 @@
                         "height": 560,
                         "width": 520
                     },
-                    "content": "## What each RAG stage does\n\n1. **Rewrite Query Transformer** turns the conversational question into a search query.\n2. **Multi Query Expander** adds three variants (plus the original).\n3. **Vector Store Document Retriever** fetches the top 4 chunks per query above similarity 0.5; the **Concatenation Document Joiner** merges and dedups them.\n4. **Jev Document Filter** asks four questions per chunk: drop it if it looks like a prompt injection (> 0.7) or is irrelevant (< 0.45), keep and tag it if it contradicts the question's premise (> 0.7), keep it only if it contains answer evidence (> 0.55). Reference lists and archive links that merely mention the topic are dropped here.\n5. **Jev Reranker** scores how well each surviving chunk answers the question and keeps the best 3.\n6. **Contextual Query Augmenter** puts the survivors into the prompt with the *original* question.\n\nEach Jev element makes one call per chunk, four at a time (**Concurrency**). Filter first so the reranker sees fewer chunks."
+                    "content": "## What each RAG stage does\n\n1. **Rewrite Query Transformer** turns the conversational question into a search query.\n2. **Multi Query Expander** adds three variants (plus the original).\n3. **Vector Store Document Retriever** fetches the top 4 chunks per query above similarity 0.5; the **Concatenation Document Joiner** merges and dedups them.\n4. **Jev Document Filter** asks four questions per chunk: drop it if it looks like a prompt injection (> 0.7) or is irrelevant (< 0.45), keep and tag it if it contradicts the question's premise (> 0.7), keep it only if it contains answer evidence (> 0.55). Reference lists and archive links that merely mention the topic are dropped here.\n5. **Jev Reranker** scores how well each surviving chunk answers the question and keeps the best 3.\n6. **Contextual Query Augmenter** puts the survivors into the prompt with the *original* question. Its **Prompt Template** says to answer only from the context, and **Allow Empty Context** is off: when the filter drops every chunk, the model is told the document does not answer the question instead of answering from memory. Leave it on for agents that should fall back to their tools.\n\nEach Jev element makes one call per chunk, four at a time (**Concurrency**). Filter first so the reranker sees fewer chunks."
                 }
             ]
         }
