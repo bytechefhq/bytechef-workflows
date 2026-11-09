@@ -1,0 +1,186 @@
+{
+    "label": "Showcase the four TypeSafe Jev actions on a product review",
+    "description": "A small showcase of the TypeSafe AI component: one product review goes through each Jev action in turn. Noul answers a yes/no question with a truth value, Choice picks one label with probabilities and a confidence, Score places the review on a star rubric, and Ask Questions answers all three in a single call. Only a TypeSafe AI connection is needed; run it with Test and compare the outputs.",
+    "inputs": [
+        {
+            "internalOnly": false,
+            "label": "Review",
+            "name": "review",
+            "required": true,
+            "type": "string"
+        }
+    ],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Noul: is the review positive?",
+            "name": "typesafe_1",
+            "type": "typesafe/v1/noul",
+            "parameters": {
+                "model": "jev-latest",
+                "state": "${review}",
+                "instructions": "Is this review positive overall?",
+                "whenTrue": "The customer is mostly happy with the purchase.",
+                "whenFalse": "The customer is mostly unhappy with the purchase.",
+                "threshold": 0.5
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Choice: what is it about?",
+            "name": "typesafe_2",
+            "type": "typesafe/v1/choice",
+            "parameters": {
+                "model": "jev-latest",
+                "state": "${review}",
+                "instructions": "What is the review mainly about?",
+                "options": [
+                    {
+                        "label": "product",
+                        "description": "Quality, features or durability of the product itself"
+                    },
+                    {
+                        "label": "shipping",
+                        "description": "Delivery time, packaging or damage in transit"
+                    },
+                    {
+                        "label": "price",
+                        "description": "Cost, value for money or discounts"
+                    },
+                    {
+                        "label": "service",
+                        "description": "Contact with customer support, returns or refunds"
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Score: how many stars?",
+            "name": "typesafe_3",
+            "type": "typesafe/v1/score",
+            "parameters": {
+                "model": "jev-latest",
+                "state": "${review}",
+                "instructions": "How many stars would this customer give?",
+                "levels": [
+                    "1 star",
+                    "2 stars",
+                    "3 stars",
+                    "4 stars",
+                    "5 stars"
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Ask Questions: all three in one call",
+            "name": "typesafe_4",
+            "type": "typesafe/v1/askQuestions",
+            "parameters": {
+                "model": "jev-latest",
+                "state": "${review}",
+                "questions": [
+                    {
+                        "name": "is_positive",
+                        "type": "noul",
+                        "instructions": "Is this review positive overall?",
+                        "whenTrue": "The customer is mostly happy with the purchase.",
+                        "whenFalse": "The customer is mostly unhappy with the purchase.",
+                        "threshold": 0.5
+                    },
+                    {
+                        "name": "topic",
+                        "type": "choice",
+                        "instructions": "What is the review mainly about?",
+                        "options": [
+                            {
+                                "label": "product",
+                                "description": "Quality, features or durability of the product itself"
+                            },
+                            {
+                                "label": "shipping",
+                                "description": "Delivery time, packaging or damage in transit"
+                            },
+                            {
+                                "label": "price",
+                                "description": "Cost, value for money or discounts"
+                            },
+                            {
+                                "label": "service",
+                                "description": "Contact with customer support, returns or refunds"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "stars",
+                        "type": "score",
+                        "instructions": "How many stars would this customer give?",
+                        "levels": [
+                            "1 star",
+                            "2 stars",
+                            "3 stars",
+                            "4 stars",
+                            "5 stars"
+                        ]
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "blue",
+                    "id": "setup-note-jev-actions-showcase",
+                    "position": {
+                        "x": 1010,
+                        "y": 100
+                    },
+                    "size": {
+                        "height": 760,
+                        "width": 500
+                    },
+                    "content": "## Jev actions showcase\n\n**TypeSafe Jev** answers typed questions about text instead of writing text. The same review goes through all four actions of the **TypeSafe AI** component:\n\n1. **Noul** (`typesafe_1`): a yes/no question. Returns `noul`, a truth value from 0 to 1, and `isTrue` against the **Threshold** (0.5).\n2. **Choice** (`typesafe_2`): pick one of a fixed set of labels. Returns `choice`, `probabilities` for every option and `confidence`.\n3. **Score** (`typesafe_3`): place the text on an ordered rubric. Returns `score` (0 = first level), `probabilities`, `confidence`, `nearestLevel` and `nearestLabel`.\n4. **Ask Questions** (`typesafe_4`): the same three questions in **one** call, under `answers.is_positive`, `answers.topic` and `answers.stars`. Cheaper and faster than three calls when you need several answers about the same text.\n\n### Setup\n\n1. Create an API key at [typesafe.ai](https://typesafe.ai).\n2. Add a **TypeSafe AI** connection with that key and select it on all four steps. Keep **Base URL** at `https://api.typesafe.ai`, or point it at your own System One server (for example Laya on Ollama) and set each step's **Model** to `laya`.\n3. Click **Test**, paste a review into **Review** and run it. No deployment and no other connection is needed.\n\nTry: *The blender is great, but it arrived two weeks late and the box was crushed.*"
+                },
+                {
+                    "color": "yellow",
+                    "id": "using-note-jev-actions-showcase",
+                    "position": {
+                        "x": 1010,
+                        "y": 900
+                    },
+                    "size": {
+                        "height": 520,
+                        "width": 500
+                    },
+                    "content": "## Using the answers\n\nEvery answer is a number or a label with a probability, so later steps can branch on it directly:\n\n- `${typesafe_1.isTrue}` in a **Condition** to act only on positive reviews.\n- `${typesafe_2.choice}` in a **Branch** to send each topic to a different team.\n- `${typesafe_2.confidence} >= 0.6` in a **Condition** so a person reads the reviews Jev is unsure about.\n- `${typesafe_3.nearestLabel}` to store a star rating next to the review.\n- `${typesafe_4.answers.topic.choice}` for the same values from the single Ask Questions call.\n\nEach output also has `model` and `usage` (input and output tokens).\n\nChange the instructions, options or levels to fit your own text: support tickets, leads, survey answers, contract clauses. The same review should get the same answers from the separate actions and from Ask Questions."
+                }
+            ]
+        }
+    }
+}
