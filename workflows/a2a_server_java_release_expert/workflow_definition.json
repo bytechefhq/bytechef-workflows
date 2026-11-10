@@ -10,6 +10,7 @@
     ],
     "triggers": [
         {
+            "description": "Starts the workflow when another agent or workflow calls it, for example through a ByteChef A2A Server. The caller passes a single message field with its question.",
             "name": "workflowCall_1",
             "type": "workflow/v1/newWorkflowCall",
             "parameters": {
@@ -33,6 +34,7 @@
                             "fromAi": []
                         }
                     },
+                    "description": "The Claude model the release expert answers with. Needs an Anthropic connection.",
                     "name": "anthropic_1",
                     "parameters": {
                         "model": "claude-sonnet-5-5",
@@ -50,6 +52,7 @@
                     "dynamicPropertyTypes": {}
                 }
             },
+            "description": "The Java release expert. It answers the caller's question about Java and Spring versions, release dates and support timelines, following its system prompt.",
             "name": "aiAgent_1",
             "parameters": {
                 "format": "SIMPLE",
@@ -63,6 +66,7 @@
             "label": "AI Agent"
         },
         {
+            "description": "Returns the agent's answer to the caller as the message field of the response.",
             "name": "reply_1",
             "type": "workflow/v1/responseToWorkflowCall",
             "parameters": {

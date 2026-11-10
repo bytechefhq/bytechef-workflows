@@ -6,7 +6,7 @@
     {
       "label": "Schedule",
       "name": "trigger_1",
-      "description": "Every month at 09:00",
+      "description": "Starts the workflow at 09:00 on the first day of every month, to report on the month that just ended.",
       "type": "schedule/v1/everyMonth",
       "parameters": {
         "hour": 9,
@@ -24,6 +24,7 @@
   "tasks": [
     {
       "label": "Day of sending report",
+      "description": "Gets the date and time the report runs, in UTC.",
       "name": "dateHelper_1",
       "parameters": {
         "timeZone": "UTC",
@@ -38,6 +39,7 @@
     },
     {
       "label": "Get previous month",
+      "description": "Subtracts one month from today's date to get a date in the month being reported on.",
       "name": "dateHelper_2",
       "type": "dateHelper/v1/subtractTime",
       "parameters": {
@@ -53,6 +55,7 @@
     },
     {
       "label": "Extract Date Information with OpenAI",
+      "description": "Works out the previous month's name and year, and its first and last day with start and end times, as JSON. These values name the new sheet and set the Nifty date range.",
       "name": "openAi_1",
       "parameters": {
         "response": {
@@ -82,6 +85,7 @@
     },
     {
       "label": "Create Google Sheet for Report",
+      "description": "Creates a new sheet (tab) named after the month and year, with the headers Task ID, Task Name, Start Time, End Time and Duration (hours). Select the spreadsheet.",
       "name": "googleSheets_1",
       "parameters": {
         "sheetName": "${openAi_1.monthName} ${openAi_1.year}",
@@ -108,6 +112,7 @@
     },
     {
       "label": "Fetch Nifty Tracked Time Report",
+      "description": "Fetches all time tracked in your Nifty project between the first and last day of the previous month. Set the project ID.",
       "name": "nifty_1",
       "parameters": {
         "start_date": "${openAi_1.firstDayOfMonth}",
@@ -122,12 +127,14 @@
     },
     {
       "type": "loop/v1",
+      "description": "Goes through each tracked time entry from the Nifty report and adds it to the sheet as a row.",
       "name": "loop_1",
       "parameters": {
         "items": "${nifty_1.body.items}",
         "iteratee": [
           {
             "label": "Retrieve Nifty Task Details",
+            "description": "Fetches the Nifty task the current time entry belongs to, to get the task's name.",
             "name": "nifty_2",
             "parameters": {
               "taskId": "${loop_1.item.task}"
@@ -141,6 +148,7 @@
           },
           {
             "label": "Calculate Task Duration",
+            "description": "Calculates how many minutes the time entry lasted, from its start and end times.",
             "name": "dateHelper_3",
             "parameters": {
               "startDate": "${loop_1.item.start}",
@@ -156,6 +164,7 @@
           },
           {
             "label": "Convert Duration to Hours",
+            "description": "Divides the minutes by 60 to get the entry's duration in hours.",
             "name": "mathHelper_1",
             "parameters": {
               "firstNumber": "${dateHelper_3}",
@@ -170,6 +179,7 @@
           },
           {
             "label": "Insert Task Data into Google Sheet",
+            "description": "Adds a row to the month's sheet with the task ID, task name, start time, end time and duration in hours. Select the same spreadsheet as above.",
             "name": "googleSheets_2",
             "parameters": {
               "isTheFirstRowHeader": true,
@@ -199,6 +209,7 @@
     },
     {
       "label": "Add Total Hours Row in Google Sheet",
+      "description": "Adds a final row that sums the Duration column, giving the total hours for the month. Select the same spreadsheet as above.",
       "name": "googleSheets_3",
       "parameters": {
         "isTheFirstRowHeader": false,
@@ -226,6 +237,7 @@
     },
     {
       "label": "Send Monthly Report Email",
+      "description": "Emails a notification that the monthly report is ready, with a link to the spreadsheet. Set the recipient address in the To field.",
       "name": "googleMail_1",
       "parameters": {
         "subject": "Monthly hours report for ${openAi_1.monthName} ${openAi_1.year}",

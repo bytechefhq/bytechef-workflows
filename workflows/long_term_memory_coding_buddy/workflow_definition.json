@@ -4,6 +4,7 @@
     "inputs": [],
     "triggers": [
         {
+            "description": "Starts a run each time a user sends a message in the chat. It provides the message text and the conversation ID.",
             "name": "chat_1",
             "type": "chat/v1/newChatRequest",
             "parameters": {
@@ -14,6 +15,7 @@
     ],
     "tasks": [
         {
+            "description": "A coding buddy for a Java developer. At the start of each conversation it reads its long-term memory; when you state a preference, it saves it with the Auto Memory tool, so later conversations remember it.",
             "name": "aiAgent_1",
             "type": "aiAgent/v1/streamChat",
             "parameters": {
@@ -26,6 +28,7 @@
             },
             "clusterElements": {
                 "model": {
+                    "description": "The Claude model the coding buddy answers with. Needs an Anthropic connection.",
                     "name": "anthropic_1",
                     "type": "anthropic/v1/model",
                     "parameters": {
@@ -46,6 +49,7 @@
                     }
                 },
                 "chatMemory": {
+                    "description": "Short-term memory: keeps the history of the current conversation, keyed by its conversation ID.",
                     "name": "chatMemory_1",
                     "type": "chatMemory/v1/chatMemory",
                     "parameters": {
@@ -54,6 +58,7 @@
                 },
                 "tools": [
                     {
+                        "description": "Long-term memory: lets the agent read and save notes that persist across conversations. It works only in a deployed run, not in editor test runs.",
                         "name": "aiAgentUtils_1",
                         "type": "aiAgentUtils/v1/autoMemoryTool",
                         "parameters": {}
@@ -68,6 +73,7 @@
             "label": "AI Agent"
         },
         {
+            "description": "Sends the coding buddy's answer back to the user in the chat.",
             "name": "reply_1",
             "type": "chat/v1/responseToRequest",
             "parameters": {

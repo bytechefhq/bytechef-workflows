@@ -5,6 +5,7 @@
   "triggers": [
     {
       "label": "Poll all new emails",
+      "description": "Polls Gmail and starts a run for each new email. Only the message ID is used, to fetch the full email in the next step.",
       "name": "trigger_1",
       "type": "googleMail/v1/newEmailPolling"
     }
@@ -12,6 +13,7 @@
   "tasks": [
     {
       "label": "Get an email from the trigger",
+      "description": "Fetches the full email from the trigger by its ID, including the plain-text body and the sender, CC and BCC addresses used for the reply.",
       "name": "googleMail_1",
       "type": "googleMail/v1/getEmail",
       "parameters": {
@@ -26,6 +28,7 @@
     },
     {
       "label": "Convert the mail into a json",
+      "description": "Reads the email body and extracts the appointment request as JSON: the patient's name, the type of doctor, and the requested date-time window (start and end).",
       "name": "openAi_1",
       "parameters": {
         "n": 1,
@@ -55,6 +58,7 @@
     },
     {
       "label": "Get free time slots",
+      "description": "Looks up the free time slots in your calendar between the start and end of the requested window. Select the calendar to check.",
       "name": "googleCalendar_1",
       "type": "googleCalendar/v1/getFreeTimeSlots",
       "parameters": {
@@ -72,12 +76,14 @@
     {
       "label": "Loop through dates",
       "type": "loop/v1",
+      "description": "Goes through each free time slot returned by Google Calendar and keeps the ones long enough for an appointment.",
       "name": "loop_1",
       "parameters": {
         "items": "${googleCalendar_1}",
         "iteratee": [
           {
             "label": "If a time slot is longer than 45 minutes",
+            "description": "Checks whether the current slot is longer than 45 minutes, the length of one appointment.",
             "name": "condition_1",
             "type": "condition/v1",
             "parameters": {
@@ -86,6 +92,7 @@
               "caseTrue": [
                 {
                   "label": "Append to a list",
+                  "description": "Slot is long enough: appends it to the validTimeSlots list kept for this run.",
                   "name": "dataStorage_1",
                   "parameters": {
                     "scope": "CURRENT_EXECUTION",
@@ -104,6 +111,7 @@
               "caseFalse": [
                 {
                   "label": "Log Warning",
+                  "description": "Slot is too short: logs a warning with the slot, so you can see which slots were skipped.",
                   "name": "logEntryWarn1",
                   "parameters": {
                     "text": "${loop_1.item} is NOT valid"
@@ -118,6 +126,7 @@
     },
     {
       "label": "Get stored list",
+      "description": "Reads the validTimeSlots list built by the loop. If no slot qualified, it returns the default value, so replace that example slot with something sensible or remove it.",
       "name": "dataStorage_2",
       "type": "dataStorage/v1/getValue",
       "parameters": {
@@ -140,6 +149,7 @@
     },
     {
       "label": "Suggest a list of appointments",
+      "description": "Turns the free slots into a list of 45-minute appointment options that start on the quarter hour and don't overlap, formatted as \"1. date start time - end time\".",
       "name": "openAi_2",
       "parameters": {
         "n": 1,
@@ -168,6 +178,7 @@
     },
     {
       "label": "Reply to the Email",
+      "description": "Replies to the original email with the suggested appointment times and asks which one suits the sender. The original CC and BCC addresses are kept.",
       "name": "googleMail_2",
       "type": "googleMail/v1/replyToEmail",
       "parameters": {

@@ -4,7 +4,7 @@
     "inputs" : [ ],
     "triggers" : [
         {
-            "description" : "",
+            "description" : "Polls Gmail and starts a run for each new email. The subject, body, sender and message ID are used by the classification, labelling and forwarding steps.",
             "label" : "New email",
             "name" : "trigger_1",
             "parameters" : {
@@ -16,7 +16,7 @@
     "tasks" : [
         {
             "clusterElements" : { },
-            "description" : "",
+            "description" : "Reads the email's subject, body and sender and returns exactly one label (Sales, Support, Finance, Operations, HR or URGENT) as JSON. The branch below routes on that label.",
             "label" : "Get correct label for the email",
             "metadata" : {
                 "ui" : {
@@ -46,7 +46,7 @@
         },
         {
             "clusterElements" : { },
-            "description" : "",
+            "description" : "Routes the email on the label returned by OpenAI. Each case labels the email in Gmail and stores that department's address; an unknown label goes to the default case.",
             "label" : "Forward email to...",
             "metadata" : {
                 "ui" : {
@@ -63,6 +63,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "Sales case: adds your Sales label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_2",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -78,6 +79,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "Sales case: stores the Sales team's address under emailResponder for the forwarding step. Enter the address in Value.",
                                 "name" : "dataStorage_3",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -101,6 +103,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "Support case: adds your Support label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_3",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -116,6 +119,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "Support case: stores the Support team's address under emailResponder for the forwarding step. Enter the address in Value.",
                                 "name" : "dataStorage_4",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -139,6 +143,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "Finance case: adds your Finance label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_4",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -154,6 +159,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "Finance case: stores the Finance team's address under emailResponder for the forwarding step. Enter the address in Value.",
                                 "name" : "dataStorage_5",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -177,6 +183,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "Operations case: adds your Operations label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_5",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -192,6 +199,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "Operations case: stores the Operations team's address under emailResponder for the forwarding step. Enter the address in Value.",
                                 "name" : "dataStorage_6",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -215,6 +223,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "HR case: adds your HR label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_6",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -230,6 +239,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "HR case: stores the HR team's address under emailResponder for the forwarding step. Enter the address in Value.",
                                 "name" : "dataStorage_7",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -253,6 +263,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
+                                "description" : "URGENT case: adds your URGENT label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_8",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -268,6 +279,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
+                                "description" : "URGENT case: stores the address that should receive urgent emails under emailResponder. Enter the address in Value.",
                                 "name" : "dataStorage_9",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -290,6 +302,7 @@
                 "default" : [
                     {
                         "label" : "Set value of recipient",
+                        "description" : "Default case: no known label was returned. Stores the fallback recipient address under emailResponder, so the email is still forwarded somewhere. Enter that address in Value.",
                         "name" : "dataStorage_2",
                         "parameters" : {
                             "key" : "emailResponder",
@@ -308,6 +321,7 @@
                     },
                     {
                         "label" : "Logger",
+                        "description" : "Default case: logs that no label was added, so unclassified emails are easy to spot in the execution log.",
                         "name" : "logger_1",
                         "parameters" : {
                             "text" : "No label was added to incoming email."
@@ -328,7 +342,7 @@
         },
         {
             "clusterElements" : { },
-            "description" : "",
+            "description" : "Reads the recipient address stored by whichever branch case ran. If nothing was stored, it falls back to the default value, so set one there too.",
             "label" : "Get value of recipient",
             "metadata" : {
                 "ui" : {
@@ -348,7 +362,7 @@
         },
         {
             "clusterElements" : { },
-            "description" : "",
+            "description" : "Forwards the original email, with its subject and HTML body, to the address read in the previous step.",
             "label" : "Send email to the right team",
             "metadata" : {
                 "ui" : {
