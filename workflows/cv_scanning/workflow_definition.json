@@ -7,9 +7,7 @@
       "label": "A Google Forms is filled",
       "name": "trigger_1",
       "type": "googleForms/v1/newResponse",
-      "parameters": {
-        "formId": "1r1K_4veQT2BMsapn9ZQ7pbrDSbPGXSISt32elk41dY8"
-      },
+      "parameters": {},
       "metadata": {
         "ui": {
           "dynamicPropertyTypes": {}
@@ -49,6 +47,7 @@
         "temperature": 1,
         "text": "${pdfHelper_1}",
         "format": "STRUCTURED_SUMMARY",
+        "provider": "OPEN_AI",
         "model": "gpt-4"
       },
       "type": "aiText/v1/summarizeText",
@@ -73,6 +72,7 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
+        "format": "ADVANCED",
         "messages": [
           {
             "role": "USER",
@@ -92,10 +92,7 @@
       "label": "Record Results",
       "name": "googleSheets_1",
       "parameters": {
-        "includeItemsFromAllDrives": false,
         "isTheFirstRowHeader": true,
-        "spreadsheetId": "1RgKUE1FEL0M2lZZ3jJpe1Grlt1PWPgQ0Fda_0XrHJyg",
-        "sheetName": "prijave",
         "valueInputOption": "RAW",
         "row": {
           "values": {
@@ -125,8 +122,7 @@
             "label": "Potential Candidates",
             "name": "googleDrive_3",
             "parameters": {
-              "fileEntry": "${googleDrive_1}",
-              "parentFolder": "1DmUfAS20QtQARjHXAptbJ3JBS5RvgAcL"
+              "fileEntry": "${googleDrive_1}"
             },
             "type": "googleDrive/v1/uploadFile",
             "metadata": {
@@ -141,8 +137,7 @@
             "label": "Rejected Candidates",
             "name": "googleDrive_2",
             "parameters": {
-              "fileEntry": "${googleDrive_1}",
-              "parentFolder": "1tcVn1cpDpuIYAsQY2BCBZqS0kplwBq6V"
+              "fileEntry": "${googleDrive_1}"
             },
             "type": "googleDrive/v1/uploadFile",
             "metadata": {

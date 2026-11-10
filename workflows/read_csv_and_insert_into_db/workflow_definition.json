@@ -6,9 +6,7 @@
     "tasks" : [ {
         "label" : "Load a csv file from local machine",
         "name" : "filesystem_1",
-        "parameters" : {
-            "filename" : "/absolute/path/to/cities.csv"
-        },
+        "parameters" : { },
         "type" : "filesystem/v1/readFile",
         "description" : "Files at local machine where ByteChef Self Hosted docker image is running. Folder is configured with environment variable. The file is put into a data pill.",
         "metadata" : {
@@ -46,7 +44,7 @@
                 "type" : "condition/v1",
                 "parameters" : {
                     "rawExpression" : true,
-                    "expression" : "${loop_1.item['City'] != null and loop_1.item['State'] != null}",
+                    "expression" : "=${loop_1.item['City']} != null and ${loop_1.item['State']} != null",
                     "caseTrue" : [ {
                         "label" : "Log",
                         "name" : "logEntry1",
@@ -61,11 +59,19 @@
                         "parameters" : {
                             "schema" : "public",
                             "table" : "CITY",
-                            "rows" : [ {
-                                "name" : "${loop_1.item['City']}",
-                                "country" : "${loop_1.item['State']}"
-                            } ],
-                            "columns" : [ "name", "country" ]
+                            "values" : {
+                                "rows" : [ {
+                                    "name" : "${loop_1.item['City']}",
+                                    "country" : "${loop_1.item['State']}"
+                                } ]
+                            },
+                            "columns" : [ {
+                                "name" : "name",
+                                "type" : "STRING"
+                            }, {
+                                "name" : "country",
+                                "type" : "STRING"
+                            } ]
                         },
                         "description" : "Store columns 'City' and 'State' into a PostgreSQL database under a table 'CITY'",
                         "metadata" : {

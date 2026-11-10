@@ -16,9 +16,9 @@
     "Condition-based Slack routing to the correct team channel"
   ],
   "prerequisites": [
-    "HubSpot connection with the app ID configured",
+    "HubSpot connection, with your HubSpot app ID set in the \"New Hubspot ticket is created\" trigger",
     "OpenAI API key",
-    "Slack connection with access to the tech-team and sales-team channels"
+    "Slack connection, with the tech team and sales team channels selected in the \"Notify Tech Team\" and \"Notify Sales Team\" steps"
   ],
   "idealFor": "Support organizations that want incoming tickets cleaned up and routed to the right team channel automatically.",
   "steps": [

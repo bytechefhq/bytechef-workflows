@@ -18,10 +18,10 @@
     "Condition-based file sorting into Google Drive folders"
   ],
   "prerequisites": [
-    "Google Forms connection",
-    "Google Drive connection with the Rejected and Potential candidate folders",
-    "OpenAI API key",
-    "Google Sheets connection with the target spreadsheet"
+    "Google Forms connection, with the application form selected in the \"A Google Forms is filled\" trigger (question 1 name, question 2 email, question 3 CV upload)",
+    "Google Drive connection, with the target folders selected in the \"Rejected Candidates\" and \"Potential Candidates\" steps",
+    "OpenAI API key, plus OpenAI added as a provider in Settings > AI > Providers for the \"Summarize CV\" step",
+    "Google Sheets connection, with the target spreadsheet and sheet selected in the \"Record Results\" step"
   ],
   "idealFor": "Recruiters and hiring teams that want to pre-screen and triage incoming job applications automatically.",
   "steps": [
