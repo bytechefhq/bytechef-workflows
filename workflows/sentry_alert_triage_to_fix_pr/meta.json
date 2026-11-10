@@ -1,0 +1,37 @@
+{
+  "name": "Triage a Sentry alert, post its impact and draft a fix PR",
+  "category": "it",
+  "description": "Sentry posts an issue alert to the workflow's webhook. An AI agent reads the issue and its latest event from the Sentry API, writes an impact summary with Sentry's exact numbers and posts it to your alerts Slack channel. It searches GitHub for an existing PR, maps the stack trace to files in your repository and drafts the smallest fix. A person reviews the change, and only then is it committed to a new branch and opened as a draft pull request for the owning team.",
+  "shortDescription": "From Sentry alert to impact summary and a draft fix PR, with a person approving the change.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the alert-triage-to-fix-pr skill, HTTP Client tools for Sentry and GitHub search, and GitHub code tools",
+    "Impact summary that quotes Sentry's numbers and never copies user data",
+    "No second PR when one already exists for the issue",
+    "Approval before the fix is committed; the PR always stays a draft"
+  ],
+  "prerequisites": [
+    "The `alert-triage-to-fix-pr` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Sentry internal integration with an issue alert rule that sends to the workflow's webhook URL",
+    "HTTP Client Bearer token connection with a Sentry auth token (event:read, project:read)",
+    "HTTP Client Bearer token connection with a GitHub token for searching pull requests",
+    "GitHub connection that can read code, push branches and open pull requests",
+    "Slack connection and the ID of the alerts channel",
+    "Server public URL configured, so the webhook and the approval form link can be reached"
+  ],
+  "idealFor": "On-call engineers who want every new production error sized and a first fix drafted before they open the laptop.",
+  "steps": [
+    "Trigger: Sentry posts an issue alert to the webhook.",
+    "Triage the alert: the AI Agent loads the alert-triage-to-fix-pr skill, reads the issue and latest event, checks for an existing PR and drafts a fix from the code.",
+    "Post the impact summary to the alerts Slack channel.",
+    "If a fix was drafted, the run pauses until an engineer approves the change.",
+    "Approved: commit the files to a new branch, open a draft pull request and post its link to Slack.",
+    "Rejected or no fix: log the reason and change no code."
+  ]
+}
