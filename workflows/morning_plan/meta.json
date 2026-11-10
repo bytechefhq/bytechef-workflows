@@ -1,0 +1,33 @@
+{
+  "name": "Get a one-screen morning plan from Slack, Gmail, Calendar and Jira",
+  "category": "other",
+  "description": "Every weekday morning an AI agent collects what arrived since yesterday evening: Slack messages that mention you, unread Gmail split into needs-reply and FYI, today's Google Calendar events and Jira issues assigned to you that are due or overdue. It ranks direct asks first, then meetings needing prep, then due work, then FYI, flags collisions and sends you a briefing that fits on one screen.",
+  "shortDescription": "Start the day with one ranked briefing of messages, meetings and due work.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the morning-plan skill and Slack search, Gmail, Google Calendar and Jira tools",
+    "Four short sections: Needs you, Today's calendar, Work due and FYI",
+    "A link on every item and counts for anything cut by the caps",
+    "Read-only: nothing is marked read, replied to or completed"
+  ],
+  "prerequisites": [
+    "The `morning-plan` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Mail (Gmail) and Google Calendar connection for your account",
+    "Jira connection",
+    "HTTP Client Bearer token connection with a Slack user token that has search:read",
+    "Slack connection and your own Slack user ID in the Send to me step"
+  ],
+  "idealFor": "Anyone who starts the day across several inboxes, calendars and trackers.",
+  "steps": [
+    "Trigger: every weekday at 06:30 UTC.",
+    "Get the current date.",
+    "Build the plan: the AI Agent loads the morning-plan skill and reads Slack, Gmail, Google Calendar and Jira in the same window.",
+    "Send the briefing to you as a Slack direct message."
+  ]
+}
