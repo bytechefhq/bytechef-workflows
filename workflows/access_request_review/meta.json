@@ -1,0 +1,31 @@
+{
+  "name": "Review pending access requests against Okta roles and peers",
+  "category": "it",
+  "description": "Every weekday an AI agent reads pending access requests from your Jira Service Management project. For each one it looks up the recipient in Okta, finds active peers with the same title and department, counts how many of them already have the requested app or group, and classifies privileged targets. It recommends approve, deny or needs human review with a reason that cites the peer comparison, and posts the table to your IT Slack channel. Access is never changed and requesters are never contacted.",
+  "shortDescription": "Peer-based access recommendations for every pending request, posted to IT without changing anything.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the access-request-review skill, the Jira JQL search tool and an HTTP Client tool for the Okta API",
+    "Recommendation rules based on peer access, with privileged targets always sent to a human",
+    "Every reason cites \"N of M peers (title, department) have it\"",
+    "Recommendations only: no group, app or ticket changes, and no messages to requesters"
+  ],
+  "prerequisites": [
+    "The `access-request-review` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Jira connection with read access to the service desk project that holds access requests",
+    "HTTP Client API key connection to Okta (header Authorization, value SSWS <token>) with a read-only admin token, and your Okta domain in the system prompt",
+    "Slack connection and the ID of the IT channel"
+  ],
+  "idealFor": "IT and security teams that review a steady stream of access requests.",
+  "steps": [
+    "Trigger: every weekday at 08:00 UTC.",
+    "Review the requests: the AI Agent loads the access-request-review skill, reads pending requests with JQL, looks up recipients and peers in Okta and applies the rules.",
+    "Post the recommendations table to the IT Slack channel."
+  ]
+}
