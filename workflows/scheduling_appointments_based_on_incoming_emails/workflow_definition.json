@@ -13,9 +13,9 @@
     {
       "label": "Get an email from the trigger",
       "name": "googleMail_1",
-      "type": "googleMail/v1/getMail",
+      "type": "googleMail/v1/getEmail",
       "parameters": {
-        "format": "simple",
+        "format": "SIMPLE",
         "id": "${trigger_1.id}"
       },
       "metadata": {
@@ -28,13 +28,13 @@
       "label": "Convert the mail into a json",
       "name": "openAi_1",
       "parameters": {
-        "responseFormat": 1,
         "n": 1,
         "temperature": 1,
         "topP": 1,
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
+        "format": "ADVANCED",
         "messages": [
           {
             "content": "${googleMail_1.bodyPlain} \n\nCan you conclude from this message if someone is requesting an appointment? Who wants to schedule the appointment? On which day? At what time does the patient want to make the appointment?",
@@ -58,8 +58,6 @@
       "name": "googleCalendar_1",
       "type": "googleCalendar/v1/getFreeTimeSlots",
       "parameters": {
-        "maxResults": 250,
-        "calendarId": "bytechefconnectordev@gmail.com",
         "dateRange": {
           "from": "${openAi_1.dateTimePeriod.startDateTime}",
           "to": "${openAi_1.dateTimePeriod.endDateTime}"
@@ -126,7 +124,6 @@
         "key": "validTimeSlots",
         "scope": "CURRENT_EXECUTION",
         "type": "OBJECT",
-        "value": "${loop_1.item}",
         "defaultValue": {
           "startTime": "2024-09-15T08:29",
           "endTime": "2024-09-16T08:29"
@@ -145,13 +142,13 @@
       "label": "Suggest a list of appointments",
       "name": "openAi_2",
       "parameters": {
-        "responseFormat": 0,
         "n": 1,
         "temperature": 1,
         "topP": 1,
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4",
+        "format": "ADVANCED",
         "messages": [
           {
             "content": "${dataStorage_2} Can you look at the start and end times of all these free time slots? Can you suggest a list of appointments? Each appointment lasts 45 minutes and can start at every quarter of an hour at 00, 15, 30, and 45. Appointments cannot overlap. Provide a response in the format \"1. date of appointment start time - end time\" and so on. Do not include any additional explanation.",
@@ -174,6 +171,7 @@
       "name": "googleMail_2",
       "type": "googleMail/v1/replyToEmail",
       "parameters": {
+        "bodyType": "plain",
         "body": "Here are all the available appointments:\n ${openAi_2} \nWould you like to schedule any of these appointments?",
         "id": "${googleMail_1.id}",
         "bcc": "${googleMail_1.bcc}",

@@ -20,7 +20,7 @@
   "prerequisites": [
     "Google Mail connection",
     "OpenAI API key",
-    "Google Calendar connection with the target calendar"
+    "Google Calendar connection, with the calendar to check selected in the \"Get free time slots\" step"
   ],
   "idealFor": "Clinics or service businesses that want to turn appointment-request emails into concrete bookable time slots automatically.",
   "steps": [

@@ -26,7 +26,7 @@
       "label": "Day of sending report",
       "name": "dateHelper_1",
       "parameters": {
-        "timeZone": "Europe/Zagreb",
+        "timeZone": "UTC",
         "dateFormat": "yyyy-MM-dd'T'HH:mm:ss"
       },
       "type": "dateHelper/v1/getCurrentDate",
@@ -42,7 +42,7 @@
       "type": "dateHelper/v1/subtractTime",
       "parameters": {
         "dateFormat": "yyyy-MM-dd'T'HH:mm:ss",
-        "inputDate": "2025-01-18T11:20:55",
+        "date": "${dateHelper_1}",
         "month": 1
       },
       "metadata": {
@@ -65,6 +65,7 @@
         "frequencyPenalty": 0,
         "presencePenalty": 0,
         "model": "gpt-4-turbo",
+        "format": "ADVANCED",
         "messages": [
           {
             "role": "USER",
@@ -83,7 +84,6 @@
       "label": "Create Google Sheet for Report",
       "name": "googleSheets_1",
       "parameters": {
-        "spreadsheetId": "1S-T3t45INoBCf6Bvkn1KcAAKYdSzPC_31z-uOvaKpDk",
         "sheetName": "${openAi_1.monthName} ${openAi_1.year}",
         "headers": [
           "Task ID",
@@ -110,7 +110,6 @@
       "label": "Fetch Nifty Tracked Time Report",
       "name": "nifty_1",
       "parameters": {
-        "project_id": "7XkiDL2hqW8MZ",
         "start_date": "${openAi_1.firstDayOfMonth}",
         "end_date": "${openAi_1.lastDayOfMonth}"
       },
@@ -173,9 +172,7 @@
             "label": "Insert Task Data into Google Sheet",
             "name": "googleSheets_2",
             "parameters": {
-              "includeItemsFromAllDrives": false,
               "isTheFirstRowHeader": true,
-              "spreadsheetId": "1S-T3t45INoBCf6Bvkn1KcAAKYdSzPC_31z-uOvaKpDk",
               "sheetName": "${googleSheets_1.sheetName}",
               "valueInputOption": "RAW",
               "row": {
@@ -204,9 +201,7 @@
       "label": "Add Total Hours Row in Google Sheet",
       "name": "googleSheets_3",
       "parameters": {
-        "includeItemsFromAllDrives": false,
         "isTheFirstRowHeader": false,
-        "spreadsheetId": "1S-T3t45INoBCf6Bvkn1KcAAKYdSzPC_31z-uOvaKpDk",
         "sheetName": "${googleSheets_1.sheetName}",
         "valueInputOption": "USER_ENTERED",
         "row": {
@@ -233,11 +228,9 @@
       "label": "Send Monthly Report Email",
       "name": "googleMail_1",
       "parameters": {
-        "subject": "Month hours for Fina GS - new code project",
-        "body": "Hello,\nThe monthly report for ${openAi_1.monthName} ${openAi_1.year} has been generated and is now available. The report includes detailed task hours along with a summary of total hours worked.\nYou can access the new sheet to review the data and insights.\nhttps://docs.google.com/spreadsheets/d/${googleSheets_1.spreadsheetId}\nBest regards,\nYour Team",
-        "to": [
-          "domitermonika@gmail.com"
-        ]
+        "subject": "Monthly hours report for ${openAi_1.monthName} ${openAi_1.year}",
+        "bodyType": "plain",
+        "body": "Hello,\nThe monthly report for ${openAi_1.monthName} ${openAi_1.year} has been generated and is now available. The report includes detailed task hours along with a summary of total hours worked.\nYou can access the new sheet to review the data and insights.\nhttps://docs.google.com/spreadsheets/d/${googleSheets_1.spreadsheetId}\nBest regards,\nYour Team"
       },
       "type": "googleMail/v1/sendEmail",
       "metadata": {

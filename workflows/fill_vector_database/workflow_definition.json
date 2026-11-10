@@ -8,8 +8,7 @@
     "name" : "filesystem_1",
     "type" : "filesystem/v1/ls",
     "parameters" : {
-      "recursive" : true,
-      "path" : "/home/user/IdeaProjects/bytechef/docs/src/content/docs"
+      "recursive" : true
     },
     "metadata" : {
       "ui" : {

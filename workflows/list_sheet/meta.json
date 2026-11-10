@@ -14,7 +14,7 @@
     "Result logging"
   ],
   "prerequisites": [
-    "Google Sheets connection with access to the target spreadsheet"
+    "Google Sheets connection, with the target spreadsheet selected in the Google Sheets step"
   ],
   "idealFor": "Developers learning ByteChef who want a minimal Google Sheets example.",
   "steps": [

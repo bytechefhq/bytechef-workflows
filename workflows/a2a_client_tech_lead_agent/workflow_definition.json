@@ -56,9 +56,7 @@
                     {
                         "name": "a2a_1",
                         "type": "a2a/v1/agentTool",
-                        "parameters": {
-                            "agentUrl": "https://your-bytechef-host/api/automation/a2a/your-a2a-server-key"
-                        },
+                        "parameters": {},
                         "metadata": {
                             "ui": {
                                 "dynamicPropertyTypes": {

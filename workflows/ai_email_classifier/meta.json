@@ -19,8 +19,8 @@
   "prerequisites": [
     "Google Mail (Gmail) connection",
     "OpenAI API key",
-    "Gmail labels pre-created, matching the label IDs referenced in the workflow",
-    "Department recipient email addresses"
+    "Gmail labels pre-created for each department and selected in each \"Add label\" step",
+    "Department recipient email addresses, entered in each \"Set value of recipient\" step and as the default value in \"Get value of recipient\""
   ],
   "idealFor": "Support and operations teams that want incoming email triaged and routed to the correct department automatically.",
   "steps": [

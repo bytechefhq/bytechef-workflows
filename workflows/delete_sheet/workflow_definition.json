@@ -8,10 +8,7 @@
         "label" : "Google Sheets",
         "name" : "googleSheets_1",
         "type" : "googleSheets/v1/deleteSheet",
-        "parameters" : {
-            "spreadsheetId" : "1wnYhkyBVNfys2XCxZgxjYFGOB3_pLSxB9ISMUhMvXDs",
-            "sheetId" : 769775461
-        },
+        "parameters" : { },
         "metadata" : {
             "ui" : {
                 "dynamicPropertyTypes" : { }

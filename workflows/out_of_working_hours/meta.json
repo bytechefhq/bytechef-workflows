@@ -19,10 +19,10 @@
     "Slack alerts to the internal team for urgent cases"
   ],
   "prerequisites": [
-    "Google Mail connection",
+    "Google Mail connection and a Google Cloud Pub/Sub topic for Gmail push notifications, set as the topic name in the \"New Email\" trigger",
     "OpenAI API key",
-    "Google Sheets connection with the logging spreadsheet",
-    "Slack connection with the alert channel"
+    "Google Sheets connection, with the logging spreadsheet and sheet selected in the \"Log to Google Sheets\" step",
+    "Slack connection, with the alert channel selected in the Slack step"
   ],
   "idealFor": "Support teams that want after-hours customer emails triaged, auto-acknowledged, and escalated when urgent.",
   "steps": [

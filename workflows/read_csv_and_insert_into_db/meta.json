@@ -18,7 +18,7 @@
     "Post-load row-count query"
   ],
   "prerequisites": [
-    "Local filesystem access to cities.csv on the ByteChef host",
+    "Local filesystem access to cities.csv on the ByteChef host, with its path set in the \"Load a csv file from local machine\" step",
     "A PostgreSQL connection with a CITY table (columns name, country)"
   ],
   "idealFor": "Data engineers loading and validating CSV records into a relational database.",
