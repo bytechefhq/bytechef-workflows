@@ -253,5 +253,24 @@
         }
       }
     }
-  ]
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup: Nifty project, sheet and recipient\n\n1. Add your Nifty, Google Sheets, OpenAI and Gmail connections.\n2. Pick your project in **Project ID** in **Fetch Nifty Tracked Time Report**.\n3. Select the same spreadsheet in **Create Google Sheet for Report**, **Insert Task Data into Google Sheet** and **Add Total Hours Row in Google Sheet**. Each run adds a new sheet named after the month.\n4. Enter the recipient in **To** in **Send Monthly Report Email**.\n5. The schedule runs at 09:00 on the 1st of every month. A manual **Test** reports on the previous month too.",
+          "id": "setup-note-monthly-report-generation-for-nifty-project",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 350,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
 }

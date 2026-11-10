@@ -132,5 +132,24 @@
         }
       }
     }
-  ]
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup: HubSpot webhook and Slack channels\n\nThe trigger registers a webhook for new tickets on a HubSpot developer app.\n\n1. In your HubSpot developer account, create or open an app and enter its ID in **App Id** in the trigger.\n2. In the HubSpot connection, fill in **Hubspot API Key** with your developer API key. It's used to register the webhook.\n3. Add your OpenAI connection to **Rewrite Ticket Content** and **Categorize Ticket**.\n4. Select your channels in **Notify Tech Team** and **Notify Sales Team**, and invite your Slack app to both.\n5. Only tickets that OpenAI labels exactly `tech` go to the tech team. Everything else goes to sales.",
+          "id": "setup-note-customer-support-ticketing",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 410,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
 }

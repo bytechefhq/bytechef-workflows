@@ -81,5 +81,24 @@
             },
             "label": "Reply"
         }
-    ]
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Try it: an agent that asks first\n\n1. Add your Anthropic connection to the model.\n2. Click **Test** to open the test chat, and ask for a plan, for example *Plan a two-day offsite for 12 engineers*.\n3. Before planning, the agent asks three or four multiple-choice questions, shown as cards in the chat. The run waits until you answer.\n4. Once you answer, it writes the plan. Follow-up messages in the same chat keep the context.",
+                    "id": "setup-note-ask-user-offsite-planner",
+                    "position": {
+                        "x": 20,
+                        "y": 590
+                    },
+                    "size": {
+                        "height": 300,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
 }

@@ -66,5 +66,24 @@
         }
       }
     }
-  ]
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: run your first agent\n\nThe **Explain a quote** agent has one tool, **Get a random quote**. The model decides when to call it.\n\n1. Open the **OpenAI** model inside the agent and add your OpenAI connection.\n2. Click **Test** to run the workflow.\n3. Click the agent and open its **Output** tab to see the answer. **Log the answer** writes the same text to the execution log.\n4. Next, change the system prompt, or add another tool to the agent's **Tools** slot.",
+          "id": "setup-note-build-your-first-agent",
+          "position": {
+            "x": 20,
+            "y": 590
+          },
+          "size": {
+            "height": 340,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
 }

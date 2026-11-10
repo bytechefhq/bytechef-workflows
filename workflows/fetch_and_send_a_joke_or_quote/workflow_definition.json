@@ -154,5 +154,24 @@
 			},
 			"type": "condition/v1"
 		}
-	]
+	],
+	"metadata": {
+		"ui": {
+			"stickyNotes": [
+				{
+					"color": "yellow",
+					"content": "## Setup: send it to yourself\n\n1. Add your Gmail connection to **Send the joke** and **Send the quote**, and enter your address in **To** in both.\n2. Click **Test** to send one now: a joke on weekends, a quote on weekdays.\n3. The **Daily** trigger runs at 08:00 London time. Change the time or time zone there if you need to.\n4. Publish and deploy the project to start the daily emails.",
+					"id": "setup-note-fetch-and-send-a-joke-or-quote",
+					"position": {
+						"x": 20,
+						"y": 40
+					},
+					"size": {
+						"height": 270,
+						"width": 480
+					}
+				}
+			]
+		}
+	}
 }

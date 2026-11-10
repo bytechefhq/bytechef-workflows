@@ -48,5 +48,24 @@
 			},
 			"type": "logger/v1/info"
 		}
-	]
+	],
+	"metadata": {
+		"ui": {
+			"stickyNotes": [
+				{
+					"color": "yellow",
+					"content": "## Start here: your first run\n\nThis workflow fetches a random quote and logs it. It needs no connection.\n\n1. Click **Test** at the top to run it.\n2. Click **Get a random quote** and open its **Output** tab to see the data it returned, such as `quote` and `author`.\n3. Click **Log the quote**. Its text is the data pill `${httpClient_1.quote}`, which takes the quote from the step above. Change it to `${httpClient_1.author}` and run it again.\n4. Use the **+** buttons between steps to add your own.",
+					"id": "setup-note-learn-bytechef-by-doing",
+					"position": {
+						"x": 20,
+						"y": 40
+					},
+					"size": {
+						"height": 340,
+						"width": 480
+					}
+				}
+			]
+		}
+	}
 }
