@@ -1,0 +1,33 @@
+{
+  "name": "Triage new Freshdesk tickets by severity, topic and team",
+  "category": "support",
+  "description": "Every weekday morning an AI agent reads new, unassigned Freshdesk tickets, newest first. It classifies each one by severity, topic and the team that should own it, using only your existing priorities and topics, and flags tickets about data loss, security or named enterprise accounts for human review. A person reviews the triage table, and only then are the proposed priorities written to Freshdesk.",
+  "shortDescription": "Classify and prioritize overnight support tickets, applied only after a person approves.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the ticket-triage skill and an HTTP Client tool for the Freshdesk tickets API",
+    "Severity, topic and route proposed from your existing levels and topics only",
+    "Data loss, security and enterprise tickets flagged for a human instead of auto-classified",
+    "Priorities applied with the Freshdesk Update Ticket action only after approval"
+  ],
+  "prerequisites": [
+    "The `ticket-triage` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Freshdesk connection (API key and domain) for the Update Ticket action",
+    "HTTP Client Basic auth connection with your Freshdesk API key as the username and X as the password, and your Freshdesk domain in the system prompt",
+    "Your topics, teams and enterprise account names in the AI Agent's system prompt"
+  ],
+  "idealFor": "Support teams that want the overnight queue triaged before the first shift starts.",
+  "steps": [
+    "Trigger: every weekday at 07:00 UTC.",
+    "Triage the queue: the AI Agent loads the ticket-triage skill, reads new tickets and proposes severity, topic, route and priority for each.",
+    "Approve: the run pauses until a reviewer approves the triage table.",
+    "Approved: set the proposed priority on each approved ticket in Freshdesk.",
+    "Rejected: log the comment and change nothing."
+  ]
+}
