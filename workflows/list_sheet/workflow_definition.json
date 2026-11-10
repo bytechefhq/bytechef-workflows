@@ -7,9 +7,7 @@
         "description" : "Google Sheets is a cloud-based spreadsheet software that allows users to create, edit, and collaborate on spreadsheets in real-time.",
         "label" : "Google Sheets",
         "name" : "googleSheets_1",
-        "parameters" : {
-            "spreadsheetId" : "1wnYhkyBVNfys2XCxZgxjYFGOB3_pLSxB9ISMUhMvXDs"
-        },
+        "parameters" : { },
         "type" : "googleSheets/v1/listSheets",
         "metadata" : {
             "ui" : {

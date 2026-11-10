@@ -19,10 +19,10 @@
     "Email notification with a link to the report"
   ],
   "prerequisites": [
-    "Nifty connection with the project ID configured",
-    "Google Sheets connection with the target spreadsheet",
+    "Nifty connection, with the project ID set in the \"Fetch Nifty Tracked Time Report\" step",
+    "Google Sheets connection, with the target spreadsheet selected in the \"Create Google Sheet for Report\", \"Insert Task Data into Google Sheet\" and \"Add Total Hours Row in Google Sheet\" steps",
     "OpenAI API key",
-    "Google Mail connection"
+    "Google Mail connection, with the recipient address set in the \"Send Monthly Report Email\" step"
   ],
   "idealFor": "Project managers who need an automated monthly time-tracking report for a Nifty project.",
   "steps": [
