@@ -64,7 +64,7 @@
                     },
                     "clusterElements": {
                         "model": {
-                            "description": "A smaller Claude model (Haiku) that the chat memory uses for its own work on the history, keeping that cost off the main model.",
+                            "description": "A smaller Claude model (Haiku) that Chat Memory calls only with the Recursive summarization strategy, to summarize older turns. With the turn window this template uses, it isn't called.",
                             "name": "anthropic_2",
                             "type": "anthropic/v1/model",
                             "parameters": {
@@ -109,5 +109,24 @@
             },
             "label": "Reply"
         }
-    ]
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Try it: watch the history compact\n\n**Chat Memory** sends the model only the last 3 turns, and keeps the full conversation searchable.\n\n1. Add your Anthropic connection to both Anthropic models. The one inside Chat Memory is only called if you switch **Compaction Strategy** to *Recursive summarization*.\n2. Click **Test** to open the test chat. Tell the assistant a few facts, one per message: your name, your team, your favourite language.\n3. After four or more turns, ask about the first fact. It's no longer in the short history, so the assistant searches the full log and answers from there.\n4. To keep more history, raise **Max turns** in Chat Memory.",
+                    "id": "setup-note-compacting-session-chat",
+                    "position": {
+                        "x": 20,
+                        "y": 760
+                    },
+                    "size": {
+                        "height": 380,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
 }

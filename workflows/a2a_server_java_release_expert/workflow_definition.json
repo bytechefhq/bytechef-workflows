@@ -76,12 +76,12 @@
         "ui": {
             "stickyNotes": [
                 {
-                    "color": "blue",
+                    "color": "yellow",
                     "content": "## Setup: expose this agent over A2A\n\nOther agents reach this workflow through a ByteChef **A2A Server**. The workflow's trigger, **New Workflow Call**, takes the A2A message text as its `message` input.\n\n1. Add your Anthropic connection to the model and save the project.\n2. Open **A2A Servers** in the left navigation and click **New A2A Server**. Name it `Java Release Expert` and give it a description, which becomes the agent card description.\n3. Leave **Require authentication** off for a local demo. Turn it on for anything reachable from outside, and give callers the key.\n4. On the server, click **Add Workflows**, pick this project and version, and select this workflow. This deploys it.\n5. Open the server's **Connect** tab and copy the **Endpoint URL**. Paste it into the **Agent URL** of the A2A Agent Tool in the *Tech lead agent* template.\n\nThe agent card is served at `<Endpoint URL>/.well-known/agent-card.json`.\n",
                     "id": "setup-note-a2a-server-java-release-expert",
                     "position": {
-                        "x": 1010,
-                        "y": 150
+                        "x": 20,
+                        "y": 590
                     },
                     "size": {
                         "height": 520,

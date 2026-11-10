@@ -147,5 +147,24 @@
                 }
             }
         }
-    } ]
+    } ],
+    "metadata" : {
+        "ui" : {
+            "stickyNotes" : [
+                {
+                    "color" : "yellow",
+                    "content" : "## Setup: S3 file and columns\n\n1. Add your AWS S3 connection to both S3 steps. The bucket is set in the connection.\n2. Upload your CSV to the bucket as `files/offices.csv`, or change **Key** in **Retrieve an object from AWS S3**.\n3. The file needs the columns F-NOM0103, F-COD0047, F-LOC0001 and NUM0366. To keep other columns, edit the value in **Create a data pill object for csv row**.\n4. Click **Test**. The trimmed file is uploaded as `files/offices_reduced.csv`.",
+                    "id" : "setup-note-csv-transformation",
+                    "position" : {
+                        "x" : 20,
+                        "y" : 40
+                    },
+                    "size" : {
+                        "height" : 320,
+                        "width" : 480
+                    }
+                }
+            ]
+        }
+    }
 }

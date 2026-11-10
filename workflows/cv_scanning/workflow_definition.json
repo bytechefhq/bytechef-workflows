@@ -159,5 +159,24 @@
         }
       }
     }
-  ]
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup: form, sheet and folders\n\n1. Create a Google Form with the candidate's name as question 1, their email as question 2 and a file upload for the PDF CV as question 3. Select it in the trigger.\n2. Uploaded files are saved to the form owner's Google Drive, so connect **Download CV** with an account that can read them.\n3. Create a Google Sheet with the headers Name, Email, Summary and Score in row 1, and select it in **Record Results**.\n4. Create two Drive folders and select them in **Rejected Candidates** and **Potential Candidates**.\n5. Add OpenAI under **Settings > AI > Providers** for **Summarize CV**, and add your OpenAI connection to **Score Candidate**.\n6. Replace the job description in the **Score Candidate** prompt with your own.",
+          "id": "setup-note-cv-scanning",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 420,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
 }
