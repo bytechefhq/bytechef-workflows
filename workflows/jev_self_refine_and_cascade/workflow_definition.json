@@ -39,7 +39,7 @@
                         "type": "var/v1/set",
                         "parameters": {
                             "type": "INTEGER",
-                            "value": "=getOrDefault('attempts', 0) + 1"
+                            "value": "=getOrDefault(${attempts}, 0) + 1"
                         },
                         "metadata": {
                             "ui": {
@@ -57,8 +57,8 @@
                         "type": "aiAgent/v1/chat",
                         "parameters": {
                             "format": "SIMPLE",
-                            "systemPrompt": "=(getOrDefault('forceMistake', false) && ${attempts} == 1) ? 'Answer the question in two or three sentences, but for this demo make one deliberate, obviously impossible factual mistake, such as a temperature of -455 degrees Celsius.' : 'Answer the question in two or three sentences. Be concrete: give numbers with units where they help. If you are given feedback on a previous answer, fix exactly what it points out.'",
-                            "userPrompt": "=${question} + getOrDefault('feedback', '')",
+                            "systemPrompt": "=(getOrDefault(${forceMistake}, false) && ${attempts} == 1) ? 'Answer the question in two or three sentences, but for this demo make one deliberate, obviously impossible factual mistake, such as a temperature of -455 degrees Celsius.' : 'Answer the question in two or three sentences. Be concrete: give numbers with units where they help. If you are given feedback on a previous answer, fix exactly what it points out.'",
+                            "userPrompt": "=${question} + getOrDefault(${feedback}, '')",
                             "response": {
                                 "responseFormat": "TEXT"
                             }
@@ -185,7 +185,7 @@
                         "parameters": {
                             "format": "SIMPLE",
                             "systemPrompt": "Answer the question in two or three sentences. Be concrete: give numbers with units where they help. If you are given feedback on a previous answer, fix exactly what it points out.",
-                            "userPrompt": "=${question} + getOrDefault('feedback', '')",
+                            "userPrompt": "=${question} + getOrDefault(${feedback}, '')",
                             "response": {
                                 "responseFormat": "TEXT"
                             }
@@ -286,7 +286,7 @@
                         "height": 680,
                         "width": 500
                     },
-                    "content": "## How it works\n\n**Self-refine.** **Judge the answer with Jev** asks three typed questions about the question and the answer in one call: `answers_question` and `is_plausible` (Noul, threshold 0.8) and `helpfulness` (Score, 0 to 3). An answer passes when both Nouls are true and helpfulness is at least 1.5. A rejected answer is turned into feedback, naming each failed check, and the cheap model tries again with it.\n\n**Cascade.** After two rejected attempts, **Escalate to the strong model** answers instead, with the same feedback. You pay for the strong model only when Jev finds a problem.\n\n**The graph.** Each step is a node; the arrows are transitions, checked in order after a node finishes. `feedback` jumps back to `attempts` while `${attempts} < 2`, otherwise it goes to `strong`. **Count the attempt** starts at 1 with `getOrDefault('attempts', 0) + 1`, because `attempts` does not exist on the first pass (a plain `${attempts}` would be left unresolved). The same function reads the optional `feedback` and **Make the first answer wrong** values. **Max Transitions** (20) stops a runaway loop.\n\n**Output.** The run ends at **Keep the cheap answer** or at **Escalate to the strong model**, so `${graph_1}` is the answer either way. `${judge}` still holds Jev's last verdict and `${attempts}` the number of cheap attempts."
+                    "content": "## How it works\n\n**Self-refine.** **Judge the answer with Jev** asks three typed questions about the question and the answer in one call: `answers_question` and `is_plausible` (Noul, threshold 0.8) and `helpfulness` (Score, 0 to 3). An answer passes when both Nouls are true and helpfulness is at least 1.5. A rejected answer is turned into feedback, naming each failed check, and the cheap model tries again with it.\n\n**Cascade.** After two rejected attempts, **Escalate to the strong model** answers instead, with the same feedback. You pay for the strong model only when Jev finds a problem.\n\n**The graph.** Each step is a node; the arrows are transitions, checked in order after a node finishes. `feedback` jumps back to `attempts` while `${attempts} < 2`, otherwise it goes to `strong`. **Count the attempt** starts at 1 with `getOrDefault(${attempts}, 0) + 1`, because `attempts` does not exist on the first pass (a plain `${attempts}` would be left unresolved). The same function reads the optional `feedback` and **Make the first answer wrong** values. **Max Transitions** (20) stops a runaway loop.\n\n**Output.** The run ends at **Keep the cheap answer** or at **Escalate to the strong model**, so `${graph_1}` is the answer either way. `${judge}` still holds Jev's last verdict and `${attempts}` the number of cheap attempts."
                 }
             ]
         }
