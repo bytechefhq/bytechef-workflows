@@ -5,6 +5,7 @@
   "triggers": [
     {
       "label": "A Google Forms is filled",
+      "description": "Starts a run for each new response to your application form. The form must have the candidate's name in question 1, email in question 2 and the CV upload in question 3.",
       "name": "trigger_1",
       "type": "googleForms/v1/newResponse",
       "parameters": {},
@@ -28,7 +29,7 @@
           "dynamicPropertyTypes": {}
         }
       },
-      "description": "Retrieves the CV file from Google Drive using the file ID from the form response."
+      "description": "Downloads the CV that the candidate uploaded in question 3, using the file ID from the form response. The file is used for text extraction and for the final upload."
     },
     {
       "label": "PDF Helper",
@@ -38,7 +39,7 @@
       },
       "type": "pdfHelper/v1/extractText",
       "metadata": {},
-      "description": "Extracts text from the downloaded CV file."
+      "description": "Extracts the plain text from the downloaded PDF CV, so the AI steps can read it."
     },
     {
       "label": "Summarize CV",
@@ -56,7 +57,7 @@
           "dynamicPropertyTypes": {}
         }
       },
-      "description": "Use AI to summarize the extracted text."
+      "description": "Writes a structured summary of the CV text with OpenAI. The summary goes into the results spreadsheet."
     },
     {
       "label": "Score Candidate",
@@ -86,7 +87,7 @@
           "dynamicPropertyTypes": {}
         }
       },
-      "description": "Uses OpenAI to compare the CV against a job description and assigns a compatibility score."
+      "description": "Compares the CV text with the job description in the prompt and returns a score from 1 to 10 as JSON. The score is 0 when the candidate has less than 3 years of hands-on Java experience."
     },
     {
       "label": "Record Results",
@@ -109,10 +110,10 @@
           "dynamicPropertyTypes": {}
         }
       },
-      "description": "Inserts the candidate's name, email, summary, and score into a Google Sheets document."
+      "description": "Adds a row to your results sheet with the candidate's name, email, CV summary and score. Select the spreadsheet and sheet; its first row must be the header."
     },
     {
-      "description": "Directs a stream based on true/false results of comparisons.",
+      "description": "Checks the score. A score of 0 sends the CV to the rejected folder; any other score sends it to the potential candidates folder.",
       "label": "Condition",
       "name": "condition_1",
       "parameters": {
@@ -120,6 +121,7 @@
         "caseFalse": [
           {
             "label": "Potential Candidates",
+            "description": "Score above 0: uploads the CV to your potential candidates folder. Select the folder.",
             "name": "googleDrive_3",
             "parameters": {
               "fileEntry": "${googleDrive_1}"
@@ -135,6 +137,7 @@
         "caseTrue": [
           {
             "label": "Rejected Candidates",
+            "description": "Score is 0: uploads the CV to your rejected candidates folder. Select the folder.",
             "name": "googleDrive_2",
             "parameters": {
               "fileEntry": "${googleDrive_1}"

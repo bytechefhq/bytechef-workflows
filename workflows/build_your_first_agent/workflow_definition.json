@@ -6,6 +6,7 @@
   "tasks": [
     {
       "label": "Explain a quote",
+      "description": "The agent at the heart of this workflow. It follows the system prompt: it calls the \"Get a random quote\" tool, then replies with the quote, its author and a one-sentence explanation. Its text reply is the output that the logger step uses.",
       "name": "aiAgent_1",
       "type": "aiAgent/v1/chat",
       "parameters": {
@@ -19,6 +20,7 @@
       "clusterElements": {
         "model": {
           "label": "OpenAI",
+          "description": "The language model the agent thinks with (gpt-5-mini). It decides when to call the quote tool and writes the final explanation. Needs an OpenAI connection.",
           "name": "openAi_1",
           "type": "openAi/v1/model",
           "parameters": {
@@ -28,6 +30,7 @@
         "tools": [
           {
             "label": "Get a random quote",
+            "description": "A tool the agent can call. It sends a GET request to dummyjson.com and returns a random quote with its author, which the agent then explains.",
             "name": "httpClient_1",
             "type": "httpClient/v1/get",
             "parameters": {
@@ -51,6 +54,7 @@
     },
     {
       "label": "Log the answer",
+      "description": "Writes the agent's answer to the execution log, so you can read the quote and its explanation after clicking Run.",
       "name": "logger_1",
       "type": "logger/v1/info",
       "parameters": {

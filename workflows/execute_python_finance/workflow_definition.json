@@ -12,7 +12,7 @@
     ],
     "triggers": [
         {
-            "description": "",
+            "description": "Starts the workflow when you click Run. Set the CCY Rates Resource URL input to the exchange-rate API to call; the query parameters match the Croatian National Bank (HNB) API.",
             "label": "Manual",
             "name": "trigger_1",
             "type": "manual/v1/manual",
@@ -22,7 +22,7 @@
     "tasks": [
         {
             "clusterElements": {},
-            "description": "",
+            "description": "Fetches today's EUR/USD exchange rate from the rates API set in the workflow input.",
             "label": "Get EUR/USD Rate (Today)",
             "maxRetries": 0,
             "metadata": {
@@ -48,7 +48,7 @@
         },
         {
             "clusterElements": {},
-            "description": "",
+            "description": "Fetches the EUR/USD exchange rate for the reference date (25 Oct 2025) from the same API, to compare against today's rate.",
             "label": "Get EUR/USD Rate (2025)",
             "maxRetries": 0,
             "metadata": {
@@ -80,7 +80,7 @@
         },
         {
             "clusterElements": {},
-            "description": "",
+            "description": "Runs a Python script that reads the middle (or buying/selling) rate from both responses and returns today's rate, the reference rate and the difference as diff.",
             "label": "Compare growth",
             "maxRetries": 0,
             "metadata": {
@@ -104,6 +104,7 @@
         },
         {
             "label": "Condition",
+            "description": "Checks whether today's rate is higher than the reference rate (diff greater than 0).",
             "name": "condition_1",
             "parameters": {
                 "rawExpression": true,
@@ -111,6 +112,7 @@
                 "caseTrue": [
                     {
                         "label": "Logger",
+                        "description": "Rate has risen: logs a message. Replace this step with the action you want to take when the rate goes up.",
                         "name": "logger_1",
                         "parameters": {
                             "text": "Rate diff > 0 - do something!!"

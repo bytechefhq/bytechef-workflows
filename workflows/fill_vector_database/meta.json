@@ -16,7 +16,7 @@
     "Markdown document type handling"
   ],
   "prerequisites": [
-    "Local filesystem access to the documentation directory, with its path set in the Filesystem step",
+    "Local filesystem access to the documentation directory on the ByteChef host, with its path set in the Docs directory workflow input",
     "A Pinecone connection and index"
   ],
   "idealFor": "Teams building a RAG knowledge base from a folder of Markdown documentation.",

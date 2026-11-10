@@ -4,6 +4,7 @@
 	"inputs": [],
 	"triggers": [
 		{
+			"description": "Starts the workflow every day at 08:00 London time. The run's date and time are passed on to the weekend check.",
 			"label": "Daily",
 			"name": "trigger_1",
 			"parameters": {
@@ -18,7 +19,7 @@
 	"tasks": [
 		{
 			"clusterElements": {},
-			"description": "",
+			"description": "Checks whether the trigger's date falls on a Saturday or Sunday (London time) and returns true or false. The next step uses this to choose between a joke and a quote.",
 			"label": "Check if its the weekend",
 			"maxRetries": 0,
 			"metadata": {
@@ -37,7 +38,7 @@
 		},
 		{
 			"clusterElements": {},
-			"description": "",
+			"description": "Routes the run on the weekend check. True (weekend) runs the joke branch; false (weekday) runs the quote branch.",
 			"label": "Quote or a joke",
 			"maxRetries": 0,
 			"metadata": {
@@ -53,6 +54,7 @@
 				"expression": "=${dateHelper_1}",
 				"caseFalse": [
 					{
+						"description": "Weekday branch: asks OpenAI for a real inspirational quote and returns its author, the quote text and some historical context as JSON.",
 						"label": "Generate a quote",
 						"metadata": {
 							"ui": {
@@ -82,6 +84,7 @@
 					},
 					{
 						"clusterElements": {},
+						"description": "Weekday branch: emails the quote, with the author in the subject and the quote plus its context as the body. Set the recipient address in the To field.",
 						"label": "Send the quote",
 						"maxRetries": 0,
 						"metadata": {
@@ -103,6 +106,7 @@
 				],
 				"caseTrue": [
 					{
+						"description": "Weekend branch: asks OpenAI for a real joke and returns its setup and punchline as JSON.",
 						"label": "Generate a joke",
 						"metadata": {
 							"ui": {
@@ -132,6 +136,7 @@
 					},
 					{
 						"clusterElements": {},
+						"description": "Weekend branch: emails the joke, with the setup in the subject and the punchline as the body. Set the recipient address in the To field.",
 						"label": "Send the joke",
 						"maxRetries": 0,
 						"metadata": {

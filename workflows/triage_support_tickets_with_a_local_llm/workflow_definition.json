@@ -13,6 +13,7 @@
     "triggers": [
         {
             "label": "Manual",
+            "description": "Starts the workflow when you click Run. Paste the support ticket text into the Ticket input.",
             "name": "trigger_1",
             "type": "manual/v1/manual"
         }
@@ -20,6 +21,7 @@
     "tasks": [
         {
             "label": "Classify ticket",
+            "description": "Classifies the ticket with Qwen3 8B running in your own Ollama, so the text never leaves your network. A JSON schema limits the answer to a category (Billing, Technical or Sales), a priority (Low, Medium or High) and a one-sentence summary.",
             "name": "ollama_1",
             "parameters": {
                 "format": "SIMPLE",

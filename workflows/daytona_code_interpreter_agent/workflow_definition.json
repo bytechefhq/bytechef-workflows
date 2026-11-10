@@ -12,6 +12,7 @@
     "triggers": [
         {
             "label": "Manual",
+            "description": "Starts the workflow when you click Run. Type the question to answer in the Question input.",
             "name": "trigger_1",
             "type": "manual/v1/manual"
         }
@@ -19,6 +20,7 @@
     "tasks": [
         {
             "label": "Code interpreter agent",
+            "description": "A code-interpreter agent that never does arithmetic, counting or data processing in its head. It writes a Python program, runs it with the Daytona tool, and answers from the program's printed output.",
             "name": "aiAgent_1",
             "type": "aiAgent/v1/chat",
             "parameters": {
@@ -32,6 +34,7 @@
             "clusterElements": {
                 "model": {
                     "label": "Anthropic",
+                    "description": "The Claude model the agent reasons with. It decides what code to write and turns the results into the final answer. Needs an Anthropic connection.",
                     "name": "anthropic_1",
                     "type": "anthropic/v1/model",
                     "parameters": {
@@ -48,6 +51,7 @@
                 "tools": [
                     {
                         "label": "Run Python in Daytona",
+                        "description": "Lets the agent run the Python it writes in an isolated Daytona sandbox; the agent supplies the code. Each call gets a fresh sandbox that is deleted afterwards, with a 120-second limit. Needs a Daytona connection.",
                         "name": "daytona_1",
                         "type": "daytona/v1/executeCode",
                         "parameters": {
@@ -68,6 +72,7 @@
         },
         {
             "label": "Log the answer",
+            "description": "Writes the agent's final answer to the execution log.",
             "name": "logger_1",
             "type": "logger/v1/info",
             "parameters": {

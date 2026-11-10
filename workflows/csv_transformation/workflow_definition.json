@@ -10,7 +10,7 @@
             "filename" : "offices.csv",
             "key" : "files/offices.csv"
         },
-        "description": "Get an object called 'office.csv' with the key 'files/office.csv'",
+        "description": "Downloads files/offices.csv from your S3 bucket. Change the key if your file is somewhere else.",
         "type" : "awsS3/v1/getObject",
         "metadata" : {
             "ui" : {
@@ -22,6 +22,7 @@
         }
     }, {
         "label" : "Turn the csv file into a data pill",
+        "description" : "Parses the downloaded CSV, using its first row as the header, into a list of rows that the loop goes through.",
         "name" : "csvFile_1",
         "parameters" : {
             "delimiter" : ",",
@@ -40,6 +41,7 @@
         }
     }, {
         "label" : "Loop over the csv items",
+        "description" : "Goes through each CSV row and keeps only the four columns the output file needs.",
         "name" : "loop_1",
         "parameters" : {
             "loopForever" : false,
@@ -56,7 +58,7 @@
                     }
                 },
                 "type" : "var/v1/set",
-                "description" : "Create a data pill object for item columns: 'F-NOM0103','F-COD0047','F-LOC0001' and 'NUM0366'",
+                "description" : "Builds a new row object containing only the F-NOM0103, F-COD0047, F-LOC0001 and NUM0366 columns from the current row.",
                 "metadata" : {
                     "ui" : {
                         "dynamicPropertyTypes" : {
@@ -74,7 +76,7 @@
                     "value" : "${var_1}"
                 },
                 "type" : "dataStorage/v1/appendValueToList",
-                "description" : "Store the variable object data pill into a list under a key: 'list'",
+                "description" : "Appends the trimmed row to the list stored under the key list for this run.",
                 "metadata" : {
                     "ui" : {
                         "dynamicPropertyTypes" : {
@@ -102,7 +104,7 @@
             "key" : "list",
             "type" : "ARRAY"
         },
-        "description" : "Get a variable object under a key: 'list'",
+        "description" : "Reads back the full list of trimmed rows once the loop has finished.",
         "type" : "dataStorage/v1/getValue",
         "metadata" : {
             "ui" : {
@@ -113,6 +115,7 @@
         }
     }, {
         "label" : "Convert a data pill into a csv file",
+        "description" : "Writes the trimmed rows into a new CSV file, file.csv.",
         "name" : "csvFile_2",
         "parameters" : {
             "filename" : "file.csv",
@@ -134,7 +137,7 @@
             "key" : "files/offices_reduced.csv",
             "fileEntry" : "${csvFile_2}"
         },
-        "description" : "Put the csv file into AWS S3 under a key: 'files/offices_reduced.csv'",
+        "description" : "Uploads the trimmed CSV to S3 as files/offices_reduced.csv, as a private object.",
         "type" : "awsS3/v1/putObject",
         "metadata" : {
             "ui" : {

@@ -5,6 +5,7 @@
   "triggers": [
     {
       "label": "New Hubspot ticket is created",
+      "description": "Starts a run whenever a new ticket is created in HubSpot. It passes the ticket's ID to the next step.",
       "name": "trigger_1",
       "type": "hubspot/v1/newTicket",
       "parameters": {},
@@ -28,7 +29,7 @@
           "dynamicPropertyTypes": {}
         }
       },
-      "description": "Fetches ticket information from Hubspot."
+      "description": "Fetches the full ticket from HubSpot, including its subject and content, using the ticket ID from the trigger."
     },
     {
       "label": "Rewrite Ticket Content",
@@ -59,7 +60,7 @@
           }
         }
       },
-      "description": "Use OpenAI to rewrite the ticket for clarity."
+      "description": "Rewrites the ticket in a clear, organised format (customer issue, details, expected resolution). The rewritten text is what the Slack message contains."
     },
     {
       "label": "Categorize Ticket",
@@ -90,10 +91,10 @@
           }
         }
       },
-      "description": "Use OpenAI to categorize the ticket as either tech or customer support."
+      "description": "Reads the ticket and answers with a single word: tech for a technical issue, or a customer support category otherwise. The next step routes on this answer."
     },
     {
-      "description": "Directs a stream based on true/false results of comparisons.",
+      "description": "Routes the ticket on the category. tech goes to the tech team's channel; anything else goes to the sales team's channel.",
       "label": "Notify appropriate team",
       "name": "condition_1",
       "parameters": {
@@ -101,6 +102,7 @@
         "caseFalse": [
           {
             "label": "Notify Sales Team",
+            "description": "Customer support tickets: posts the rewritten ticket to your sales team's Slack channel. Select the channel.",
             "name": "slack_2",
             "parameters": {
               "text": "Hey #sales-team,\n\nA new customer support ticket has been assigned to your team. Please review the details below and assist the customer as soon as possible.\n\nRewritten Ticket Details:\n${openAi_1}"
@@ -111,6 +113,7 @@
         "caseTrue": [
           {
             "label": "Notify Tech Team",
+            "description": "Tech tickets: posts the rewritten ticket to your tech team's Slack channel. Select the channel.",
             "name": "slack_1",
             "parameters": {
               "text": "Hey #tech-team\n\nA new technical support ticket has been assigned to your team. Please review the details below and address the issue promptly.\n\nRewritten Ticket Details:\n${openAi_1}"
