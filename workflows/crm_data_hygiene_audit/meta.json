@@ -1,0 +1,35 @@
+{
+  "name": "Audit CRM data hygiene and nudge each deal owner in Slack",
+  "category": "sales",
+  "description": "Every Monday an AI agent reads open Salesforce opportunities, checks them against the required fields you define per stage and flags missing fields, past-due close dates, deals with no recent activity and contradictory records. It drafts one Slack message per opportunity owner. A person reviews the issues table and the drafts, and only approved messages are sent.",
+  "shortDescription": "Find incomplete and stale deals, then nudge each owner once in Slack after approval.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the crm-hygiene-audit skill and a Salesforce SOQL tool",
+    "Stage rules and the staleness threshold kept in the system prompt, easy to change",
+    "One batched Slack nudge per owner, never one per record",
+    "Approval step before any message is posted; CRM records are never edited"
+  ],
+  "prerequisites": [
+    "The `crm-hygiene-audit` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Salesforce connection with read access to Opportunity and User",
+    "Slack connection that can send direct messages",
+    "HTTP Client Bearer token connection with a Slack bot token that has users:read.email",
+    "Your required fields per pipeline stage, written into the AI Agent's system prompt"
+  ],
+  "idealFor": "RevOps teams that want a clean pipeline before every forecast or pipeline review.",
+  "steps": [
+    "Trigger: every Monday at 07:00 UTC.",
+    "Get the current date.",
+    "Audit the pipeline: the AI Agent loads the crm-hygiene-audit skill, queries open opportunities with SOQL, flags issues and resolves each owner to a Slack user by email.",
+    "Approve nudges: the run pauses until a reviewer approves the issues table and the drafted messages.",
+    "Approved: send one Slack direct message per owner and log a summary.",
+    "Rejected: log the reviewer's comment and send nothing."
+  ]
+}
