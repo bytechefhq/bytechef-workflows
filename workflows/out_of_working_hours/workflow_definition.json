@@ -38,12 +38,12 @@
         },
         {
             "label": "Is business hours?",
-            "description": "Checks whether the current time falls within business hours (09:00-17:00 UTC on the configured business days). Adjust the days, hours and time zone to your own.",
+            "description": "Checks whether the current time falls within business hours, 09:00-17:00 UTC, Monday to Friday. Adjust the days, hours and time zone to your own.",
             "name": "dateHelper_1",
             "type": "dateHelper/v1/isBusinessHours",
             "parameters": {
                 "businessWeekStart": 1,
-                "businessWeekEnd": 2,
+                "businessWeekEnd": 5,
                 "businessHoursStart": "09:00:00",
                 "businessHoursEnd": "17:00:00",
                 "timeZone": "UTC",

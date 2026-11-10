@@ -1,13 +1,7 @@
 {
     "label": "Java release expert served over A2A",
     "description": "An agent workflow that answers questions about Java and Spring releases. Add it to a ByteChef A2A Server so other agents can call it over A2A.",
-    "inputs": [
-        {
-            "name": "prop1",
-            "label": "Prop1",
-            "type": "string"
-        }
-    ],
+    "inputs": [],
     "triggers": [
         {
             "description": "Starts the workflow when another agent or workflow calls it, for example through a ByteChef A2A Server. The caller passes a single message field with its question.",
