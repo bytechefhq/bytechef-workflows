@@ -1,14 +1,21 @@
 {
   "label" : "Load a folder of Markdown files into Pinecone for RAG",
-  "description" : "Takes all files located in directory '/home/user/IdeaProjects/bytechef/docs/src/content/docs' and uploads them to a vector database.",
-  "inputs" : [ ],
+  "description" : "Takes all files in the directory set in the Docs directory input and uploads them to a vector database.",
+  "inputs" : [ {
+    "label" : "Docs directory",
+    "name" : "docsDirectory",
+    "required" : true,
+    "type" : "string"
+  } ],
   "triggers" : [ ],
   "tasks" : [ {
     "label" : "Filesystem",
+    "description" : "Lists every file in the folder set in the Docs directory input, including subfolders. Each entry's relative path is used to read the file.",
     "name" : "filesystem_1",
     "type" : "filesystem/v1/ls",
     "parameters" : {
-      "recursive" : true
+      "recursive" : true,
+      "path" : "${docsDirectory}"
     },
     "metadata" : {
       "ui" : {
@@ -17,15 +24,17 @@
     }
   }, {
     "type" : "loop/v1",
+    "description" : "Goes through each file found in the folder and loads it into Pinecone, one file at a time.",
     "name" : "loop_1",
     "parameters" : {
       "items" : "${filesystem_1}",
       "iteratee" : [
         {
           "label" : "Filesystem",
+          "description" : "Reads the current file from disk, combining the Docs directory input with the file's relative path.",
           "name" : "filesystem_2",
           "parameters" : {
-            "filename" : "/home/user/IdeaProjects/bytechef/docs/src/content/docs/${loop_1.item.relativePath}"
+            "filename" : "${docsDirectory}/${loop_1.item.relativePath}"
           },
           "type" : "filesystem/v1/readFile",
           "metadata" : {
@@ -36,6 +45,7 @@
         },
         {
           "label" : "Pinecone",
+          "description" : "Splits the file as a Markdown document, embeds it and stores it in your Pinecone index, so a RAG agent can search it later. Needs a Pinecone connection and index.",
           "name" : "pinecone_1",
           "parameters" : {
             "useTokenTextSplitter" : false,

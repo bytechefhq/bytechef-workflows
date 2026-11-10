@@ -8,7 +8,7 @@
         "name" : "filesystem_1",
         "parameters" : { },
         "type" : "filesystem/v1/readFile",
-        "description" : "Files at local machine where ByteChef Self Hosted docker image is running. Folder is configured with environment variable. The file is put into a data pill.",
+        "description" : "Reads cities.csv from the machine running ByteChef (self-hosted only). Set the file's full path.",
         "metadata" : {
             "ui" : {
                 "dynamicPropertyTypes" : { }
@@ -26,7 +26,7 @@
             "enclosingCharacter" : "\""
         },
         "type" : "csvFile/v1/read",
-        "description" : "Interface to physical file configured by Filesystem component.",
+        "description" : "Parses the file as CSV with a header row, producing one record per line with City and State values.",
         "metadata" : {
             "ui" : {
                 "dynamicPropertyTypes" : { }
@@ -35,11 +35,13 @@
     }, {
         "label" : "Loop through CSV rows",
         "type" : "loop/v1",
+        "description" : "Goes through each CSV record and either stores it in the database or logs a warning.",
         "name" : "loop_1",
         "parameters" : {
             "items" : "${csvFile_1}",
             "iteratee" : [ {
                 "label" : "If 'City' and 'State' are present",
+                "description" : "Checks that the current record has both a City and a State value.",
                 "name" : "condition_1",
                 "type" : "condition/v1",
                 "parameters" : {
@@ -47,6 +49,7 @@
                     "expression" : "=${loop_1.item['City']} != null and ${loop_1.item['State']} != null",
                     "caseTrue" : [ {
                         "label" : "Log",
+                        "description" : "Record is complete: logs the line and its city name.",
                         "name" : "logEntry1",
                         "parameters" : {
                             "text" : "Line> ${loop_1.item} city: ${loop_1.item['City']}"
@@ -73,7 +76,7 @@
                                 "type" : "STRING"
                             } ]
                         },
-                        "description" : "Store columns 'City' and 'State' into a PostgreSQL database under a table 'CITY'",
+                        "description" : "Record is complete: inserts it into the public.CITY table, with City as the name column and State as the country column.",
                         "metadata" : {
                             "ui" : {
                                 "dynamicPropertyTypes" : {
@@ -85,6 +88,7 @@
                     } ],
                     "caseFalse" : [ {
                         "label" : "Log Warning",
+                        "description" : "Record is missing a value: logs a warning with the record and skips it.",
                         "name" : "logEntryWarn1",
                         "parameters" : {
                             "text" : "Missing data: ${loop_1.item}"
@@ -98,7 +102,7 @@
         "label" : "Query a database",
         "name" : "postgresql_2",
         "type" : "postgresql/v1/query",
-        "description" : "Query a PostgreSQL database to count all rows from table 'CITY'",
+        "description" : "After the loop, counts the rows in the CITY table.",
         "parameters" : {
             "query" : "SELECT count(*) from CITY"
         },
@@ -109,6 +113,7 @@
         }
     }, {
         "label" : "Logger",
+        "description" : "Logs the total number of records now in the CITY table.",
         "name" : "logger_1",
         "type" : "logger/v1/info",
         "parameters" : {

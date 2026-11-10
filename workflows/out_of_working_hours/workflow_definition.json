@@ -5,6 +5,7 @@
     "triggers": [
         {
             "label": "New Email",
+            "description": "Starts a run for each new email in Gmail, delivered through Gmail push notifications. Set the Google Cloud Pub/Sub topic name that Gmail publishes to.",
             "name": "trigger_1",
             "type": "googleMail/v1/newEmail",
             "parameters": {
@@ -22,6 +23,7 @@
     "tasks": [
         {
             "label": "Current timestamp",
+            "description": "Gets the current date and time in UTC. It is used for the business-hours check and as the timestamp in the log row.",
             "name": "dateHelper_2",
             "type": "dateHelper/v1/getCurrentDate",
             "parameters": {
@@ -36,6 +38,7 @@
         },
         {
             "label": "Is business hours?",
+            "description": "Checks whether the current time falls within business hours (09:00-17:00 UTC on the configured business days). Adjust the days, hours and time zone to your own.",
             "name": "dateHelper_1",
             "type": "dateHelper/v1/isBusinessHours",
             "parameters": {
@@ -56,7 +59,7 @@
         },
         {
             "clusterElements": {},
-            "description": "",
+            "description": "Routes on the business-hours check. During business hours (true) nothing happens; outside them (false) the email is triaged, logged and answered.",
             "label": "Is outside working hours?",
             "maxRetries": 0,
             "metadata": {
@@ -72,6 +75,7 @@
                 "caseFalse": [
                     {
                         "label": "AI urgency classification",
+                        "description": "Outside business hours: classifies the email's urgency and returns JSON with urgent (true/false) and a short reason.",
                         "name": "openAi_1",
                         "type": "openAi/v1/ask",
                         "parameters": {
@@ -92,6 +96,7 @@
                     },
                     {
                         "label": "Log to Google Sheets",
+                        "description": "Outside business hours: logs the timestamp, sender, subject, body and urgency result to your tracking sheet. Select the spreadsheet and sheet.",
                         "name": "googleSheets_1",
                         "type": "googleSheets/v1/insertRow",
                         "parameters": {
@@ -117,6 +122,7 @@
                     },
                     {
                         "label": "Is it urgent?",
+                        "description": "Routes on the urgency result. Urgent emails alert the team on Slack; non-urgent ones get an AI-written reply.",
                         "name": "condition_2",
                         "type": "condition/v1",
                         "parameters": {
@@ -125,6 +131,7 @@
                             "caseTrue": [
                                 {
                                     "label": "OpenAI",
+                                    "description": "Urgent: summarises the email into a message for the internal support team. That message is posted to Slack.",
                                     "name": "openAi_2",
                                     "parameters": {
                                         "format": "SIMPLE",
@@ -152,6 +159,7 @@
                                 },
                                 {
                                     "label": "Urgent auto-reply",
+                                    "description": "Urgent: replies to the sender that the message arrived outside working hours, was marked urgent and will be handled as soon as possible.",
                                     "name": "googleMail_2",
                                     "type": "googleMail/v1/replyToEmail",
                                     "parameters": {
@@ -172,6 +180,7 @@
                                 },
                                 {
                                     "label": "Slack",
+                                    "description": "Urgent: posts the summary for the support team to your alert channel. Select the channel.",
                                     "name": "slack_1",
                                     "parameters": {
                                         "text": "${openAi_2}"
@@ -189,6 +198,7 @@
                             "caseFalse": [
                                 {
                                     "label": "OpenAI",
+                                    "description": "Not urgent: writes a reply to the customer that solves the issue if possible, or says a team member will follow up.",
                                     "name": "openAi_3",
                                     "parameters": {
                                         "format": "SIMPLE",
@@ -216,6 +226,7 @@
                                 },
                                 {
                                     "label": "Not urgent auto-reply",
+                                    "description": "Not urgent: sends the AI-written reply to the sender, in the same email thread.",
                                     "name": "googleMail_3",
                                     "type": "googleMail/v1/replyToEmail",
                                     "parameters": {

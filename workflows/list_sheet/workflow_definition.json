@@ -4,7 +4,7 @@
     "inputs" : [ ],
     "triggers" : [ ],
     "tasks" : [ {
-        "description" : "Google Sheets is a cloud-based spreadsheet software that allows users to create, edit, and collaborate on spreadsheets in real-time.",
+        "description" : "Lists all sheets (tabs) in a Google Sheets spreadsheet, with their names and IDs. Select the spreadsheet.",
         "label" : "Google Sheets",
         "name" : "googleSheets_1",
         "parameters" : { },
@@ -15,7 +15,7 @@
             }
         }
     }, {
-        "description" : "Logs a value to the system log.",
+        "description" : "Logs the list of sheets returned by the previous step.",
         "label" : "Logger",
         "name" : "logger_1",
         "parameters" : {

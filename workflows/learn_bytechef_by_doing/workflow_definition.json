@@ -6,7 +6,7 @@
 	"tasks": [
 		{
 			"clusterElements": {},
-			"description": "",
+			"description": "Fetches a random quote from dummyjson.com as JSON. Open its output after a run to see the fields, such as quote and author, that later steps can use as data pills.",
 			"label": "Get a random quote",
 			"maxRetries": 3,
 			"metadata": {
@@ -32,6 +32,7 @@
 		},
 		{
 			"clusterElements": {},
+			"description": "Writes the quote text from the previous step to the execution log, using the ${httpClient_1.quote} data pill.",
 			"label": "Log the quote",
 			"maxRetries": 0,
 			"metadata": {
