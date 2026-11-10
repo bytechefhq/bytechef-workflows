@@ -137,5 +137,24 @@
                 }
             }
         }
-    ]
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: exchange-rate API and reference date\n\n1. Open **Workflow Inputs** in the right sidebar and set the **Test Value** of **CCY Rates Resource URL** to `https://api.hnb.hr/tecajn-eur/v3`, the Croatian National Bank's exchange-rate API. The `valuta` and `datum-primjene` query parameters belong to it.\n2. The reference date is 2025-10-25. Change `datum-primjene` in **Get EUR/USD Rate (2025)** to compare against another day.\n3. Click **Test**. **Compare growth** returns today's rate, the reference rate and the difference.\n4. **Logger** is a placeholder. Replace it with what should happen when the rate has risen.",
+                    "id": "setup-note-execute-python-finance",
+                    "position": {
+                        "x": 20,
+                        "y": 40
+                    },
+                    "size": {
+                        "height": 340,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
 }

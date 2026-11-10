@@ -16,7 +16,7 @@
     "tasks" : [
         {
             "clusterElements" : { },
-            "description" : "Reads the email's subject, body and sender and returns exactly one label (Sales, Support, Finance, Operations, HR or URGENT) as JSON. The branch below routes on that label.",
+            "description" : "Reads the email's subject, body and sender and returns one label as JSON: Sales, Support, Finance, Operations or HR, or URGENT when none of them fits. The branch below routes on that label.",
             "label" : "Get correct label for the email",
             "metadata" : {
                 "ui" : {
@@ -263,7 +263,7 @@
                         "tasks" : [
                             {
                                 "label" : "Add label",
-                                "description" : "URGENT case: adds your URGENT label to the incoming email in Gmail. Select the label in Label IDs.",
+                                "description" : "URGENT case, used when no department fits: adds your URGENT label to the incoming email in Gmail. Select the label in Label IDs.",
                                 "name" : "googleMail_8",
                                 "parameters" : {
                                     "id" : "${trigger_1.id}"
@@ -279,7 +279,7 @@
                             },
                             {
                                 "label" : "Set value of recipient",
-                                "description" : "URGENT case: stores the address that should receive urgent emails under emailResponder. Enter the address in Value.",
+                                "description" : "URGENT case, used when no department fits: stores the address that should receive these emails under emailResponder. Enter the address in Value.",
                                 "name" : "dataStorage_9",
                                 "parameters" : {
                                     "key" : "emailResponder",
@@ -384,5 +384,37 @@
             },
             "type" : "googleMail/v1/sendEmail"
         }
-    ]
+    ],
+    "metadata" : {
+        "ui" : {
+            "stickyNotes" : [
+                {
+                    "color" : "yellow",
+                    "content" : "## Setup: labels and team addresses\n\n1. Add your Gmail connection to the trigger and every Gmail step, and your OpenAI connection to **Get correct label for the email**.\n2. In Gmail, create a label for each case: Sales, Support, Finance, Operations, HR and URGENT. OpenAI returns URGENT when no department fits.\n3. In each branch case, open **Add label** and pick the matching label in **Label IDs**.\n4. In each **Set value of recipient**, enter that team's address in **Value**. Also set a fallback address in the default case and in **Default Value** of **Get value of recipient**.\n5. To add a department, update the label list in the OpenAI prompt and response schema, and add a branch case for it.",
+                    "id" : "setup-note-ai-email-classifier",
+                    "position" : {
+                        "x" : 20,
+                        "y" : 40
+                    },
+                    "size" : {
+                        "height" : 400,
+                        "width" : 480
+                    }
+                },
+                {
+                    "color" : "orange",
+                    "content" : "## Watch out: forwarding loops\n\nEvery new email in the inbox this workflow polls is forwarded to a team address.\n\nIf a team address delivers back into that same inbox, for example an alias or a group that includes it, the forwarded copy is polled as a new email and forwarded again, over and over.\n\nUse team addresses outside the polled inbox, or add a condition before **Send email to the right team** that skips emails sent from your own address.",
+                    "id" : "warning-note-ai-email-classifier",
+                    "position" : {
+                        "x" : 20,
+                        "y" : 840
+                    },
+                    "size" : {
+                        "height" : 310,
+                        "width" : 480
+                    }
+                }
+            ]
+        }
+    }
 }

@@ -96,19 +96,19 @@
                     },
                     {
                         "label": "Log to Google Sheets",
-                        "description": "Outside business hours: logs the timestamp, sender, subject, body and urgency result to your tracking sheet. Select the spreadsheet and sheet.",
+                        "description": "Outside business hours: adds a row to your tracking sheet with the timestamp, sender, subject, body, message ID, urgency (true/false) and the reason. Select the spreadsheet and sheet.",
                         "name": "googleSheets_1",
                         "type": "googleSheets/v1/insertRow",
                         "parameters": {
                             "valueInputOption": "RAW",
                             "isTheFirstRowHeader": false,
                             "row": {
-                                "Timestamp": "${dateHelper_2}",
-                                "From": "${trigger_1.from}",
-                                "Subject": "${trigger_1.subject}",
-                                "Body": "${trigger_1.bodyPlain}",
-                                "Message Id": "${trigger_1.id}",
                                 "values": [
+                                    "${dateHelper_2}",
+                                    "${trigger_1.from}",
+                                    "${trigger_1.subject}",
+                                    "${trigger_1.bodyPlain}",
+                                    "${trigger_1.id}",
                                     "${openAi_1.urgent}",
                                     "${openAi_1.reason}"
                                 ]
@@ -265,28 +265,15 @@
             "stickyNotes": [
                 {
                     "color": "yellow",
-                    "content": "Make sure to set the Properties for the Google Sheets task:\n- Spreadsheet ID\n- Sheet Name\n- Values",
-                    "id": "stickyNote_d2aa28a6-4bd8-4a71-8f1f-643d8bdd9383",
+                    "content": "## Setup: Gmail push, the log sheet and Slack\n\nThe **New Email** trigger uses Gmail push notifications through Google Cloud Pub/Sub.\n\n1. In Google Cloud Console, open **Pub/Sub**, create a topic, and give `gmail-api-push@system.gserviceaccount.com` the **Pub/Sub Publisher** role on it.\n2. Enter the topic's full name, `projects/<project-id>/topics/<topic-name>`, in **Topic Name** in the trigger.\n3. Create a Google Sheet with the headers Timestamp, From, Subject, Body, Message ID, Urgent and Reason in row 1, and select it in **Log to Google Sheets**.\n4. Select the alert channel in the **Slack** step and invite your Slack app to it.\n5. Business hours are 09:00-17:00 UTC, Monday to Friday. Change them in **Is business hours?**.",
+                    "id": "setup-note-out-of-working-hours",
                     "position": {
-                        "x": 2062.5,
-                        "y": 851.5
+                        "x": 20,
+                        "y": 40
                     },
                     "size": {
-                        "height": 179,
-                        "width": 240
-                    }
-                },
-                {
-                    "color": "yellow",
-                    "content": "Make sure to set the Topic Name property that can be found in your Google Search Console",
-                    "id": "stickyNote_77040a15-ce6a-4c34-949f-c37b730365a4",
-                    "position": {
-                        "x": 1358.5,
-                        "y": 50.5
-                    },
-                    "size": {
-                        "height": 100,
-                        "width": 240
+                        "height": 460,
+                        "width": 480
                     }
                 }
             ]

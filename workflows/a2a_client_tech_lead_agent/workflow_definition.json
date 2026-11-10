@@ -94,15 +94,15 @@
         "ui": {
             "stickyNotes": [
                 {
-                    "color": "blue",
-                    "content": "## Setup: point the tool at a remote A2A agent\n\nThe **A2A Agent Tool** under the AI Agent needs the URL of a remote A2A agent.\n\n1. Set up the remote agent first. The *Java release expert served over A2A* template is built for this one: import it, add it to a ByteChef **A2A Server** and deploy it (its note has the steps).\n2. Open the server's **Connect** tab and copy the **Endpoint URL**.\n3. Open the **A2A Agent Tool** in this workflow and paste it into **Agent URL**, replacing `https://your-bytechef-host/api/automation/a2a/your-a2a-server-key`.\n4. If the server has **Require authentication** on, add an A2A connection to the tool with the server's key.\n5. Add your Anthropic connection to the model, then ask something like *Which Spring Boot version first required Java 17?*\n",
+                    "color": "yellow",
+                    "content": "## Setup: point the tool at a remote A2A agent\n\nThe **A2A Agent Tool** under the AI Agent needs the URL of a remote A2A agent.\n\n1. Set up the remote agent first. The *Java release expert served over A2A* template is built for this one: import it, add it to a ByteChef **A2A Server** and deploy it (its note has the steps).\n2. Open the server's **Connect** tab and copy the **Endpoint URL**.\n3. Open the **A2A Agent Tool** in this workflow and paste it into **Agent URL**.\n4. If the server has **Require authentication** on, add an A2A connection to the tool with the server's key.\n5. Add your Anthropic connection to the model, then ask something like *Which Spring Boot version first required Java 17?*\n",
                     "id": "setup-note-a2a-client-tech-lead-agent",
                     "position": {
-                        "x": 1010,
-                        "y": 150
+                        "x": 20,
+                        "y": 590
                     },
                     "size": {
-                        "height": 420,
+                        "height": 410,
                         "width": 480
                     }
                 }
