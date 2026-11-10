@@ -1,0 +1,34 @@
+{
+  "name": "Draft release notes from pull requests merged between two tags",
+  "category": "it",
+  "description": "Run it with a repository and the previous and new tags. An AI agent compares the two tags on GitHub, collects the merged pull requests, reads linked Jira issues for user impact and sorts every change into breaking changes, features, improvements, fixes and internal. A person edits and approves the draft, and it is saved as a Google Doc, ready to paste into a GitHub release or your changelog.",
+  "shortDescription": "Turn the PRs merged between two releases into user-facing notes, approved and saved as a Google Doc.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the release-notes-from-prs skill, the GitHub Get Release by Tag tool, an HTTP Client tool for the GitHub API and the Jira Get Issue tool",
+    "Entries written for users, one line each, with the PR linked",
+    "Breaking changes first, internal changes left out of customer notes",
+    "Approval form with the notes editable before they are saved"
+  ],
+  "prerequisites": [
+    "The `release-notes-from-prs` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "GitHub connection",
+    "HTTP Client Bearer token connection with a GitHub token that can read the repository",
+    "Google Docs connection",
+    "Jira connection (optional; remove the Get Jira issue tool if you don't use Jira)"
+  ],
+  "idealFor": "Engineering and product teams that publish release notes for every version.",
+  "steps": [
+    "Trigger: run the workflow manually with the repository owner, name and the two tags.",
+    "Draft the notes: the AI Agent loads the release-notes-from-prs skill, collects merged PRs between the tags, reads linked Jira issues and writes the notes.",
+    "Approve: the run pauses until a reviewer edits and approves the notes.",
+    "Approved: save the approved notes as a Google Doc.",
+    "Rejected: log the comment and save nothing."
+  ]
+}
