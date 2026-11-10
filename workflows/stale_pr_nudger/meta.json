@@ -1,0 +1,34 @@
+{
+  "name": "Nudge reviewers in Slack about pull requests waiting too long",
+  "category": "it",
+  "description": "Every weekday morning an AI agent lists open, non-draft pull requests in the repositories you choose, checks requested reviewers and existing reviews, and finds the ones waiting past your review SLA. It groups them by pending reviewer and drafts one Slack message per person with links and wait times. On-hold PRs are listed but never pinged, and nothing is sent until a person approves.",
+  "shortDescription": "Find PRs stuck in review and send each reviewer one batched Slack nudge after approval.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the stale-pr-nudger skill and an HTTP Client tool for the GitHub pull requests API",
+    "SLA, repositories and the GitHub-to-Slack reviewer map kept in the system prompt",
+    "One message per reviewer, never one per PR",
+    "PRs labeled on-hold, WIP or do-not-nudge listed separately and never pinged"
+  ],
+  "prerequisites": [
+    "The `stale-pr-nudger` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "HTTP Client Bearer token connection with a GitHub token that can read pull requests in the chosen repositories",
+    "Slack connection that can send direct messages",
+    "The GitHub login to Slack user ID map for your reviewers, in the AI Agent's system prompt"
+  ],
+  "idealFor": "Engineering teams that want pull requests reviewed within an agreed time without manual chasing.",
+  "steps": [
+    "Trigger: every weekday at 08:00 UTC.",
+    "Get the current date.",
+    "Find stale PRs: the AI Agent loads the stale-pr-nudger skill, lists open PRs, checks reviewers and reviews, and drafts one nudge per reviewer.",
+    "Approve: the run pauses until a reviewer approves the table and the drafts.",
+    "Approved: send each nudge as a Slack direct message.",
+    "Rejected: log the comment and send nothing."
+  ]
+}
