@@ -1,0 +1,32 @@
+{
+  "name": "Prep today's interviews with questions aimed at feedback gaps",
+  "category": "hr",
+  "description": "Every weekday morning an AI agent finds today's interviews in your Google Calendar and looks up each candidate in Greenhouse: role, stage, application, the interview plan for this round and the scorecards from earlier rounds that you are allowed to see. It finds the focus areas no one has rated yet, rated as mixed or flagged as unclear, and writes three to five questions per candidate aimed at those gaps. The briefs are emailed only to you before your first interview.",
+  "shortDescription": "A brief per candidate with questions aimed at what earlier interviews missed.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the interview-prep skill, Google Calendar and an HTTP Client tool for the Greenhouse Harvest API",
+    "Questions tied to gaps in earlier feedback and the role's requirements",
+    "Earlier scorecards summarized, never quoted",
+    "Protected characteristics never included; the brief goes only to you"
+  ],
+  "prerequisites": [
+    "The `interview-prep` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Calendar and Google Mail (Gmail) connection for your account",
+    "HTTP Client Basic auth connection with a Greenhouse Harvest API key (as username, empty password) limited to the candidates, applications, scorecards and jobs endpoints",
+    "Your email address in the Email me the briefs step"
+  ],
+  "idealFor": "Hiring managers and interviewers who want to walk into every interview knowing what is still open.",
+  "steps": [
+    "Trigger: every weekday at 06:30 UTC.",
+    "Get the current date.",
+    "Prep the interviews: the AI Agent loads the interview-prep skill, finds today's interviews and reads each candidate's Greenhouse record and scorecards.",
+    "If there are interviews today, email the briefs to you."
+  ]
+}
