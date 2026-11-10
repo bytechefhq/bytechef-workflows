@@ -1,0 +1,33 @@
+{
+  "name": "Build, segment and schedule an email campaign in SendGrid",
+  "category": "marketing",
+  "description": "Run it with the campaign goal, audience, subject direction, content and send time. An AI agent matches the audience to an existing SendGrid Marketing list and reports its size, picks a verified sender and an unsubscribe group, and drafts the subject, preview text and HTML body. A person reviews the whole package, with the subject and body editable, and only then is the campaign created as a SendGrid Single Send and scheduled for the confirmed time.",
+  "shortDescription": "Draft a campaign against a real segment and schedule it only after the full package is approved.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the email-campaign-builder skill and an HTTP Client tool for the SendGrid Marketing API",
+    "Audience matched to a real list with its size; segments are never guessed",
+    "Verified sender and an unsubscribe group required on every send",
+    "Approval of audience, content and send time together before anything is scheduled"
+  ],
+  "prerequisites": [
+    "The `email-campaign-builder` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "HTTP Client Bearer token connection with a SendGrid API key that has Marketing access",
+    "A verified sender identity and an unsubscribe group in SendGrid",
+    "The audience as an existing SendGrid Marketing list or segment"
+  ],
+  "idealFor": "Marketing teams that want campaigns drafted fast without risking a send to the wrong audience.",
+  "steps": [
+    "Trigger: run the workflow manually with the campaign brief.",
+    "Draft the campaign: the AI Agent loads the email-campaign-builder skill, resolves the list, sender and unsubscribe group, and drafts the email.",
+    "Approve: the run pauses until a reviewer approves audience, content and send time, with the subject and body editable.",
+    "Approved: create the SendGrid Single Send and schedule it.",
+    "Rejected: log the comment and create nothing."
+  ]
+}
