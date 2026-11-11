@@ -1,0 +1,167 @@
+{
+  "label": "Answer customer emails with an AI agent using live order data and escalate to a human",
+  "description": "Answers customer emails in the author's voice using live order data. Complaints, uncertain answers and dedication requests go to the author with a drafted reply instead.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New customer email",
+      "name": "trigger_1",
+      "type": "googleMail/v1/newEmailPolling",
+      "parameters": {
+        "format": "SIMPLE"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Support agent",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You answer customer emails for the book in the author's voice: warm, short, with a light touch of humour, in the language of the customer. Use Get order to look up an order by its number, or Search orders to find it by the customer's email, before answering anything about shipping, delivery or invoices. Delivery inside Croatia takes 2 to 4 working days and costs REPLACE_WITH_SHIPPING_COST EUR. Set escalate to true for complaints, refunds, damaged copies, dedication requests and anything you are not sure about; still draft the reply for the author in that case.",
+        "userPrompt": "From: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\": \"object\", \"properties\": {\"escalate\": {\"type\": \"boolean\"}, \"reason\": {\"type\": \"string\", \"description\": \"Why the email is escalated, empty otherwise\"}, \"reply\": {\"type\": \"string\", \"description\": \"The reply to the customer\"}}, \"required\": [\"escalate\", \"reply\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get order",
+            "name": "woocommerce_get",
+            "type": "woocommerce/v1/getOrder",
+            "parameters": {
+              "id": "=fromAi('id', 'STRING', {'description': 'Order number', 'required': true})"
+            }
+          },
+          {
+            "label": "Search orders",
+            "name": "woocommerce_search",
+            "type": "woocommerce/v1/searchOrders",
+            "parameters": {
+              "search": "=fromAi('search', 'STRING', {'description': 'Customer email or name', 'required': true})",
+              "per_page": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Escalate?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "=${aiAgent_1.escalate} == true",
+        "caseTrue": [
+          {
+            "label": "Author reviews the reply",
+            "name": "approval_1",
+            "type": "approval/v1/requestApproval",
+            "parameters": {
+              "formTitle": "Odgovor kupcu treba tvoju odluku",
+              "formDescription": "Razlog: ${aiAgent_1.reason}\n\nKupac: ${trigger_1.from}\n${trigger_1.bodyPlain}\n\nPrijedlog odgovora:\n${aiAgent_1.reply}",
+              "inputs": [
+                {
+                  "fieldType": 5,
+                  "fieldName": "reply",
+                  "fieldLabel": "Final reply",
+                  "defaultValue": "${aiAgent_1.reply}",
+                  "required": true
+                }
+              ],
+              "expiresIn": 2,
+              "expiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "approvalChannels": [
+                {
+                  "label": "Email the author",
+                  "name": "googleMail_channel",
+                  "type": "googleMail/v1/googleMail",
+                  "parameters": {
+                    "to": [
+                      "REPLACE_WITH_AUTHOR_EMAIL"
+                    ],
+                    "subject": "Kupac čeka tvoj odgovor"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "Approved?",
+            "name": "condition_2",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": true,
+              "expression": "=${approval_1.approved} == true",
+              "caseTrue": [
+                {
+                  "label": "Send the reviewed reply",
+                  "name": "googleMail_reviewed",
+                  "type": "googleMail/v1/replyToEmail",
+                  "parameters": {
+                    "id": "${trigger_1.id}",
+                    "to": [
+                      "${trigger_1.from}"
+                    ],
+                    "bodyType": "plain",
+                    "body": "${approval_1.reply}"
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Reply automatically",
+            "name": "googleMail_reply",
+            "type": "googleMail/v1/replyToEmail",
+            "parameters": {
+              "id": "${trigger_1.id}",
+              "to": [
+                "${trigger_1.from}"
+              ],
+              "bodyType": "plain",
+              "body": "${aiAgent_1.reply}"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Mail (Gmail) connection.\n3. WooCommerce connection.\n4. Replace REPLACE_WITH_SHIPPING_COST and REPLACE_WITH_AUTHOR_EMAIL.\n\nThe order tools use the WooCommerce actions that PR adds.\n",
+          "id": "setup-note-self-publishing-customer-support",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 460,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
