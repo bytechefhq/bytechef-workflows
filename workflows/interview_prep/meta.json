@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the interview-prep skill, Google Calendar and an HTTP Client tool for the Greenhouse Harvest API",
+    "AI Agent with the interview-prep skill, Google Calendar and Greenhouse tools",
     "Questions tied to gaps in earlier feedback and the role's requirements",
     "Earlier scorecards summarized, never quoted",
     "Protected characteristics never included; the brief goes only to you"
@@ -19,7 +19,7 @@
     "The `interview-prep` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
     "Google Calendar and Google Mail (Gmail) connection for your account",
-    "HTTP Client Basic auth connection with a Greenhouse Harvest API key (as username, empty password) limited to the candidates, applications, scorecards and jobs endpoints",
+    "Greenhouse connection (Harvest v3 OAuth client credentials limited to the candidates, applications, scorecards and jobs list scopes)",
     "Your email address in the Email me the briefs step"
   ],
   "idealFor": "Hiring managers and interviewers who want to walk into every interview knowing what is still open.",
