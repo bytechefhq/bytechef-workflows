@@ -1,0 +1,28 @@
+{
+  "name": "Illustrate every new story saved to a Google Drive folder",
+  "category": "documentOps",
+  "description": "Starts the Illustrator whenever the author saves a new story to the stories folder in Google Drive.",
+  "shortDescription": "Start the story illustrator whenever a new story lands in a Google Drive folder.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Google Drive trigger on a stories folder",
+    "Reads the story from Google Docs",
+    "Calls the story illustrator workflow as a subflow"
+  ],
+  "prerequisites": [
+    "Google Drive and Google Docs connections",
+    "The Illustrate a story template imported and published in the same project; replace REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID with its workflow UUID",
+    "A Google Drive folder for new stories; replace REPLACE_WITH_STORIES_FOLDER_ID"
+  ],
+  "idealFor": "Writers who keep stories as Google Docs and want each one illustrated as soon as it is saved.",
+  "steps": [
+    "Trigger: a new file appears in the stories folder in Google Drive.",
+    "Read the story from Google Docs.",
+    "Run the illustrator workflow with the story title and text."
+  ]
+}
