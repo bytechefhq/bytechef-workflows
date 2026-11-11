@@ -20,8 +20,7 @@
     "Anthropic API key",
     "Google Mail (Gmail) and Google Calendar connection for your account",
     "Jira connection",
-    "HTTP Client Bearer token connection with a Slack user token that has search:read",
-    "Slack connection and your own Slack user ID in the Send to me step"
+    "Slack connection authorized with the search:read user scope, and your own Slack user ID in the Send to me step"
   ],
   "idealFor": "Anyone who starts the day across several inboxes, calendars and trackers.",
   "steps": [
