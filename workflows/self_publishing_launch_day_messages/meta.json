@@ -1,0 +1,30 @@
+{
+  "name": "Write a personal launch-day message to every interested reader with an AI copywriter",
+  "category": "marketing",
+  "description": "On launch day, writes every interested reader a personal message that mentions the story they commented on. The author approves each batch, then sends it by hand, since the networks do not allow automated replies to comments.",
+  "shortDescription": "On launch day, draft a personal message for every reader who asked about the book.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Loads interested readers from a data table",
+    "AI copywriter that mentions the story each reader commented on",
+    "Writes all messages to a Google Doc for the author to review and send"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Docs connection",
+    "The interested readers data table filled by the comment tracker template; replace REPLACE_WITH_INTERESTED_READERS_TABLE",
+    "Replace REPLACE_WITH_SHOP_DOMAIN with your shop's address"
+  ],
+  "idealFor": "Authors launching a book to readers who already asked for it.",
+  "steps": [
+    "Trigger: run the workflow manually on launch day.",
+    "Load the interested readers from the data table.",
+    "The copywriter agent writes a personal message for each reader.",
+    "Write the messages to a new Google Doc."
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "label": "Write a personal launch-day message to every interested reader with an AI copywriter",
+  "description": "On launch day, writes every interested reader a personal message that mentions the story they commented on. The author approves each batch, then sends it by hand, since the networks do not allow automated replies to comments.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Run on launch day",
+      "name": "trigger_1",
+      "type": "manual/v1/manual",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Load interested readers",
+      "name": "dataTable_1",
+      "type": "dataTable/v1/findRecords",
+      "parameters": {
+        "table": "REPLACE_WITH_INTERESTED_READERS_TABLE",
+        "limit": 500
+      }
+    },
+    {
+      "label": "Copywriter",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "Write a short, personal message in Croatian for each reader who has not been notified yet. Mention the story they commented on and quote a few words of their comment. Include the link https://REPLACE_WITH_SHOP_DOMAIN. No sales clichés. Return a document with one block per reader: name, network, profile link, message.",
+        "userPrompt": "Readers:\n${dataTable_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Write the messages",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/createDocument",
+      "parameters": {
+        "title": "Poruke za dan izlaska knjige",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Docs connection.\n3. The interested readers data table filled by the comment tracker template; replace REPLACE_WITH_INTERESTED_READERS_TABLE.\n4. Replace REPLACE_WITH_SHOP_DOMAIN with your shop's address.\n",
+          "id": "setup-note-self-publishing-launch-day-messages",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 392,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
