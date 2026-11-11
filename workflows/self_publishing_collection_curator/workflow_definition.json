@@ -1,0 +1,78 @@
+{
+  "label": "Pick the best social media posts for a book and group them into chapters with an AI editor",
+  "description": "Reads exported Facebook and LinkedIn posts with their engagement and comments, picks the stories for the book, groups them into chapters and writes the proposal to a Google Doc for the author to approve.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Run manually",
+      "name": "trigger_1",
+      "type": "manual/v1/manual",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read exported posts",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID",
+        "sheetName": "Posts",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "Editor",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are the editor of a collection of short stories that first appeared as social media posts. Each row has the post text, network, likes, comments, shares and a sample of the comments. Pick the 50 to 60 strongest stories, judged by engagement and by the sentiment of the comments, not by reactions alone. Group them into 6 chapters with a clear emotional arc, and give every chapter a title and an opening quote taken from one of its stories. For every story, give one sentence on why it made the cut. Write in Croatian, as a document the author can edit.",
+        "userPrompt": "Posts:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Write the proposal",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/createDocument",
+      "parameters": {
+        "title": "Prijedlog zbirke: odabir priča i poglavlja",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Docs connections.\n3. A spreadsheet with your exported posts, their engagement numbers and comments; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID.\n",
+          "id": "setup-note-self-publishing-collection-curator",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 358,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
