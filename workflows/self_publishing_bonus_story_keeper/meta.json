@@ -1,0 +1,35 @@
+{
+  "name": "Illustrate new bonus stories and publish them on WordPress",
+  "category": "documentOps",
+  "description": "When the author drops a new story into the bonus folder, gets it illustrated, formats it like the book and publishes it quietly on the buyers-only bonus page, then updates the bonus counter.",
+  "shortDescription": "When a new bonus story lands in Google Drive, illustrate it, format it and publish it on WordPress.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Google Drive trigger on a bonus stories folder",
+    "Calls the story illustrator workflow",
+    "AI layout editor that formats the story like the book",
+    "Publishes on WordPress and logs the story to a spreadsheet"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Drive, Google Docs and Google Sheets connections",
+    "WordPress connection; replace REPLACE_WITH_BONUS_CATEGORY_ID with the bonus page category",
+    "The Illustrate a story template imported and published in the same project; replace REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID",
+    "A Google Drive folder for bonus stories; replace REPLACE_WITH_BONUS_FOLDER_ID",
+    "A log spreadsheet; replace REPLACE_WITH_BONUS_LOG_SPREADSHEET_ID"
+  ],
+  "idealFor": "Authors who keep publishing new stories for readers who already bought the book.",
+  "steps": [
+    "Trigger: a new file appears in the bonus folder in Google Drive.",
+    "Read the story from Google Docs.",
+    "Run the illustrator workflow.",
+    "The layout editor agent formats the story like the book.",
+    "Publish the story on WordPress.",
+    "Log the story to Google Sheets."
+  ]
+}
