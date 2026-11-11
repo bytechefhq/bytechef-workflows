@@ -1,0 +1,39 @@
+{
+  "name": "Send AI-personalized cold emails from a Google Sheet every morning",
+  "category": "sales",
+  "description": "Every weekday at 08:00 the workflow reads a Google Sheet of leads, skips everyone already contacted and lets Claude write a short, personal email for each new lead from the notes in their row. It sends the email from Gmail, writes Sent, the subject and the time back to the row, waits a minute before the next lead and stops after 20 emails a day.",
+  "shortDescription": "Claude writes a personal cold email for each new lead in a Google Sheet and Gmail sends 20 of them every weekday morning.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Runs on a schedule every weekday at 08:00, no manual start",
+    "Claude writes each email from the lead's own notes and returns the subject and body as JSON",
+    "Leads with anything in the Status column are skipped, so nobody is emailed twice",
+    "A daily limit of 20 emails and a 60-second pause between sends keep the volume close to how a person writes",
+    "Status, subject and send time are written back to the sheet, so the sheet is the outreach log"
+  ],
+  "prerequisites": [
+    "A Google Sheet whose first row has the columns, in this order: First Name, Last Name, Email, Title, Company, Industry, City, Notes, Status, Subject, Sent At. Status, Subject and Sent At must stay in columns I, J and K, because the Mark lead as sent step writes to those letters.",
+    "Replace YOUR_SPREADSHEET_ID in the Read leads and Mark lead as sent steps with the ID from your sheet's URL, and change Sheet1 if your tab has another name",
+    "Google Sheets and Gmail connections",
+    "Anthropic API key",
+    "Rewrite the ABOUT THE BUSINESS section of the system prompt in the Write personal email step to describe your company and sender",
+    "Adjust the timezone in the trigger and in the Current time step, and the limit of 20 in Daily limit reached?, if needed"
+  ],
+  "idealFor": "Founders and small sales teams who already have a list of leads with a few notes on each, and want a short personal first email sent to a handful of them every morning without writing each one by hand.",
+  "steps": [
+    "Trigger: every weekday at 08:00.",
+    "Read leads: get every row of the sheet, keyed by the header row.",
+    "For each lead: skip the row if its Status column is already filled.",
+    "Count the emails sent in this run and stop for today once the count passes 20.",
+    "Write personal email: Claude writes a subject of at most six words and a plain-text body of 80 to 120 words, based only on the lead's notes.",
+    "Send email: Gmail sends the email to the lead.",
+    "Mark lead as sent: write Sent, the subject and the current time to columns I, J and K of the row.",
+    "Pause 60 seconds, then continue with the next lead."
+  ],
+  "screenshot": "screenshot.png"
+}
