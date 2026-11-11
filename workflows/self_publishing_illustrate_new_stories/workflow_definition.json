@@ -1,0 +1,56 @@
+{
+  "label": "Illustrate every new story saved to a Google Drive folder",
+  "description": "Starts the Illustrator whenever the author saves a new story to the stories folder in Google Drive.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New story in the stories folder",
+      "name": "trigger_1",
+      "type": "googleDrive/v1/newFile",
+      "parameters": {
+        "folderId": "REPLACE_WITH_STORIES_FOLDER_ID"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the story",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/getDocument",
+      "parameters": {
+        "documentId": "${trigger_1.id}"
+      }
+    },
+    {
+      "label": "Run the Illustrator",
+      "name": "subflow_1",
+      "type": "subflow/v1",
+      "parameters": {
+        "workflowUuid": "REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID",
+        "inputs": {
+          "title": "${trigger_1.name}",
+          "storyText": "${googleDocs_1}"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Google Drive and Google Docs connections.\n2. The Illustrate a story template imported and published in the same project; replace REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID with its workflow UUID.\n3. A Google Drive folder for new stories; replace REPLACE_WITH_STORIES_FOLDER_ID.\n",
+          "id": "setup-note-self-publishing-illustrate-new-stories",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 358,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
