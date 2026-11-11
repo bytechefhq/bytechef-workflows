@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the ticket-triage skill and an HTTP Client tool for the Freshdesk tickets API",
+    "AI Agent with the ticket-triage skill and the Freshdesk List Tickets tool",
     "Severity, topic and route proposed from your existing levels and topics only",
     "Data loss, security and enterprise tickets flagged for a human instead of auto-classified",
     "Priorities applied with the Freshdesk Update Ticket action only after approval"
@@ -18,8 +18,7 @@
   "prerequisites": [
     "The `ticket-triage` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
-    "Freshdesk connection (API key and domain) for the Update Ticket action",
-    "HTTP Client Basic auth connection with your Freshdesk API key as the username and X as the password, and your Freshdesk domain in the system prompt",
+    "Freshdesk connection (API key and domain)",
     "Your topics, teams and enterprise account names in the AI Agent's system prompt"
   ],
   "idealFor": "Support teams that want the overnight queue triaged before the first shift starts.",
