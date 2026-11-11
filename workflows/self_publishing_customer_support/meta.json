@@ -1,0 +1,31 @@
+{
+  "name": "Answer customer emails with an AI agent using live order data and escalate to a human",
+  "category": "support",
+  "description": "Answers customer emails in the author's voice using live order data. Complaints, uncertain answers and dedication requests go to the author with a drafted reply instead.",
+  "shortDescription": "Reply to customer emails in your voice, and send complaints and uncertain answers to you for review.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Gmail trigger on new customer emails",
+    "AI support agent with an order lookup tool for live order status",
+    "Escalates complaints, uncertain answers and special requests to a human with a draft reply",
+    "Sends the reviewed reply only after approval"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Mail (Gmail) connection",
+    "Web shop with a REST API for orders; replace REPLACE_WITH_SHOP_DOMAIN",
+    "Replace REPLACE_WITH_SHIPPING_COST and REPLACE_WITH_AUTHOR_EMAIL"
+  ],
+  "idealFor": "Small shops that want routine customer emails answered automatically and the rest reviewed by the owner.",
+  "steps": [
+    "Trigger: a new customer email in Gmail.",
+    "The support agent looks up the order and drafts a reply.",
+    "If the email needs escalation, ask the author to review and edit the reply.",
+    "Send the reviewed reply, or reply automatically when no escalation is needed."
+  ]
+}
