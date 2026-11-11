@@ -1,0 +1,106 @@
+{
+  "label": "Email a morning sales report from WooCommerce orders and Xero invoices with an AI agent",
+  "description": "Every morning, collects yesterday's paid orders and invoices, applies the discount rules and emails the author a revenue table split by channel and payment type.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Every day at 06:30",
+      "name": "trigger_1",
+      "type": "schedule/v1/everyDay",
+      "parameters": {
+        "hour": 6,
+        "minute": 30,
+        "dayOfWeek": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "timezone": "Europe/Zagreb"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Sales analyst",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are the bookkeeper of a self-published book sold for EUR 29 including 13% VAT. Use Search web shop orders to fetch the WooCommerce orders and List invoices to fetch the Xero invoices for the reporting day. Rules: ignore cancelled, refunded and failed orders and every cancelled invoice. Orders of 3 or more copies carry a 20% discount. B2B invoices paid early carry the early-payment discount stated on the invoice. Answer with an HTML email body only: one table with rows per channel (web shop retail, B2B wholesale) and payment type, columns for copies, revenue without VAT, VAT and revenue with VAT, then a totals row, the number of copies sold and the average profit per copy. Use a unit cost of REPLACE_WITH_UNIT_COST EUR. Write the labels in Croatian.",
+        "userPrompt": "The report runs at ${trigger_1.dateTime}. Report on the previous calendar day.",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        },
+        "tools": [
+          {
+            "label": "Search web shop orders",
+            "name": "woocommerce_1",
+            "type": "woocommerce/v1/searchOrders",
+            "parameters": {
+              "after": "=fromAi('after', 'DATE_TIME', {'description': 'Start of the reporting day', 'required': true})",
+              "before": "=fromAi('before', 'DATE_TIME', {'description': 'Start of the day after the reporting day', 'required': true})",
+              "per_page": 100
+            }
+          },
+          {
+            "label": "List invoices",
+            "name": "xero_1",
+            "type": "xero/v1/listInvoices",
+            "parameters": {
+              "dateFrom": "=fromAi('dateFrom', 'DATE', {'description': 'The reporting day', 'required': true})",
+              "dateTo": "=fromAi('dateTo', 'DATE', {'description': 'The reporting day', 'required': true})"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Email the report",
+      "name": "googleMail_1",
+      "type": "googleMail/v1/sendEmail",
+      "parameters": {
+        "to": [
+          "REPLACE_WITH_AUTHOR_EMAIL"
+        ],
+        "subject": "Jutarnji izvještaj prodaje",
+        "bodyType": "html",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. WooCommerce connection.\n3. Xero connection (or swap the List invoices tool for QuickBooks Search Invoices).\n4. Google Mail (Gmail) connection.\n5. Replace REPLACE_WITH_UNIT_COST and REPLACE_WITH_AUTHOR_EMAIL.\n\nThe template uses WooCommerce **Search Orders** and Xero **List Invoices**, which those PRs add. With QuickBooks, replace the Xero tool with QuickBooks **Search Invoices** from bytechefhq/bytechef#7424.\n",
+          "id": "setup-note-self-publishing-morning-sales-report",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 494,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}

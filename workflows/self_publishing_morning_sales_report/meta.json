@@ -1,0 +1,32 @@
+{
+  "name": "Email a morning sales report from WooCommerce orders and Xero invoices with an AI agent",
+  "category": "finance",
+  "description": "Every morning, collects yesterday's paid orders and invoices, applies the discount rules and emails the author a revenue table split by channel and payment type.",
+  "shortDescription": "Get yesterday's revenue by channel and payment type in your inbox every morning.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI agent with WooCommerce Search Orders and Xero List Invoices as tools",
+    "Applies your discount rules and unit cost to calculate revenue and margin",
+    "Revenue table split by sales channel and payment type",
+    "Runs on a daily schedule and emails the report"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "WooCommerce connection",
+    "Xero connection (or swap the List invoices tool for QuickBooks Search Invoices)",
+    "Google Mail (Gmail) connection",
+    "Replace REPLACE_WITH_UNIT_COST and REPLACE_WITH_AUTHOR_EMAIL"
+  ],
+  "idealFor": "Authors, self-publishers and small shop owners who sell through a web shop and invoices and want one revenue summary each morning.",
+  "steps": [
+    "Trigger: every day at 06:30.",
+    "The sales analyst agent fetches yesterday's WooCommerce orders and Xero invoices with its two tools.",
+    "The agent applies the discount rules and builds a revenue table by channel and payment type.",
+    "Email the report."
+  ]
+}
