@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the email-campaign-builder skill and an HTTP Client tool for the SendGrid Marketing API",
+    "AI Agent with the email-campaign-builder skill and the SendGrid List Contact Lists and List Senders tools",
     "Audience matched to a real list with its size; segments are never guessed",
     "Verified sender and an unsubscribe group required on every send",
     "Approval of audience, content and send time together before anything is scheduled"
@@ -18,9 +18,9 @@
   "prerequisites": [
     "The `email-campaign-builder` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
-    "HTTP Client Bearer token connection with a SendGrid API key that has Marketing access",
+    "SendGrid connection with an API key that has Marketing full access",
     "A verified sender identity and an unsubscribe group in SendGrid",
-    "The audience as an existing SendGrid Marketing list or segment"
+    "The audience as an existing SendGrid Marketing list"
   ],
   "idealFor": "Marketing teams that want campaigns drafted fast without risking a send to the wrong audience.",
   "steps": [
