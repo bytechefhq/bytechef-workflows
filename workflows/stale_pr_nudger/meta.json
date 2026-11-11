@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the stale-pr-nudger skill and an HTTP Client tool for the GitHub pull requests API",
+    "AI Agent with the stale-pr-nudger skill and the GitHub List Pull Requests, Get Pull Request and List Pull Request Reviews tools",
     "SLA, repositories and the GitHub-to-Slack reviewer map kept in the system prompt",
     "One message per reviewer, never one per PR",
     "PRs labeled on-hold, WIP or do-not-nudge listed separately and never pinged"
@@ -18,7 +18,7 @@
   "prerequisites": [
     "The `stale-pr-nudger` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
-    "HTTP Client Bearer token connection with a GitHub token that can read pull requests in the chosen repositories",
+    "GitHub connection that can read pull requests in the chosen repositories",
     "Slack connection that can send direct messages",
     "The GitHub login to Slack user ID map for your reviewers, in the AI Agent's system prompt"
   ],
