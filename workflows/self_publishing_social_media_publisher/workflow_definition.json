@@ -1,0 +1,180 @@
+{
+  "label": "Turn a content plan into LinkedIn, Facebook and Instagram posts with an AI agent and publish after approval",
+  "description": "Twice a week, turns the next story from the content plan into a post per network and publishes it after the author approves it. Facebook and Instagram have no ByteChef component yet, so they go through the Meta Graph API.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Tuesday and Friday at 19:30",
+      "name": "trigger_1",
+      "type": "schedule/v1/everyDay",
+      "parameters": {
+        "hour": 19,
+        "minute": 30,
+        "dayOfWeek": [
+          3,
+          6
+        ],
+        "timezone": "Europe/Zagreb"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the content plan",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+        "sheetName": "Plan",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "Social media strategist",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You run the social media for a book of short stories. From the content plan, take the first row whose status is not \"published\". Write one post per network in Croatian: LinkedIn (reflective, up to 1,200 characters, ends with a question), Facebook (warm, up to 600 characters) and Instagram (short caption with up to 5 hashtags). Every post links to https://REPLACE_WITH_SHOP_DOMAIN.",
+        "userPrompt": "Content plan:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\": \"object\", \"properties\": {\"rowNumber\": {\"type\": \"integer\", \"description\": \"Sheet row number of the chosen story\"}, \"linkedin\": {\"type\": \"string\", \"description\": \"LinkedIn post\"}, \"facebook\": {\"type\": \"string\", \"description\": \"Facebook post\"}, \"instagram\": {\"type\": \"string\", \"description\": \"Instagram caption\"}, \"imageUrl\": {\"type\": \"string\", \"description\": \"Public URL of the story illustration from the plan\"}}, \"required\": [\"rowNumber\", \"linkedin\", \"facebook\", \"instagram\", \"imageUrl\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Author approves the posts",
+      "name": "approval_1",
+      "type": "approval/v1/requestApproval",
+      "parameters": {
+        "formTitle": "Odobri objave",
+        "formDescription": "LinkedIn:\n${aiAgent_1.linkedin}\n\nFacebook:\n${aiAgent_1.facebook}\n\nInstagram:\n${aiAgent_1.instagram}",
+        "expiresIn": 12,
+        "expiresInUnit": "HOURS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Email the author",
+            "name": "googleMail_channel",
+            "type": "googleMail/v1/googleMail",
+            "parameters": {
+              "to": [
+                "REPLACE_WITH_AUTHOR_EMAIL"
+              ],
+              "subject": "Objave su spremne za odobrenje"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Approved?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "=${approval_1.approved} == true",
+        "caseTrue": [
+          {
+            "label": "Post to LinkedIn",
+            "name": "linkedin_1",
+            "type": "linkedin/v1/createPost",
+            "parameters": {
+              "author": "PERSON",
+              "urn": "REPLACE_WITH_LINKEDIN_PERSON_URN",
+              "commentary": "${aiAgent_1.linkedin}",
+              "visibility": "PUBLIC"
+            }
+          },
+          {
+            "label": "Post to Facebook (Graph API)",
+            "name": "httpClient_facebook",
+            "type": "httpClient/v1/post",
+            "parameters": {
+              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_PAGE_ID/photos",
+              "responseType": "JSON",
+              "queryParameters": {
+                "url": "${aiAgent_1.imageUrl}",
+                "caption": "${aiAgent_1.facebook}"
+              }
+            }
+          },
+          {
+            "label": "Create Instagram media",
+            "name": "httpClient_instagramMedia",
+            "type": "httpClient/v1/post",
+            "parameters": {
+              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_IG_USER_ID/media",
+              "responseType": "JSON",
+              "queryParameters": {
+                "image_url": "${aiAgent_1.imageUrl}",
+                "caption": "${aiAgent_1.instagram}"
+              }
+            }
+          },
+          {
+            "label": "Publish on Instagram",
+            "name": "httpClient_instagramPublish",
+            "type": "httpClient/v1/post",
+            "parameters": {
+              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_IG_USER_ID/media_publish",
+              "responseType": "JSON",
+              "queryParameters": {
+                "creation_id": "${httpClient_instagramMedia.body.id}"
+              }
+            }
+          },
+          {
+            "label": "Mark as published",
+            "name": "googleSheets_2",
+            "type": "googleSheets/v1/updateRow",
+            "parameters": {
+              "spreadsheetId": "REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+              "sheetName": "Plan",
+              "rowNumber": "${aiAgent_1.rowNumber}",
+              "isTheFirstRowHeader": true,
+              "updateWholeRow": false,
+              "row": {
+                "status": "published"
+              }
+            }
+          }
+        ],
+        "caseFalse": []
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Mail (Gmail) connections.\n3. LinkedIn connection; replace REPLACE_WITH_LINKEDIN_PERSON_URN.\n4. Facebook Page access token for the Graph API; replace REPLACE_WITH_PAGE_ID.\n5. Instagram professional account token for the Graph API; replace REPLACE_WITH_IG_USER_ID.\n6. A content plan spreadsheet; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID.\n7. Replace REPLACE_WITH_AUTHOR_EMAIL and REPLACE_WITH_SHOP_DOMAIN.\n\nThe Facebook and Instagram steps are HTTP calls to the Graph API and should become Facebook Pages and Instagram actions once those PRs merge.\n",
+          "id": "setup-note-self-publishing-social-media-publisher",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 562,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}

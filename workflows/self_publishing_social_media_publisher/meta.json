@@ -1,0 +1,36 @@
+{
+  "name": "Turn a content plan into LinkedIn, Facebook and Instagram posts with an AI agent and publish after approval",
+  "category": "social",
+  "description": "Twice a week, turns the next story from the content plan into a post per network and publishes it after the author approves it. Facebook and Instagram have no ByteChef component yet, so they go through the Meta Graph API.",
+  "shortDescription": "Twice a week, write a post per network from your content plan and publish it after you approve it.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI social media strategist that writes one post per network from the next story in the plan",
+    "Human approval by email before anything is published",
+    "Publishes to LinkedIn, a Facebook Page and Instagram",
+    "Marks the story as published in the content plan"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets and Google Mail (Gmail) connections",
+    "LinkedIn connection; replace REPLACE_WITH_LINKEDIN_PERSON_URN",
+    "Facebook Page access token for the Graph API; replace REPLACE_WITH_PAGE_ID",
+    "Instagram professional account token for the Graph API; replace REPLACE_WITH_IG_USER_ID",
+    "A content plan spreadsheet; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+    "Replace REPLACE_WITH_AUTHOR_EMAIL and REPLACE_WITH_SHOP_DOMAIN"
+  ],
+  "idealFor": "Authors and small brands that post the same story on several networks and want to approve every post first.",
+  "steps": [
+    "Trigger: Tuesday and Friday at 19:30.",
+    "Read the next story from the content plan in Google Sheets.",
+    "The social media strategist agent writes a post for each network.",
+    "Ask the author to approve the posts by email.",
+    "If approved, publish to LinkedIn, Facebook and Instagram.",
+    "Mark the story as published in the content plan."
+  ]
+}
