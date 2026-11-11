@@ -12,14 +12,14 @@
   "keyFeatures": [
     "AI Agent with the deck-from-docs skill and the Google Docs Get Document tool",
     "Outline-first: nothing is created until the outline is approved, and it stays editable",
-    "Gamma generates the deck from the approved outline through its API",
+    "Gamma generates the deck from the approved outline with the Gamma Generate Presentation action",
     "No invented data, quotes or charts; cut content listed for review"
   ],
   "prerequisites": [
     "The `deck-from-docs` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
     "Google Docs and Google Mail (Gmail) connection",
-    "HTTP Client API key connection to Gamma (header X-API-KEY) on a Gamma plan with API access"
+    "Gamma connection with an API key, on a Gamma plan with API access"
   ],
   "idealFor": "Anyone who has the content in a doc and needs a presentation without building slides by hand.",
   "steps": [

@@ -148,19 +148,14 @@
                 "caseTrue": [
                     {
                         "label": "Generate the deck in Gamma",
-                        "name": "httpClient_1",
-                        "type": "httpClient/v1/post",
+                        "name": "gamma_1",
+                        "type": "gamma/v1/generatePresentation",
                         "parameters": {
-                            "uri": "https://public-api.gamma.app/v1.0/agent/generations",
-                            "responseType": "JSON",
-                            "body": {
-                                "bodyContentType": "JSON",
-                                "bodyContent": {
-                                    "prompt": "Create a presentation titled \"${aiAgent_1.title}\" for ${audience}. Follow this approved outline exactly, one card per slide, and do not add facts that are not in it:\n\n${approval_1.outline}",
-                                    "format": "presentation",
-                                    "numCards": "${slideCount}"
-                                }
-                            }
+                            "inputText": "# ${aiAgent_1.title}\n\n${approval_1.outline}",
+                            "textMode": "preserve",
+                            "format": "presentation",
+                            "numCards": "${slideCount}",
+                            "additionalInstructions": "Audience: ${audience}. One card per slide in the outline. Do not add facts that are not in the outline."
                         },
                         "metadata": {
                             "ui": {
@@ -168,8 +163,8 @@
                             }
                         },
                         "connections": {
-                            "httpClient_1": {
-                                "componentName": "httpClient",
+                            "gamma_1": {
+                                "componentName": "gamma",
                                 "componentVersion": 1
                             }
                         }
@@ -190,11 +185,10 @@
                     },
                     {
                         "label": "Read the generation",
-                        "name": "httpClient_2",
-                        "type": "httpClient/v1/get",
+                        "name": "gamma_2",
+                        "type": "gamma/v1/getGeneration",
                         "parameters": {
-                            "uri": "https://public-api.gamma.app/v1.0/agent/generations/${httpClient_1.body.generationId}",
-                            "responseType": "JSON"
+                            "generationId": "${gamma_1.generationId}"
                         },
                         "metadata": {
                             "ui": {
@@ -202,8 +196,8 @@
                             }
                         },
                         "connections": {
-                            "httpClient_2": {
-                                "componentName": "httpClient",
+                            "gamma_2": {
+                                "componentName": "gamma",
                                 "componentVersion": 1
                             }
                         }
@@ -218,7 +212,7 @@
                             ],
                             "subject": "Deck: ${aiAgent_1.title}",
                             "bodyType": "plain",
-                            "body": "Gamma status: ${httpClient_2.body.status}\nDeck: ${httpClient_2.body.gamma.gammaUrl}\n\nIf the status is still pending, the deck will appear in your Gamma workspace when it finishes.\n\nApproved outline:\n${approval_1.outline}"
+                            "body": "Gamma status: ${gamma_2.status}\nDeck: ${gamma_2.gammaUrl}\n\nIf the status is still pending, the deck will appear in your Gamma workspace when it finishes.\n\nApproved outline:\n${approval_1.outline}"
                         },
                         "metadata": {
                             "ui": {
@@ -256,7 +250,7 @@
             "stickyNotes": [
                 {
                     "color": "yellow",
-                    "content": "## Setup before the first run\n\n### 1. Create the required skill: `deck-from-docs`\n\nSkills live in your workspace, not in the workflow, so create this one first.\n\n1. Open **Settings → AI → Skills** (or click **Manage AI Skills** on the AI Agent frame).\n2. Click **Create Skill → Write Skill Instructions**, name it `deck-from-docs` and paste the `SKILL.md` from the blue note. Or save it as `SKILL.md` and use **Upload Files**.\n3. Open the **Skills** tool under the AI Agent and select **deck-from-docs**.\n\n### 2. Connections\n\n- **Anthropic** on the model.\n- **Google Docs** on Read the document and **Google Mail** on Email the deck link.\n- **HTTP Client** on Generate the deck in Gamma and Read the generation: API key auth, key `X-API-KEY`, your Gamma API key, added to the header.\n\n### 3. Make it yours\n\n- Add a `themeId` or `templateId` to the Gamma request body to use your brand theme.\n- Increase the wait for long decks; Gamma agent generations can take several minutes.\n\n### Notes\n\n- Google Slides: ByteChef can only fill an existing template (Create Presentation From Template), so free-form decks use Gamma here.\n- Canva's Create Design makes an empty design, so it is not used for generated content.\n\nInspired by the Merge workflow template of the same name, rebuilt for ByteChef components.\n",
+                    "content": "## Setup before the first run\n\n### 1. Create the required skill: `deck-from-docs`\n\nSkills live in your workspace, not in the workflow, so create this one first.\n\n1. Open **Settings → AI → Skills** (or click **Manage AI Skills** on the AI Agent frame).\n2. Click **Create Skill → Write Skill Instructions**, name it `deck-from-docs` and paste the `SKILL.md` from the blue note. Or save it as `SKILL.md` and use **Upload Files**.\n3. Open the **Skills** tool under the AI Agent and select **deck-from-docs**.\n\n### 2. Connections\n\n- **Anthropic** on the model.\n- **Google Docs** on Read the document and **Google Mail** on Email the deck link.\n- **Gamma** on Generate the deck in Gamma and Read the generation (the same connection).\n\n### 3. Make it yours\n\n- Pick your brand theme in Theme on Generate the deck in Gamma, or export a PDF or PPTX with Export As.\n- Increase the wait for long decks; Gamma generations can take several minutes.\n\n### Notes\n\n- Google Slides: ByteChef can only fill an existing template (Create Presentation From Template), so free-form decks use Gamma here.\n- Canva's Create Design makes an empty design, so it is not used for generated content.\n\nInspired by the Merge workflow template of the same name, rebuilt for ByteChef components.\n",
                     "id": "setup-note-deck-from-google-doc",
                     "position": {
                         "x": 1010,
