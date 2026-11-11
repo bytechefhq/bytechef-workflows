@@ -1,8 +1,8 @@
 {
-  "name": "Find readers who want to buy your book in social media comments with an AI agent",
+  "name": "Find readers who want to buy your book in LinkedIn, Facebook and Instagram comments with an AI agent",
   "category": "sales",
   "description": "Every evening, finds people who asked when the book comes out or said they would buy it, and saves them to a data table with the story they commented on.",
-  "shortDescription": "Every evening, save commenters who asked about the book to a data table, with the story they commented on.",
+  "shortDescription": "Every evening, read the comments on your published posts and save readers who want the book to a data table.",
   "author": {
     "name": "Ivica Cardic",
     "email": "",
@@ -10,21 +10,25 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI agent that detects buying intent in comments",
-    "Remembers which story each reader commented on",
+    "AI agent that reads comments with LinkedIn, Facebook Pages and Instagram Get Comments tools",
+    "Detects buying intent and remembers which story each reader commented on",
     "Skips readers already saved, using a data table lookup tool",
     "Runs every evening"
   ],
   "prerequisites": [
     "Anthropic API key",
     "Google Sheets connection",
-    "A spreadsheet with new comments; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID",
+    "The content plan spreadsheet filled by the social media publisher template, with the post ID columns; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+    "LinkedIn connection with the r_organization_social_feed scope enabled; LinkedIn only returns comments on company page posts, so remove the LinkedIn tool if you post from a personal profile",
+    "Facebook Pages connection; replace REPLACE_WITH_FACEBOOK_PAGE_ID",
+    "Instagram connection to a professional account",
     "A ByteChef data table for interested readers; replace REPLACE_WITH_INTERESTED_READERS_TABLE"
   ],
   "idealFor": "Authors building a list of readers to contact on launch day.",
   "steps": [
     "Trigger: every evening at 22:00.",
-    "Read new comments from Google Sheets.",
-    "The buying-intent agent checks each comment, looks the reader up in the data table and saves new interested readers."
+    "Read the published posts and their IDs from the content plan in Google Sheets.",
+    "The buying-intent agent reads the comments on each post from LinkedIn, Facebook and Instagram.",
+    "It looks each interested reader up in the data table and saves the new ones."
   ]
 }

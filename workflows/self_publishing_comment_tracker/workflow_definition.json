@@ -1,5 +1,5 @@
 {
-  "label": "Find readers who want to buy your book in social media comments with an AI agent",
+  "label": "Find readers who want to buy your book in LinkedIn, Facebook and Instagram comments with an AI agent",
   "description": "Every evening, finds people who asked when the book comes out or said they would buy it, and saves them to a data table with the story they commented on.",
   "inputs": [],
   "triggers": [
@@ -25,12 +25,12 @@
   ],
   "tasks": [
     {
-      "label": "Read new comments",
+      "label": "Read published posts",
       "name": "googleSheets_1",
       "type": "googleSheets/v1/getRows",
       "parameters": {
-        "spreadsheetId": "REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID",
-        "sheetName": "Comments",
+        "spreadsheetId": "REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+        "sheetName": "Plan",
         "isTheFirstRowHeader": true
       }
     },
@@ -40,8 +40,8 @@
       "type": "aiAgent/v1/chat",
       "parameters": {
         "format": "SIMPLE",
-        "systemPrompt": "From the comments, keep only people who ask when or where the book is available, ask for a copy, or say they will buy it. Ignore compliments without buying intent. Before saving a person, use findRecords to check they are not already in the table, then save each new person with createRecords.",
-        "userPrompt": "Comments:\n${googleSheets_1}",
+        "systemPrompt": "The content plan lists the stories that were published, with linkedinPostUrn, facebookPostId and instagramMediaId columns. For every row whose status is \"published\", read the comments with Get LinkedIn comments, Get Facebook comments and Get Instagram comments, skipping empty IDs. Keep only people who ask when or where the book is available, ask for a copy, or say they will buy it. Ignore compliments without buying intent. Before saving a person, use Find existing readers to check they are not already in the table, then save each new person with Save interested reader, with the title of the story they commented on.",
+        "userPrompt": "Content plan:\n${googleSheets_1}",
         "response": {
           "responseFormat": "TEXT"
         }
@@ -58,6 +58,32 @@
           }
         },
         "tools": [
+          {
+            "label": "Get LinkedIn comments",
+            "name": "linkedin_1",
+            "type": "linkedin/v1/getComments",
+            "parameters": {
+              "urn": "=fromAi('urn', 'STRING', {'description': 'linkedinPostUrn from the content plan', 'required': true})",
+              "count": 100
+            }
+          },
+          {
+            "label": "Get Facebook comments",
+            "name": "facebookPages_1",
+            "type": "facebookPages/v1/getComments",
+            "parameters": {
+              "pageId": "REPLACE_WITH_FACEBOOK_PAGE_ID",
+              "postId": "=fromAi('postId', 'STRING', {'description': 'facebookPostId from the content plan', 'required': true})"
+            }
+          },
+          {
+            "label": "Get Instagram comments",
+            "name": "instagram_1",
+            "type": "instagram/v1/getComments",
+            "parameters": {
+              "mediaId": "=fromAi('mediaId', 'STRING', {'description': 'instagramMediaId from the content plan', 'required': true})"
+            }
+          },
           {
             "label": "Find existing readers",
             "name": "dataTable_find",
@@ -94,14 +120,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets connection.\n3. A spreadsheet with new comments; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID.\n4. A ByteChef data table for interested readers; replace REPLACE_WITH_INTERESTED_READERS_TABLE.\n\nComments come from a spreadsheet export. Once those PRs merge, the agent can read comments directly with the LinkedIn, Facebook Pages and Instagram Get Comments actions.\n",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets connection.\n3. The content plan spreadsheet filled by the social media publisher template, with the post ID columns; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID.\n4. LinkedIn connection with the r_organization_social_feed scope enabled; LinkedIn only returns comments on company page posts, so remove the LinkedIn tool if you post from a personal profile.\n5. Facebook Pages connection; replace REPLACE_WITH_FACEBOOK_PAGE_ID.\n6. Instagram connection to a professional account.\n7. A ByteChef data table for interested readers; replace REPLACE_WITH_INTERESTED_READERS_TABLE.\n\nThe three comment tools use the actions those PRs add.\n",
           "id": "setup-note-self-publishing-comment-tracker",
           "position": {
             "x": -520,
             "y": 0
           },
           "size": {
-            "height": 460,
+            "height": 562,
             "width": 460
           }
         }
