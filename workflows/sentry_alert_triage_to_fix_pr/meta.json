@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the alert-triage-to-fix-pr skill, HTTP Client tools for Sentry and GitHub search, and GitHub code tools",
+    "AI Agent with the alert-triage-to-fix-pr skill, the Sentry Get Issue and Get Latest Event tools, and GitHub search and code tools",
     "Impact summary that quotes Sentry's numbers and never copies user data",
     "No second PR when one already exists for the issue",
     "Approval before the fix is committed; the PR always stays a draft"
@@ -19,8 +19,7 @@
     "The `alert-triage-to-fix-pr` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
     "Sentry internal integration with an issue alert rule that sends to the workflow's webhook URL",
-    "HTTP Client Bearer token connection with a Sentry auth token (event:read, project:read)",
-    "HTTP Client Bearer token connection with a GitHub token for searching pull requests",
+    "Sentry connection (auth token with event:read and project:read, and your organization slug)",
     "GitHub connection that can read code, push branches and open pull requests",
     "Slack connection and the ID of the alerts channel",
     "Server public URL configured, so the webhook and the approval form link can be reached"
