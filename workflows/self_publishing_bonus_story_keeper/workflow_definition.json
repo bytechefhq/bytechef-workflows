@@ -1,0 +1,114 @@
+{
+  "label": "Illustrate new bonus stories and publish them on WordPress",
+  "description": "When the author drops a new story into the bonus folder, gets it illustrated, formats it like the book and publishes it quietly on the buyers-only bonus page, then updates the bonus counter.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New bonus story",
+      "name": "trigger_1",
+      "type": "googleDrive/v1/newFile",
+      "parameters": {
+        "folderId": "REPLACE_WITH_BONUS_FOLDER_ID"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the story",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/getDocument",
+      "parameters": {
+        "documentId": "${trigger_1.id}"
+      }
+    },
+    {
+      "label": "Run the Illustrator",
+      "name": "subflow_1",
+      "type": "subflow/v1",
+      "parameters": {
+        "workflowUuid": "REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID",
+        "inputs": {
+          "title": "${trigger_1.name}",
+          "storyText": "${googleDocs_1}"
+        }
+      }
+    },
+    {
+      "label": "Layout editor",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "Format the story as HTML that matches the book: the title as h2, a one-line epigraph in italics, short paragraphs, no other headings. Do not change the author's words except for obvious typos. Also rate from 1 to 10 how well the story would fit a second book, with one sentence of reasoning.",
+        "userPrompt": "Title: ${trigger_1.name}\nIllustration: ${subflow_1.webFileId}\n\n${googleDocs_1}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\": \"object\", \"properties\": {\"html\": {\"type\": \"string\", \"description\": \"The formatted story\"}, \"secondBookScore\": {\"type\": \"integer\"}, \"secondBookReason\": {\"type\": \"string\", \"description\": \"One sentence\"}}, \"required\": [\"html\", \"secondBookScore\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Publish on the bonus page",
+      "name": "wordpress_1",
+      "type": "wordpress/v1/createPost",
+      "parameters": {
+        "title": "${trigger_1.name}",
+        "content": "${aiAgent_1.html}",
+        "status": "private",
+        "categories": [
+          "REPLACE_WITH_BONUS_CATEGORY_ID"
+        ],
+        "comment_status": "closed",
+        "ping_status": "closed"
+      }
+    },
+    {
+      "label": "Log for counter and second book",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/insertRow",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_BONUS_LOG_SPREADSHEET_ID",
+        "sheetName": "Bonus",
+        "valueInputOption": "USER_ENTERED",
+        "isTheFirstRowHeader": true,
+        "row": {
+          "title": "${trigger_1.name}",
+          "postId": "${wordpress_1.id}",
+          "secondBookScore": "${aiAgent_1.secondBookScore}",
+          "secondBookReason": "${aiAgent_1.secondBookReason}"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Drive, Google Docs and Google Sheets connections.\n3. WordPress connection; replace REPLACE_WITH_BONUS_CATEGORY_ID with the bonus page category.\n4. The Illustrate a story template imported and published in the same project; replace REPLACE_WITH_ILLUSTRATOR_WORKFLOW_UUID.\n5. A Google Drive folder for bonus stories; replace REPLACE_WITH_BONUS_FOLDER_ID.\n6. A log spreadsheet; replace REPLACE_WITH_BONUS_LOG_SPREADSHEET_ID.\n",
+          "id": "setup-note-self-publishing-bonus-story-keeper",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 460,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
