@@ -1,0 +1,31 @@
+{
+  "name": "Rank open deals by risk with evidence and post the report",
+  "category": "sales",
+  "description": "Every Monday an AI agent reads the open Salesforce opportunities closing soonest, their recent tasks and events, contact coverage and open support cases on the account. It rates each deal high, medium, low or unknown risk from concrete signals only, cites every signal with source and date, and suggests one next action per high-risk deal. The ranked report is posted to your sales leadership Slack channel.",
+  "shortDescription": "A weekly risk ranking of open deals, every rating backed by citable signals.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the at-risk-deal-scan skill and a Salesforce SOQL tool",
+    "Engagement, activity and support-case signals, each with source and date",
+    "Deals without data are unknown, never low risk",
+    "Read-only: no tasks, notes or messages to reps or customers"
+  ],
+  "prerequisites": [
+    "The `at-risk-deal-scan` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Salesforce connection with read access to Opportunity, OpportunityContactRole, Task, Event and Case",
+    "Slack connection and the ID of the channel that receives the report"
+  ],
+  "idealFor": "Sales leaders and RevOps teams that review pipeline risk every week.",
+  "steps": [
+    "Trigger: every Monday at 07:00 UTC.",
+    "Get the current date.",
+    "Scan the deals: the AI Agent loads the at-risk-deal-scan skill, pulls up to 50 open deals and their signals with SOQL, and rates each one.",
+    "Post the ranked report to the Slack channel."
+  ]
+}

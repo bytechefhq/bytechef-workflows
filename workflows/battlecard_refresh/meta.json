@@ -1,0 +1,32 @@
+{
+  "name": "Refresh a competitive battlecard from won and lost deals",
+  "category": "sales",
+  "description": "Run it with a competitor name, a period and the current battlecard's Google Doc ID. An AI agent reads the card and the closed-won and closed-lost Salesforce opportunities that named the competitor in that period, sorts every finding into observed or reported, and drafts a new dated version with a change log. After a person approves, the new version is saved as a separate Google Doc; the published card is never overwritten.",
+  "shortDescription": "Draft a new dated battlecard version from the quarter's won and lost deals, approved before it is saved.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the battlecard-refresh skill and Google Docs and Salesforce tools",
+    "Every claim dated and marked Observed or Reported, with its source",
+    "Change log of what changed, what was added and what was dropped",
+    "New dated version saved alongside the current card, never over it"
+  ],
+  "prerequisites": [
+    "The `battlecard-refresh` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Docs connection with access to the current battlecard",
+    "Salesforce connection with read access to Opportunity, including the field that records the competitor and the loss reason"
+  ],
+  "idealFor": "Product marketing and sales enablement teams that keep competitive battlecards current every quarter.",
+  "steps": [
+    "Trigger: run the workflow manually with the competitor, the period and the current card's document ID.",
+    "Draft the refresh: the AI Agent loads the battlecard-refresh skill, reads the current card and the won and lost deals, then drafts the new version and a change log.",
+    "Approve: the run pauses until a reviewer approves the change log.",
+    "Approved: create the new dated version as a Google Doc.",
+    "Rejected: log the comment and save nothing."
+  ]
+}

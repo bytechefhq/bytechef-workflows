@@ -1,0 +1,33 @@
+{
+  "name": "Brief you every morning on today's external meetings",
+  "category": "sales",
+  "description": "Every weekday morning an AI agent reads today's Google Calendar events with external attendees. For each meeting it looks up the people and their company in Salesforce, recent Gmail threads with them and public context from a web search, then writes a brief: who they are, where the relationship stands, what is open and three to five talking points. The briefs are emailed to you.",
+  "shortDescription": "Get a brief on the people in each of today's external meetings before your day starts.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the meeting-prep-brief skill and Google Calendar, Salesforce, Gmail and Tavily tools",
+    "Only external attendees are researched; internal ones are just named",
+    "Every claim cites its source, and missing data is stated, never invented",
+    "Read-only: nothing is written to the CRM and no mail is sent except the brief to you"
+  ],
+  "prerequisites": [
+    "The `meeting-prep-brief` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Calendar and Google Mail (Gmail) connection for your account",
+    "Salesforce connection with read access to Contact, Account and Opportunity",
+    "Tavily API key for public company context",
+    "Your email address and company domain in the AI Agent's system prompt and the Email the briefs step"
+  ],
+  "idealFor": "Account executives, founders and customer-facing teams with several external meetings a day.",
+  "steps": [
+    "Trigger: every weekday at 06:30 UTC.",
+    "Get the current date.",
+    "Brief the meetings: the AI Agent loads the meeting-prep-brief skill, lists today's events, then researches external attendees in Salesforce, Gmail and Tavily.",
+    "Email the briefs to you."
+  ]
+}

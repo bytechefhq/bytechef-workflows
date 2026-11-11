@@ -1,0 +1,32 @@
+{
+  "name": "Draft release notes from pull requests merged between two tags",
+  "category": "it",
+  "description": "Run it with a repository and the previous and new tags. An AI agent finds the pull requests merged between the two releases on GitHub, reads linked Jira issues for user impact and sorts every change into breaking changes, features, improvements, fixes and internal. A person edits and approves the draft, and it is created as a draft GitHub release for the new tag, ready to publish.",
+  "shortDescription": "Turn the PRs merged between two releases into user-facing notes, approved and created as a draft GitHub release.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the release-notes-from-prs skill, the GitHub Get Release by Tag, Search Issues and Pull Requests and Get Pull Request tools, and the Jira Get Issue tool",
+    "Entries written for users, one line each, with the PR linked",
+    "Breaking changes first, internal changes left out of customer notes",
+    "Approval form with the notes editable before the draft release is created"
+  ],
+  "prerequisites": [
+    "The `release-notes-from-prs` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "GitHub connection that can read the repository and create releases",
+    "Jira connection (optional; remove the Get Jira issue tool if you don't use Jira)"
+  ],
+  "idealFor": "Engineering and product teams that publish release notes for every version.",
+  "steps": [
+    "Trigger: run the workflow manually with the repository owner, name and the two tags.",
+    "Draft the notes: the AI Agent loads the release-notes-from-prs skill, collects merged PRs between the tags, reads linked Jira issues and writes the notes.",
+    "Approve: the run pauses until a reviewer edits and approves the notes.",
+    "Approved: create a draft GitHub release for the new tag with the approved notes.",
+    "Rejected: log the comment and create nothing."
+  ]
+}

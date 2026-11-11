@@ -1,0 +1,33 @@
+{
+  "name": "Prep each of today's 1:1s with what happened and one move to make",
+  "category": "hr",
+  "description": "Every weekday morning an AI agent finds today's 1:1s in your Google Calendar: meetings with exactly one other person from your company. For each person it reviews open and recently updated Jira issues and recent Gmail threads between you, picks the three to five items that matter (blocked, overdue, slipping, waiting on you, or a win worth naming) and writes each as what happened, why it needs you and one move. The briefs arrive as a Slack direct message to you.",
+  "shortDescription": "A short brief before every 1:1: what happened, why it needs you and one move to make.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the one-on-one-prep skill and Google Calendar, Jira and Gmail tools",
+    "1:1s detected by attendees, not titles; the org chart is never guessed",
+    "Three to five items per person, each as What happened / Why it needs you / Move",
+    "Read-only, delivered only to you"
+  ],
+  "prerequisites": [
+    "The `one-on-one-prep` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Calendar and Google Mail (Gmail) connection for your account",
+    "Jira connection",
+    "Slack connection and your own Slack user ID in the Send to me step",
+    "Your company domain and direct reports in the AI Agent's system prompt"
+  ],
+  "idealFor": "Engineering and team managers who run several 1:1s a week.",
+  "steps": [
+    "Trigger: every weekday at 06:30 UTC.",
+    "Get the current date.",
+    "Prep the 1:1s: the AI Agent loads the one-on-one-prep skill, finds today's 1:1s and reviews each person's Jira work and email with you.",
+    "Send the briefs to you as a Slack direct message."
+  ]
+}
