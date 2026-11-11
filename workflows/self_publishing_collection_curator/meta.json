@@ -1,0 +1,29 @@
+{
+  "name": "Pick the best social media posts for a book and group them into chapters with an AI editor",
+  "category": "ai",
+  "description": "Reads exported Facebook and LinkedIn posts with their engagement and comments, picks the stories for the book, groups them into chapters and writes the proposal to a Google Doc for the author to approve.",
+  "shortDescription": "Turn your best Facebook and LinkedIn posts into a chapter plan for a book.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI editor that ranks posts by engagement and by what the comments say",
+    "Groups the selected stories into chapters with a running order",
+    "Writes the proposal to a Google Doc"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets and Google Docs connections",
+    "A spreadsheet with your exported posts, their engagement numbers and comments; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID"
+  ],
+  "idealFor": "Writers who publish stories on social media and want to turn the best of them into a book.",
+  "steps": [
+    "Trigger: run the workflow manually.",
+    "Read the exported posts from Google Sheets.",
+    "The editor agent picks the stories for the book and groups them into chapters.",
+    "Write the proposal to a new Google Doc."
+  ]
+}
