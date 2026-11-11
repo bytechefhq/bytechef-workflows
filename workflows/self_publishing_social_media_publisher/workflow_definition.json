@@ -1,5 +1,5 @@
 {
-  "label": "Turn a content plan into LinkedIn, Facebook and Instagram posts with an AI agent and publish after approval",
+  "label": "Turn a content plan into LinkedIn, Facebook Page and Instagram posts with an AI agent and publish after approval",
   "description": "Twice a week, turns the next story from the content plan into a post per network and publishes it after the author approves it. Facebook and Instagram have no ByteChef component yet, so they go through the Meta Graph API.",
   "inputs": [],
   "triggers": [
@@ -101,41 +101,22 @@
             }
           },
           {
-            "label": "Post to Facebook (Graph API)",
-            "name": "httpClient_facebook",
-            "type": "httpClient/v1/post",
+            "label": "Post to the Facebook Page",
+            "name": "facebookPages_1",
+            "type": "facebookPages/v1/createPhotoPost",
             "parameters": {
-              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_PAGE_ID/photos",
-              "responseType": "JSON",
-              "queryParameters": {
-                "url": "${aiAgent_1.imageUrl}",
-                "caption": "${aiAgent_1.facebook}"
-              }
+              "pageId": "REPLACE_WITH_FACEBOOK_PAGE_ID",
+              "url": "${aiAgent_1.imageUrl}",
+              "caption": "${aiAgent_1.facebook}"
             }
           },
           {
-            "label": "Create Instagram media",
-            "name": "httpClient_instagramMedia",
-            "type": "httpClient/v1/post",
+            "label": "Post to Instagram",
+            "name": "instagram_1",
+            "type": "instagram/v1/createImagePost",
             "parameters": {
-              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_IG_USER_ID/media",
-              "responseType": "JSON",
-              "queryParameters": {
-                "image_url": "${aiAgent_1.imageUrl}",
-                "caption": "${aiAgent_1.instagram}"
-              }
-            }
-          },
-          {
-            "label": "Publish on Instagram",
-            "name": "httpClient_instagramPublish",
-            "type": "httpClient/v1/post",
-            "parameters": {
-              "uri": "https://graph.facebook.com/v21.0/REPLACE_WITH_IG_USER_ID/media_publish",
-              "responseType": "JSON",
-              "queryParameters": {
-                "creation_id": "${httpClient_instagramMedia.body.id}"
-              }
+              "imageUrl": "${aiAgent_1.imageUrl}",
+              "caption": "${aiAgent_1.instagram}"
             }
           },
           {
@@ -149,7 +130,10 @@
               "isTheFirstRowHeader": true,
               "updateWholeRow": false,
               "row": {
-                "status": "published"
+                "status": "published",
+                "linkedinPostUrn": "${linkedin_1}",
+                "facebookPostId": "${facebookPages_1.post_id}",
+                "instagramMediaId": "${instagram_1.id}"
               }
             }
           }
@@ -163,7 +147,7 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Mail (Gmail) connections.\n3. LinkedIn connection; replace REPLACE_WITH_LINKEDIN_PERSON_URN.\n4. Facebook Page access token for the Graph API; replace REPLACE_WITH_PAGE_ID.\n5. Instagram professional account token for the Graph API; replace REPLACE_WITH_IG_USER_ID.\n6. A content plan spreadsheet; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID.\n7. Replace REPLACE_WITH_AUTHOR_EMAIL and REPLACE_WITH_SHOP_DOMAIN.\n\nThe Facebook and Instagram steps are HTTP calls to the Graph API and should become Facebook Pages and Instagram actions once those PRs merge.\n",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Mail (Gmail) connections.\n3. LinkedIn connection; replace REPLACE_WITH_LINKEDIN_PERSON_URN.\n4. Facebook Pages connection; replace REPLACE_WITH_FACEBOOK_PAGE_ID.\n5. Instagram connection to a professional account.\n6. A content plan spreadsheet with a Plan sheet and status, linkedinPostUrn, facebookPostId and instagramMediaId columns; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID.\n7. Replace REPLACE_WITH_AUTHOR_EMAIL and REPLACE_WITH_SHOP_DOMAIN.\n\nThe Facebook Pages and Instagram steps use the components those PRs add.\n",
           "id": "setup-note-self-publishing-social-media-publisher",
           "position": {
             "x": -520,
