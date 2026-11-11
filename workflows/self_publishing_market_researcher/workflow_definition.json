@@ -1,0 +1,78 @@
+{
+  "label": "Build a reader persona and print specifications from your social media audience with an AI agent",
+  "description": "Profiles the people who like, comment, share and follow, then turns that profile into a reader persona and concrete print specifications for the book.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Run manually",
+      "name": "trigger_1",
+      "type": "manual/v1/manual",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read audience export",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID",
+        "sheetName": "Audience",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "Market researcher",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are a market researcher for a printed book. From the audience export (job titles, age ranges, locations, interaction type and comments) build an ideal customer profile. Then turn it into print specifications: trim size in millimetres, font and font size, paper type and weight, binding and cover finish, each with the reason it fits this reader. Also describe the visual identity the web shop should follow. Write in Croatian.",
+        "userPrompt": "Audience:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Write the profile",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/createDocument",
+      "parameters": {
+        "title": "Profil čitatelja i specifikacija knjige",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Docs connections.\n3. A spreadsheet with your exported audience data; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID.\n",
+          "id": "setup-note-self-publishing-market-researcher",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 358,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}

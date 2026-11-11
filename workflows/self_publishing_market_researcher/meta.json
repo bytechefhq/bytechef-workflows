@@ -1,0 +1,29 @@
+{
+  "name": "Build a reader persona and print specifications from your social media audience with an AI agent",
+  "category": "marketing",
+  "description": "Profiles the people who like, comment, share and follow, then turns that profile into a reader persona and concrete print specifications for the book.",
+  "shortDescription": "Profile the people who engage with your posts and turn that into a reader persona and book specs.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI market researcher that profiles the people who like, comment, share and follow",
+    "Reader persona with concrete print specifications: format, binding, paper and price range",
+    "Writes the profile to a Google Doc"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets and Google Docs connections",
+    "A spreadsheet with your exported audience data; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID"
+  ],
+  "idealFor": "Authors and small publishers deciding what kind of book their audience will actually buy.",
+  "steps": [
+    "Trigger: run the workflow manually.",
+    "Read the audience export from Google Sheets.",
+    "The market researcher agent builds a reader persona and print specifications.",
+    "Write the profile to a new Google Doc."
+  ]
+}
