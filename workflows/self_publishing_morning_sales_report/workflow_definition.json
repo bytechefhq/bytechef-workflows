@@ -1,0 +1,113 @@
+{
+  "label": "Email a morning sales report from web shop orders and accounting invoices with an AI agent",
+  "description": "Every morning, collects yesterday's paid orders and invoices, applies the discount rules and emails the author a revenue table split by channel and payment type.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Every day at 06:30",
+      "name": "trigger_1",
+      "type": "schedule/v1/everyDay",
+      "parameters": {
+        "hour": 6,
+        "minute": 30,
+        "dayOfWeek": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "timezone": "Europe/Zagreb"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Sales analyst",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are the bookkeeper of a self-published book sold for EUR 29 including 13% VAT. Use the tools to fetch the paid web shop orders and the B2B invoices for the reporting day. Rules: ignore cancelled, refunded and failed orders and every cancelled invoice. Orders of 3 or more copies carry a 20% discount. B2B invoices paid early carry the early-payment discount stated on the invoice. Answer with an HTML email body only: one table with rows per channel (web shop retail, B2B wholesale) and payment type, columns for copies, revenue without VAT, VAT and revenue with VAT, then a totals row, the number of copies sold and the average profit per copy. Use a unit cost of REPLACE_WITH_UNIT_COST EUR. Write the labels in Croatian.",
+        "userPrompt": "The report runs at ${trigger_1.dateTime}. Report on the previous calendar day.",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        },
+        "tools": [
+          {
+            "label": "Web shop orders",
+            "name": "httpClient_orders",
+            "type": "httpClient/v1/get",
+            "parameters": {
+              "uri": "https://REPLACE_WITH_SHOP_DOMAIN/wp-json/wc/v3/orders",
+              "responseType": "JSON",
+              "queryParameters": {
+                "after": "=fromAi('after', 'STRING', {'description': 'ISO 8601 start of the reporting day, for example 2026-11-06T00:00:00', 'required': true})",
+                "before": "=fromAi('before', 'STRING', {'description': 'ISO 8601 start of the day after the reporting day', 'required': true})",
+                "per_page": "100"
+              }
+            }
+          },
+          {
+            "label": "Accounting invoices",
+            "name": "httpClient_invoices",
+            "type": "httpClient/v1/get",
+            "parameters": {
+              "uri": "https://REPLACE_WITH_ACCOUNTING_API/invoices",
+              "responseType": "JSON",
+              "queryParameters": {
+                "paidDate": "=fromAi('paidDate', 'STRING', {'description': 'The reporting day as yyyy-MM-dd', 'required': true})"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Email the report",
+      "name": "googleMail_1",
+      "type": "googleMail/v1/sendEmail",
+      "parameters": {
+        "to": [
+          "REPLACE_WITH_AUTHOR_EMAIL"
+        ],
+        "subject": "Jutarnji izvještaj prodaje",
+        "bodyType": "html",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Mail (Gmail) connection.\n3. Web shop with a REST API for orders (the HTTP tool uses the WooCommerce REST API path).\n4. Accounting system with a REST API for invoices.\n5. Replace REPLACE_WITH_SHOP_DOMAIN, REPLACE_WITH_ACCOUNTING_API, REPLACE_WITH_UNIT_COST and REPLACE_WITH_AUTHOR_EMAIL.\n\nThe two HTTP tools should become WooCommerce **Search Orders** and Xero **List Invoices** or QuickBooks **Search Invoices** once those PRs merge.\n",
+          "id": "setup-note-self-publishing-morning-sales-report",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 494,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
