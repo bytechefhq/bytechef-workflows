@@ -1,0 +1,36 @@
+{
+  "name": "Turn a content plan into LinkedIn, Facebook Page and Instagram posts with an AI agent and publish after approval",
+  "category": "social",
+  "description": "Twice a week, turns the next story from the content plan into a post per network and publishes it after the author approves it. Facebook and Instagram have no ByteChef component yet, so they go through the Meta Graph API.",
+  "shortDescription": "Twice a week, write a post per network from your content plan and publish it after you approve it.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI social media strategist that writes one post per network from the next story in the plan",
+    "Human approval by email before anything is published",
+    "Publishes with LinkedIn Create Post, Facebook Pages Create Photo Post and Instagram Create Image Post",
+    "Saves the post IDs in the content plan, so the comment tracker template can read the comments"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets and Google Mail (Gmail) connections",
+    "LinkedIn connection; replace REPLACE_WITH_LINKEDIN_PERSON_URN",
+    "Facebook Pages connection; replace REPLACE_WITH_FACEBOOK_PAGE_ID",
+    "Instagram connection to a professional account",
+    "A content plan spreadsheet with a Plan sheet and status, linkedinPostUrn, facebookPostId and instagramMediaId columns; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+    "Replace REPLACE_WITH_AUTHOR_EMAIL and REPLACE_WITH_SHOP_DOMAIN"
+  ],
+  "idealFor": "Authors and small brands that post the same story on several networks and want to approve every post first.",
+  "steps": [
+    "Trigger: Tuesday and Friday at 19:30.",
+    "Read the next story from the content plan in Google Sheets.",
+    "The social media strategist agent writes a post for each network.",
+    "Ask the author to approve the posts by email.",
+    "If approved, publish to LinkedIn, the Facebook Page and Instagram.",
+    "Mark the story as published and save the three post IDs in the content plan."
+  ]
+}
