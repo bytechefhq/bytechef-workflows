@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the vendor-bill-review skill and an HTTP Client tool for the QuickBooks Online query API",
+    "AI Agent with the vendor-bill-review skill and the QuickBooks Search Bills and Get Bill tools",
     "Duplicate detection that always shows the matching bill ID",
     "Recurring bills (rent, subscriptions) listed apart from duplicates",
     "Read-only: no bill is created, approved, paid, edited or voided"
@@ -18,7 +18,7 @@
   "prerequisites": [
     "The `vendor-bill-review` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
-    "HTTP Client OAuth2 connection to QuickBooks Online (Intuit app client ID and secret, scope com.intuit.quickbooks.accounting) and your company (realm) ID in the system prompt",
+    "QuickBooks connection (OAuth2 with your Intuit app and company ID)",
     "Slack connection and the ID of the finance channel"
   ],
   "idealFor": "Finance and accounts payable teams that want a clean list before every payment run.",
