@@ -11,14 +11,14 @@
   },
   "keyFeatures": [
     "Gmail trigger on new customer emails",
-    "AI support agent with an order lookup tool for live order status",
+    "AI support agent with WooCommerce Get Order and Search Orders tools for live order status",
     "Escalates complaints, uncertain answers and special requests to a human with a draft reply",
     "Sends the reviewed reply only after approval"
   ],
   "prerequisites": [
     "Anthropic API key",
     "Google Mail (Gmail) connection",
-    "Web shop with a REST API for orders; replace REPLACE_WITH_SHOP_DOMAIN",
+    "WooCommerce connection",
     "Replace REPLACE_WITH_SHIPPING_COST and REPLACE_WITH_AUTHOR_EMAIL"
   ],
   "idealFor": "Small shops that want routine customer emails answered automatically and the rest reviewed by the owner.",

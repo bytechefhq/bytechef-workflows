@@ -19,7 +19,7 @@
       "type": "aiAgent/v1/chat",
       "parameters": {
         "format": "SIMPLE",
-        "systemPrompt": "You answer customer emails for the book in the author's voice: warm, short, with a light touch of humour, in the language of the customer. Use getOrder to look up an order by number or the customer's email before answering anything about shipping, delivery or invoices. Delivery inside Croatia takes 2 to 4 working days and costs REPLACE_WITH_SHIPPING_COST EUR. Set escalate to true for complaints, refunds, damaged copies, dedication requests and anything you are not sure about; still draft the reply for the author in that case.",
+        "systemPrompt": "You answer customer emails for the book in the author's voice: warm, short, with a light touch of humour, in the language of the customer. Use Get order to look up an order by its number, or Search orders to find it by the customer's email, before answering anything about shipping, delivery or invoices. Delivery inside Croatia takes 2 to 4 working days and costs REPLACE_WITH_SHIPPING_COST EUR. Set escalate to true for complaints, refunds, damaged copies, dedication requests and anything you are not sure about; still draft the reply for the author in that case.",
         "userPrompt": "From: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}",
         "response": {
           "responseFormat": "JSON",
@@ -39,15 +39,20 @@
         },
         "tools": [
           {
-            "label": "getOrder",
-            "name": "httpClient_order",
-            "type": "httpClient/v1/get",
+            "label": "Get order",
+            "name": "woocommerce_get",
+            "type": "woocommerce/v1/getOrder",
             "parameters": {
-              "uri": "https://REPLACE_WITH_SHOP_DOMAIN/wp-json/wc/v3/orders",
-              "responseType": "JSON",
-              "queryParameters": {
-                "search": "=fromAi('search', 'STRING', {'description': 'Order number or customer email', 'required': true})"
-              }
+              "id": "=fromAi('id', 'STRING', {'description': 'Order number', 'required': true})"
+            }
+          },
+          {
+            "label": "Search orders",
+            "name": "woocommerce_search",
+            "type": "woocommerce/v1/searchOrders",
+            "parameters": {
+              "search": "=fromAi('search', 'STRING', {'description': 'Customer email or name', 'required': true})",
+              "per_page": 10
             }
           }
         ]
@@ -145,7 +150,7 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Mail (Gmail) connection.\n3. Web shop with a REST API for orders; replace REPLACE_WITH_SHOP_DOMAIN.\n4. Replace REPLACE_WITH_SHIPPING_COST and REPLACE_WITH_AUTHOR_EMAIL.\n\nThe order lookup tool is an HTTP call and should become WooCommerce **Get Order** once that PR merges.\n",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Mail (Gmail) connection.\n3. WooCommerce connection.\n4. Replace REPLACE_WITH_SHIPPING_COST and REPLACE_WITH_AUTHOR_EMAIL.\n\nThe order tools use the WooCommerce actions that PR adds.\n",
           "id": "setup-note-self-publishing-customer-support",
           "position": {
             "x": -520,
