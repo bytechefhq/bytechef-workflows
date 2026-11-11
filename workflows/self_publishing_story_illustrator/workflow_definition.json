@@ -1,0 +1,114 @@
+{
+  "label": "Illustrate a story with an AI art director and save print and web versions to Google Drive",
+  "description": "Callable workflow: reads a story, finds its most emotional detail and generates a lithograph-style illustration, saved to Google Drive in a print and a web version.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Called by another workflow",
+      "name": "trigger_1",
+      "type": "workflow/v1/newWorkflowCall",
+      "parameters": {
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"title\": {\"type\": \"string\", \"description\": \"Story title\"}, \"storyText\": {\"type\": \"string\", \"description\": \"Full story text\"}}, \"required\": [\"title\", \"storyText\"]}"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Art director",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are the art director of an illustrated book of short stories about a grandmother from the island of Vis. Find the single most emotional, concrete detail of the story (an object, a gesture, a place) and write an image prompt for it. Style: black and white lithograph, fine cross-hatching, off-white paper texture, no text, no faces in close-up, generous empty space around the subject.",
+        "userPrompt": "Title: ${trigger_1.title}\n\n${trigger_1.storyText}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\": \"object\", \"properties\": {\"detail\": {\"type\": \"string\", \"description\": \"The chosen detail, one sentence\"}, \"imagePrompt\": {\"type\": \"string\", \"description\": \"The image generation prompt\"}}, \"required\": [\"detail\", \"imagePrompt\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Generate illustration",
+      "name": "aiImage_1",
+      "type": "aiImage/v1/generateImage",
+      "parameters": {
+        "provider": "OPEN_AI",
+        "model": "REPLACE_WITH_IMAGE_MODEL",
+        "prompt": "${aiAgent_1.imagePrompt}",
+        "size": "_1024x1024",
+        "responseFormat": "URL"
+      }
+    },
+    {
+      "label": "Download image",
+      "name": "httpClient_1",
+      "type": "httpClient/v1/get",
+      "parameters": {
+        "uri": "${aiImage_1.url}",
+        "responseType": "BINARY",
+        "responseFilename": "${trigger_1.title}.png"
+      }
+    },
+    {
+      "label": "Save print version",
+      "name": "googleDrive_print",
+      "type": "googleDrive/v1/uploadFile",
+      "parameters": {
+        "fileEntry": "${httpClient_1.body}",
+        "folderId": "REPLACE_WITH_PRINT_FOLDER_ID"
+      }
+    },
+    {
+      "label": "Save web version",
+      "name": "googleDrive_web",
+      "type": "googleDrive/v1/uploadFile",
+      "parameters": {
+        "fileEntry": "${httpClient_1.body}",
+        "folderId": "REPLACE_WITH_WEB_FOLDER_ID"
+      }
+    },
+    {
+      "label": "Return the files",
+      "name": "workflow_1",
+      "type": "workflow/v1/responseToWorkflowCall",
+      "parameters": {
+        "response": {
+          "detail": "${aiAgent_1.detail}",
+          "printFileId": "${googleDrive_print.id}",
+          "webFileId": "${googleDrive_web.id}"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. API key for the image model provider (OpenAI by default); replace REPLACE_WITH_IMAGE_MODEL.\n3. Google Drive connection.\n4. Two Google Drive folders, for print and web; replace REPLACE_WITH_PRINT_FOLDER_ID and REPLACE_WITH_WEB_FOLDER_ID.\n",
+          "id": "setup-note-self-publishing-story-illustrator",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 392,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}

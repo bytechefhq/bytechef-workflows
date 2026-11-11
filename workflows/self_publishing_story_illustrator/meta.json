@@ -1,0 +1,32 @@
+{
+  "name": "Illustrate a story with an AI art director and save print and web versions to Google Drive",
+  "category": "ai",
+  "description": "Callable workflow: reads a story, finds its most emotional detail and generates a lithograph-style illustration, saved to Google Drive in a print and a web version.",
+  "shortDescription": "A callable workflow that turns a story into an illustration saved in print and web folders.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Callable from other workflows with a story title and text",
+    "AI art director that finds the story's most emotional detail and writes the image prompt",
+    "Image generation in one consistent lithograph style",
+    "Saves a print version and a web version to two Google Drive folders and returns both files"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "API key for the image model provider (OpenAI by default); replace REPLACE_WITH_IMAGE_MODEL",
+    "Google Drive connection",
+    "Two Google Drive folders, for print and web; replace REPLACE_WITH_PRINT_FOLDER_ID and REPLACE_WITH_WEB_FOLDER_ID"
+  ],
+  "idealFor": "Authors and publishers who want a consistent illustration for every story without commissioning each one.",
+  "steps": [
+    "Trigger: another workflow calls this one with a story title and text.",
+    "The art director agent picks the most emotional detail and writes an image prompt.",
+    "Generate the illustration.",
+    "Download the image and save a print version and a web version to Google Drive.",
+    "Return both files to the calling workflow."
+  ]
+}
