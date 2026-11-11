@@ -10,7 +10,7 @@
     "socialLinks": ""
   },
   "keyFeatures": [
-    "AI Agent with the access-request-review skill, the Jira JQL search tool and an HTTP Client tool for the Okta API",
+    "AI Agent with the access-request-review skill, the Jira JQL search tool and Okta user, group and app tools",
     "Recommendation rules based on peer access, with privileged targets always sent to a human",
     "Every reason cites \"N of M peers (title, department) have it\"",
     "Recommendations only: no group, app or ticket changes, and no messages to requesters"
@@ -19,7 +19,7 @@
     "The `access-request-review` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
     "Anthropic API key",
     "Jira connection with read access to the service desk project that holds access requests",
-    "HTTP Client API key connection to Okta (header Authorization, value SSWS <token>) with a read-only admin token, and your Okta domain in the system prompt",
+    "Okta connection (your Okta domain and a read-only admin API token)",
     "Slack connection and the ID of the IT channel"
   ],
   "idealFor": "IT and security teams that review a steady stream of access requests.",
