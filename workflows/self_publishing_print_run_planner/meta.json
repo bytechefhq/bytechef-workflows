@@ -1,0 +1,30 @@
+{
+  "name": "Compare printer quotes and calculate break-even for a print run with an AI financial planner",
+  "category": "finance",
+  "description": "Compares printer quotes, calculates cost per copy and break-even for the print run, and compares the author's margin when self-publishing with a publisher's royalty.",
+  "shortDescription": "Compare printer quotes, cost per copy and break-even, and self-publishing against a publisher deal.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI financial planner that reads printer quotes from a spreadsheet",
+    "Cost per copy and break-even for each print run size",
+    "Compares the author's margin when self-publishing with a publisher deal",
+    "Writes the comparison to a Google Doc"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets and Google Docs connections",
+    "A spreadsheet with printer quotes; replace REPLACE_WITH_PRINTER_QUOTES_SPREADSHEET_ID"
+  ],
+  "idealFor": "Self-publishers deciding how many copies to print and whether to go with a publisher.",
+  "steps": [
+    "Trigger: run the workflow manually.",
+    "Read the printer quotes from Google Sheets.",
+    "The financial planner agent calculates cost per copy, break-even and both margins.",
+    "Write the comparison to a new Google Doc."
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "label": "Compare printer quotes and calculate break-even for a print run with an AI financial planner",
+  "description": "Compares printer quotes, calculates cost per copy and break-even for the print run, and compares the author's margin when self-publishing with a publisher's royalty.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Run manually",
+      "name": "trigger_1",
+      "type": "manual/v1/manual",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read printer quotes",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_PRINTER_QUOTES_SPREADSHEET_ID",
+        "sheetName": "Quotes",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "Financial planner",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are the financial planner for a self-published book. Compare the printer quotes on paper, binding, lamination, delivery time and total price. For a print run of 2,000 copies at a retail price of EUR 29 including 13% VAT, calculate the cost per copy, the break-even number of copies and the profit per copy for: (a) selling through the own web shop, (b) wholesale at the discount in the sheet, (c) a classic publisher deal at a 10% royalty. Show the arithmetic. Finish with a recommended printer and one paragraph of reasoning. Write in Croatian.",
+        "userPrompt": "Quotes:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        }
+      }
+    },
+    {
+      "label": "Write the comparison",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/createDocument",
+      "parameters": {
+        "title": "Usporedba tiskara i izračun isplativosti",
+        "body": "${aiAgent_1}"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets and Google Docs connections.\n3. A spreadsheet with printer quotes; replace REPLACE_WITH_PRINTER_QUOTES_SPREADSHEET_ID.\n",
+          "id": "setup-note-self-publishing-print-run-planner",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 358,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
