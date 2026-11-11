@@ -1,0 +1,137 @@
+{
+  "label": "Find readers who want to buy your book in LinkedIn, Facebook and Instagram comments with an AI agent",
+  "description": "Every evening, finds people who asked when the book comes out or said they would buy it, and saves them to a data table with the story they commented on.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Every evening",
+      "name": "trigger_1",
+      "type": "schedule/v1/everyDay",
+      "parameters": {
+        "hour": 22,
+        "minute": 0,
+        "dayOfWeek": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "timezone": "Europe/Zagreb"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read published posts",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID",
+        "sheetName": "Plan",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "Buying-intent detector",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "The content plan lists the stories that were published, with linkedinPostUrn, facebookPostId and instagramMediaId columns. For every row whose status is \"published\", read the comments with Get LinkedIn comments, Get Facebook comments and Get Instagram comments, skipping empty IDs. Keep only people who ask when or where the book is available, ask for a copy, or say they will buy it. Ignore compliments without buying intent. Before saving a person, use Find existing readers to check they are not already in the table, then save each new person with Save interested reader, with the title of the story they commented on.",
+        "userPrompt": "Content plan:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get LinkedIn comments",
+            "name": "linkedin_1",
+            "type": "linkedin/v1/getComments",
+            "parameters": {
+              "urn": "=fromAi('urn', 'STRING', {'description': 'linkedinPostUrn from the content plan', 'required': true})",
+              "count": 100
+            }
+          },
+          {
+            "label": "Get Facebook comments",
+            "name": "facebookPages_1",
+            "type": "facebookPages/v1/getComments",
+            "parameters": {
+              "pageId": "REPLACE_WITH_FACEBOOK_PAGE_ID",
+              "postId": "=fromAi('postId', 'STRING', {'description': 'facebookPostId from the content plan', 'required': true})"
+            }
+          },
+          {
+            "label": "Get Instagram comments",
+            "name": "instagram_1",
+            "type": "instagram/v1/getComments",
+            "parameters": {
+              "mediaId": "=fromAi('mediaId', 'STRING', {'description': 'instagramMediaId from the content plan', 'required': true})"
+            }
+          },
+          {
+            "label": "Find existing readers",
+            "name": "dataTable_find",
+            "type": "dataTable/v1/findRecords",
+            "parameters": {
+              "table": "REPLACE_WITH_INTERESTED_READERS_TABLE",
+              "limit": 100
+            }
+          },
+          {
+            "label": "Save interested reader",
+            "name": "dataTable_create",
+            "type": "dataTable/v1/createRecords",
+            "parameters": {
+              "table": "REPLACE_WITH_INTERESTED_READERS_TABLE",
+              "records": [
+                {
+                  "name": "=fromAi('name', 'STRING', {'required': true})",
+                  "network": "=fromAi('network', 'STRING', {'description': 'facebook, instagram or linkedin', 'required': true})",
+                  "profileUrl": "=fromAi('profileUrl', 'STRING')",
+                  "story": "=fromAi('story', 'STRING', {'description': 'Title of the story they commented on', 'required': true})",
+                  "comment": "=fromAi('comment', 'STRING', {'required': true})",
+                  "notified": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Google Sheets connection.\n3. The content plan spreadsheet filled by the social media publisher template, with the post ID columns; replace REPLACE_WITH_CONTENT_PLAN_SPREADSHEET_ID.\n4. LinkedIn connection with the r_organization_social_feed scope enabled; LinkedIn only returns comments on company page posts, so remove the LinkedIn tool if you post from a personal profile.\n5. Facebook Pages connection; replace REPLACE_WITH_FACEBOOK_PAGE_ID.\n6. Instagram connection to a professional account.\n7. A ByteChef data table for interested readers; replace REPLACE_WITH_INTERESTED_READERS_TABLE.\n\nThe three comment tools use the actions those PRs add.\n",
+          "id": "setup-note-self-publishing-comment-tracker",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 562,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
