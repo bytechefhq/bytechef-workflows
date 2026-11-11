@@ -1,0 +1,32 @@
+{
+  "name": "Send personalized corporate gift offers enriched with Apollo after approving each email",
+  "category": "sales",
+  "description": "For each target company, enriches the company and contact in Apollo and drafts a personalized holiday gift offer. Every email waits for the author's approval before it is sent.",
+  "shortDescription": "Enrich target companies in Apollo, draft a gift offer for each and send it once you approve it.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI B2B sales agent with Apollo company and person enrichment tools",
+    "Personalized holiday gift offer for each company",
+    "Approval gate: every email waits for the author's approval before it is sent",
+    "Runs on weekday mornings"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Apollo API key",
+    "Google Sheets and Google Mail (Gmail) connections",
+    "A spreadsheet of target companies; replace REPLACE_WITH_B2B_TARGETS_SPREADSHEET_ID",
+    "Replace REPLACE_WITH_AUTHOR_EMAIL with the address that approves the emails"
+  ],
+  "idealFor": "Authors and small brands selling their product as a corporate gift.",
+  "steps": [
+    "Trigger: weekdays at 09:00.",
+    "Read the target companies from Google Sheets.",
+    "The B2B sales agent enriches each company and contact in Apollo and drafts a gift offer.",
+    "Each offer email waits for the author's approval, then is sent from Gmail."
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "label": "Send personalized corporate gift offers enriched with Apollo after approving each email",
+  "description": "For each target company, enriches the company and contact in Apollo and drafts a personalized holiday gift offer. Every email waits for the author's approval before it is sent.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Weekdays at 09:00",
+      "name": "trigger_1",
+      "type": "schedule/v1/everyDay",
+      "parameters": {
+        "hour": 9,
+        "minute": 0,
+        "dayOfWeek": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "timezone": "Europe/Zagreb"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read target companies",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_B2B_TARGETS_SPREADSHEET_ID",
+        "sheetName": "Targets",
+        "isTheFirstRowHeader": true
+      }
+    },
+    {
+      "label": "B2B sales agent",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You sell a book of short stories as a corporate holiday gift. Process at most 10 rows whose status is empty. For each company, enrich it with enrichCompany, then enrich the contact with enrichPerson. Write the email in Croatian and adapt it to the role: marketing hears about brand visibility, HR about employee gifts. Terms: 10% off from 50 copies, 15% off from 200 copies, a further 5% for payment within 8 days. Companies ordering 500 or more copies may be offered a sponsor page in the second edition. Every copy can be signed by the author. Send each email with sendEmail; the author approves every email before it goes out.",
+        "userPrompt": "Targets:\n${googleSheets_1}",
+        "response": {
+          "responseFormat": "TEXT"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "Claude",
+          "name": "anthropic_1",
+          "type": "anthropic/v1/model",
+          "parameters": {
+            "model": "claude-sonnet-5-5",
+            "maxTokens": 16000,
+            "reasoningEffort": "medium"
+          }
+        },
+        "tools": [
+          {
+            "label": "Enrich company",
+            "name": "apollo_company",
+            "type": "apollo/v1/enrichCompany",
+            "parameters": {
+              "domain": "=fromAi('domain', 'STRING', {'description': 'Company website domain', 'required': true})"
+            }
+          },
+          {
+            "label": "Enrich contact",
+            "name": "apollo_person",
+            "type": "apollo/v1/enrichPerson",
+            "parameters": {
+              "name": "=fromAi('name', 'STRING', {'description': 'Contact full name'})",
+              "domain": "=fromAi('domain', 'STRING', {'description': 'Company website domain'})",
+              "email": "=fromAi('email', 'STRING', {'description': 'Contact email, if known'})"
+            }
+          },
+          {
+            "label": "Approval gate",
+            "name": "aiAgentUtils_gate",
+            "type": "aiAgentUtils/v1/approvalGate",
+            "parameters": {
+              "name": "Author approves outreach email",
+              "approvalExpiresIn": 3,
+              "approvalExpiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "tools": [
+                {
+                  "label": "Send offer email",
+                  "name": "googleMail_send",
+                  "type": "googleMail/v1/sendEmail",
+                  "parameters": {
+                    "to": [
+                      "=fromAi('to', 'STRING', {'description': 'Recipient email', 'required': true})"
+                    ],
+                    "subject": "=fromAi('subject', 'STRING', {'required': true})",
+                    "bodyType": "plain",
+                    "body": "=fromAi('body', 'STRING', {'required': true})"
+                  }
+                }
+              ],
+              "approvalChannels": [
+                {
+                  "label": "Email the author",
+                  "name": "googleMail_channel",
+                  "type": "googleMail/v1/googleMail",
+                  "parameters": {
+                    "to": [
+                      "REPLACE_WITH_AUTHOR_EMAIL"
+                    ],
+                    "subject": "Nova B2B ponuda čeka odobrenje"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. Anthropic API key.\n2. Apollo API key.\n3. Google Sheets and Google Mail (Gmail) connections.\n4. A spreadsheet of target companies; replace REPLACE_WITH_B2B_TARGETS_SPREADSHEET_ID.\n5. Replace REPLACE_WITH_AUTHOR_EMAIL with the address that approves the emails.\n",
+          "id": "setup-note-self-publishing-corporate-gift-outreach",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 426,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
