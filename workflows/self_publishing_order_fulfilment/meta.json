@@ -1,0 +1,30 @@
+{
+  "name": "Invoice paid WooCommerce orders and send packing orders to the warehouse",
+  "category": "other",
+  "description": "When a paid WooCommerce order arrives, issues the invoice in the accounting system and sends the packing order to the logistics warehouse. No AI is needed here.",
+  "shortDescription": "When a WooCommerce order is paid, issue the invoice and send the packing order. No AI needed.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "WooCommerce New Order trigger",
+    "Only paid orders continue",
+    "Issues the invoice in your accounting system",
+    "Sends the packing order to the logistics warehouse"
+  ],
+  "prerequisites": [
+    "WooCommerce connection",
+    "Accounting system with a REST API for invoices; replace REPLACE_WITH_ACCOUNTING_API",
+    "Warehouse or logistics provider with a REST API for packing orders; replace REPLACE_WITH_WAREHOUSE_API"
+  ],
+  "idealFor": "Small web shops that ship physical products through a fulfilment warehouse.",
+  "steps": [
+    "Trigger: a new order in WooCommerce.",
+    "Check whether the order is paid.",
+    "Issue the invoice in the accounting system.",
+    "Send the packing order to the warehouse."
+  ]
+}

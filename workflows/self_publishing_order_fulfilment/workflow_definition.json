@@ -1,0 +1,83 @@
+{
+  "label": "Invoice paid WooCommerce orders and send packing orders to the warehouse",
+  "description": "When a paid WooCommerce order arrives, issues the invoice in the accounting system and sends the packing order to the logistics warehouse. No AI is needed here.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New order",
+      "name": "trigger_1",
+      "type": "woocommerce/v1/newOrder",
+      "parameters": {}
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Is the order paid?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "=${trigger_1.status} == 'processing'",
+        "caseTrue": [
+          {
+            "label": "Issue the invoice",
+            "name": "httpClient_invoice",
+            "type": "httpClient/v1/post",
+            "parameters": {
+              "uri": "https://REPLACE_WITH_ACCOUNTING_API/invoices",
+              "responseType": "JSON",
+              "body": {
+                "bodyContentType": "JSON",
+                "bodyContent": {
+                  "orderNumber": "${trigger_1.id}",
+                  "customer": "${trigger_1.billing}",
+                  "lineItems": "${trigger_1.line_items}",
+                  "total": "${trigger_1.total}",
+                  "paymentMethod": "${trigger_1.payment_method}"
+                }
+              }
+            }
+          },
+          {
+            "label": "Send the packing order",
+            "name": "httpClient_packing",
+            "type": "httpClient/v1/post",
+            "parameters": {
+              "uri": "https://REPLACE_WITH_WAREHOUSE_API/packing-orders",
+              "responseType": "JSON",
+              "body": {
+                "bodyContentType": "JSON",
+                "bodyContent": {
+                  "reference": "${trigger_1.id}",
+                  "shipping": "${trigger_1.shipping}",
+                  "lineItems": "${trigger_1.line_items}",
+                  "invoiceNumber": "${httpClient_invoice.body.number}"
+                }
+              }
+            }
+          }
+        ],
+        "caseFalse": []
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Setup\n\nThis template has not been run end to end yet. Before you run it:\n\n1. WooCommerce connection.\n2. Accounting system with a REST API for invoices; replace REPLACE_WITH_ACCOUNTING_API.\n3. Warehouse or logistics provider with a REST API for packing orders; replace REPLACE_WITH_WAREHOUSE_API.\n\nThe New Order trigger declares no order fields until #7421 merges, so the data pills for the order are missing in the editor. The invoice step could use Xero or QuickBooks actions instead of HTTP.\n",
+          "id": "setup-note-self-publishing-order-fulfilment",
+          "position": {
+            "x": -520,
+            "y": 0
+          },
+          "size": {
+            "height": 426,
+            "width": 460
+          }
+        }
+      ]
+    }
+  }
+}
