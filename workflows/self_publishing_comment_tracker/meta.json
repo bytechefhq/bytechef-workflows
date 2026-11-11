@@ -1,0 +1,30 @@
+{
+  "name": "Find readers who want to buy your book in social media comments with an AI agent",
+  "category": "sales",
+  "description": "Every evening, finds people who asked when the book comes out or said they would buy it, and saves them to a data table with the story they commented on.",
+  "shortDescription": "Every evening, save commenters who asked about the book to a data table, with the story they commented on.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI agent that detects buying intent in comments",
+    "Remembers which story each reader commented on",
+    "Skips readers already saved, using a data table lookup tool",
+    "Runs every evening"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Google Sheets connection",
+    "A spreadsheet with new comments; replace REPLACE_WITH_SOCIAL_EXPORT_SPREADSHEET_ID",
+    "A ByteChef data table for interested readers; replace REPLACE_WITH_INTERESTED_READERS_TABLE"
+  ],
+  "idealFor": "Authors building a list of readers to contact on launch day.",
+  "steps": [
+    "Trigger: every evening at 22:00.",
+    "Read new comments from Google Sheets.",
+    "The buying-intent agent checks each comment, looks the reader up in the data table and saves new interested readers."
+  ]
+}
