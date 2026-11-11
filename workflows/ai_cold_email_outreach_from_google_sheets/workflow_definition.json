@@ -1,0 +1,215 @@
+{
+    "label": "Send AI-personalized cold emails from a Google Sheet every morning",
+    "description": "Every weekday at 08:00 reads a Google Sheet of leads, lets Claude write a personal email for each lead that has not been contacted yet, sends it from Gmail, marks the row as Sent and waits a minute between emails. Stops after a daily limit.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Every weekday at 08:00",
+            "name": "trigger_1",
+            "type": "schedule/v1/everyDay",
+            "parameters": {
+                "hour": 8,
+                "minute": 0,
+                "dayOfWeek": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "timezone": "Europe/Zagreb"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Read leads",
+            "name": "googleSheets_1",
+            "type": "googleSheets/v1/getRows",
+            "parameters": {
+                "spreadsheetId": "YOUR_SPREADSHEET_ID",
+                "sheetName": "Sheet1",
+                "isTheFirstRowHeader": true
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "For each lead",
+            "name": "loop_1",
+            "type": "loop/v1",
+            "parameters": {
+                "items": "${googleSheets_1}",
+                "loopForever": false,
+                "iteratee": [
+                    {
+                        "label": "Not contacted yet?",
+                        "name": "condition_1",
+                        "type": "condition/v1",
+                        "parameters": {
+                            "rawExpression": true,
+                            "expression": "=loop_1.item['Status'] == null or loop_1.item['Status'] == ''",
+                            "caseTrue": [
+                                {
+                                    "label": "Count emails sent in this run",
+                                    "name": "dataStorage_1",
+                                    "type": "dataStorage/v1/atomicIncrement",
+                                    "parameters": {
+                                        "key": "emailsSent",
+                                        "scope": "CURRENT_EXECUTION",
+                                        "valueToAdd": 1
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "label": "Daily limit reached?",
+                                    "name": "condition_2",
+                                    "type": "condition/v1",
+                                    "parameters": {
+                                        "rawExpression": true,
+                                        "expression": "=dataStorage_1 > 20",
+                                        "caseTrue": [
+                                            {
+                                                "label": "Stop for today",
+                                                "name": "loopBreak_1",
+                                                "type": "loopBreak/v1",
+                                                "parameters": {}
+                                            }
+                                        ],
+                                        "caseFalse": []
+                                    }
+                                },
+                                {
+                                    "label": "Write personal email",
+                                    "name": "anthropic_1",
+                                    "type": "anthropic/v1/ask",
+                                    "parameters": {
+                                        "model": "claude-sonnet-5-5",
+                                        "format": "SIMPLE",
+                                        "systemPrompt": "You write short, personal cold emails on behalf of a small business.\n\nABOUT THE BUSINESS\nDescribe your company here: what you sell, who it is for, and the typical result a customer gets. Example: Acme Automation helps companies of 20 to 200 people automate the repetitive admin work between the tools they already use. A typical first project takes one week. The sender is Alex, founder of Acme.\n\nRULES\n- Write to one person, in plain text, as a human would type it. No markdown, no links, no emojis.\n- Open with one specific observation taken from the lead's notes. Never invent facts that are not in the notes.\n- Connect that observation to one concrete way the business could help. One idea only.\n- End with a single low-pressure question, for example asking whether a 15-minute call next week makes sense.\n- 80 to 120 words in the body. Greet the lead by first name. Sign off with the sender's first name only.\n- The subject line has at most 6 words, is specific to the lead, and contains no hype or clickbait.\n\nReturn JSON with two fields: \"subject\" and \"body\".",
+                                        "userPrompt": "Lead:\n- Name: ${loop_1.item['First Name']} ${loop_1.item['Last Name']}\n- Title: ${loop_1.item['Title']}\n- Company: ${loop_1.item['Company']}\n- Industry: ${loop_1.item['Industry']}\n- City: ${loop_1.item['City']}\n- Notes: ${loop_1.item['Notes']}\n\nWrite the email.",
+                                        "maxTokens": 1000,
+                                        "temperature": 0.7,
+                                        "response": {
+                                            "responseFormat": "JSON",
+                                            "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"subject\":{\"type\":\"string\",\"title\":\"subject\",\"description\":\"Email subject line, at most 6 words\"},\"body\":{\"type\":\"string\",\"title\":\"body\",\"description\":\"Plain-text email body\"}},\"required\":[\"subject\",\"body\"]}"
+                                        }
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {
+                                                "userPrompt": "STRING",
+                                                "systemPrompt": "STRING"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "label": "Send email",
+                                    "name": "googleMail_1",
+                                    "type": "googleMail/v1/sendEmail",
+                                    "parameters": {
+                                        "to": [
+                                            "${loop_1.item['Email']}"
+                                        ],
+                                        "subject": "${anthropic_1.subject}",
+                                        "bodyType": "plain",
+                                        "body": "${anthropic_1.body}"
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "label": "Current time",
+                                    "name": "dateHelper_1",
+                                    "type": "dateHelper/v1/getCurrentDate",
+                                    "parameters": {
+                                        "timeZone": "Europe/Zagreb",
+                                        "dateFormat": "yyyy-MM-dd'T'HH:mm:ss"
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "label": "Mark lead as sent",
+                                    "name": "googleSheets_2",
+                                    "type": "googleSheets/v1/updateRow",
+                                    "parameters": {
+                                        "spreadsheetId": "YOUR_SPREADSHEET_ID",
+                                        "sheetName": "Sheet1",
+                                        "rowNumber": "=loop_1.index + 2",
+                                        "isTheFirstRowHeader": false,
+                                        "updateWholeRow": false,
+                                        "row": {
+                                            "values": [
+                                                {
+                                                    "column": "I",
+                                                    "value": "Sent"
+                                                },
+                                                {
+                                                    "column": "J",
+                                                    "value": "${anthropic_1.subject}"
+                                                },
+                                                {
+                                                    "column": "K",
+                                                    "value": "${dateHelper_1}"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {
+                                                "rowNumber": "INTEGER"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "label": "Pause 60 seconds",
+                                    "name": "wait_1",
+                                    "type": "wait/v1/afterTimeInterval",
+                                    "parameters": {
+                                        "amount": 60,
+                                        "unit": "SECONDS"
+                                    },
+                                    "metadata": {
+                                        "ui": {
+                                            "dynamicPropertyTypes": {}
+                                        }
+                                    }
+                                }
+                            ],
+                            "caseFalse": []
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {
+                        "items": "ARRAY"
+                    }
+                }
+            }
+        }
+    ]
+}
