@@ -1,0 +1,35 @@
+{
+  "name": "Answer support emails with an AI agent that uses the Notion and Linear MCP servers",
+  "category": "support",
+  "description": "An AI agent reads each new support email, triages it, searches your Notion help center over MCP, creates a Linear issue over MCP and replies to the customer. The agent follows plain English instructions, and every model call and tool call is recorded in the execution log.",
+  "shortDescription": "Triage support emails, search a Notion help center, open a Linear issue and reply, with one AI agent and two MCP servers.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "One AI Agent step driven by plain English instructions instead of branches and mappings",
+    "Two MCP servers as tools: Notion for the help center and Linear for tickets",
+    "Triage into a fixed set of categories and priorities, written into the Linear issue",
+    "Replies that use only facts from help center articles, and fall back to the issue identifier",
+    "Every model call and MCP tool call recorded in the execution log"
+  ],
+  "prerequisites": [
+    "Google Mail (Gmail) connection for the support inbox",
+    "Anthropic API key",
+    "Linear personal API key and a team named Support",
+    "Notion internal integration with access to your help center pages",
+    "Notion MCP server reachable from ByteChef (for example @notionhq/notion-mcp-server started with --transport http)"
+  ],
+  "idealFor": "Support teams that want an AI agent to handle first-line email support, with every decision it makes visible and auditable.",
+  "steps": [
+    "Trigger: poll Gmail for a new unread email.",
+    "The AI agent triages the email into a category and a priority.",
+    "The agent searches the Notion help center through the Notion MCP server and reads the best articles.",
+    "The agent creates a Linear issue through the Linear MCP server with the triage, the articles and the drafted reply.",
+    "The agent drafts a reply that uses only facts from the articles.",
+    "Reply to the customer in the same Gmail thread."
+  ]
+}

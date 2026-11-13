@@ -1,0 +1,107 @@
+{
+    "label": "Answer support emails with an AI agent that uses the Notion and Linear MCP servers",
+    "description": "An AI agent reads each new support email, triages it, searches your Notion help center over MCP, creates a Linear issue over MCP and replies to the customer. The agent follows plain English instructions, and every model call and tool call is recorded in the execution log.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "New support email",
+            "name": "trigger_1",
+            "type": "googleMail/v1/newEmailPolling",
+            "parameters": {
+                "format": "SIMPLE"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Support agent",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are the first-line support agent for our product. Handle the customer email you are given in four steps.\n\n1. Triage. Pick one category: Bug, Billing, How-to or Feature request. Pick one priority: Urgent (the customer cannot use the product at all, or data is lost), High (a main feature is broken or a payment failed), Normal (everything else that needs an answer) or Low (feedback and feature requests).\n\n2. Search the help center. Use the Notion tools to search for help center articles that answer the question. Open the most relevant article and read it before you use it. Use at most three articles.\n\n3. Create a ticket. Use the Linear tools to create one issue in the Support team. Title: the category in square brackets, then a one-line summary, for example \"[Billing] Card declined when upgrading to the Team plan\". Set the Linear priority to match your priority. In the description, write the customer's email address, the category, the priority, a short summary of the problem, links to the help center articles you used, and the reply you are about to send.\n\n4. Draft the reply. Write a friendly, short reply to the customer. Use only facts from the help center articles. If the articles do not answer the question, say that the team is looking into it and give the Linear issue identifier. Never promise refunds, discounts or release dates.\n\nReturn only the reply text, with no greeting line for the support team and no explanation of your steps.",
+                "userPrompt": "From: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 4000,
+                        "temperature": 0.2
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "Notion help center (MCP)",
+                        "name": "mcpClient_1",
+                        "type": "mcpClient/v1/mcpTools",
+                        "parameters": {
+                            "toolFilterType": "all"
+                        },
+                        "connections": {
+                            "mcpClient_1": {
+                                "componentName": "mcpClient",
+                                "componentVersion": 1
+                            }
+                        }
+                    },
+                    {
+                        "label": "Linear tickets (MCP)",
+                        "name": "mcpClient_2",
+                        "type": "mcpClient/v1/mcpTools",
+                        "parameters": {
+                            "toolFilterType": "all"
+                        },
+                        "connections": {
+                            "mcpClient_2": {
+                                "componentName": "mcpClient",
+                                "componentVersion": 1
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Reply to customer",
+            "name": "googleMail_1",
+            "type": "googleMail/v1/replyToEmail",
+            "parameters": {
+                "id": "${trigger_1.id}",
+                "bodyType": "plain",
+                "body": "${aiAgent_1}"
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: connect the two MCP servers\n\nThe agent has no built-in Notion or Linear steps. It reaches both through their MCP servers and picks the tools it needs from its instructions.\n\n1. **Linear:** create a personal API key in Linear (**Settings > Security & access**). Add a connection to **Linear tickets (MCP)** with Server URL `https://mcp.linear.app/mcp`, transport **HTTP Streamable** and authorization **Bearer Token** set to the key.\n2. **Notion:** create an internal integration on https://www.notion.so/profile/integrations, share your help center page with it, and start Notion's MCP server: `NOTION_TOKEN=<secret> npx -y @notionhq/notion-mcp-server --transport http --port 3100 --auth-token <any-token>`. Add a connection to **Notion help center (MCP)** with Server URL `http://localhost:3100/mcp` and **Bearer Token** set to `<any-token>`.\n3. Add your **Anthropic** connection to the model and your **Gmail** connection to the trigger and the reply step.\n4. Send a support question to the Gmail inbox, then click **Test**. Open the run to see each model call and MCP tool call in the execution log.\n",
+                    "id": "setup-note-support-email-agent-mcp",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 520,
+                        "width": 520
+                    }
+                }
+            ]
+        }
+    }
+}
