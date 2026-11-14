@@ -1,0 +1,49 @@
+{
+    "label": "Check that Claude Code runs on your ByteChef server",
+    "description": "Asks Claude Code to run a few read-only checks on the server and report them in a PASS/FAIL table, so you can confirm the component works before you build on it.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run read-only checks",
+            "name": "claudeCode_1",
+            "type": "claudeCode/v1/chat",
+            "parameters": {
+                "script": "You are checking that Claude Code works on a ByteChef server. Do not create, change or delete any file. Run these checks and report each one as a row of a Markdown table with the columns Check, Result and Status (PASS or FAIL):\n\n1. Working directory: the output of `pwd`.\n2. Claude Code version: the output of `claude --version`.\n3. Operating system: the output of `uname -sr`.\n4. Directory listing: the number of entries in the working directory.\n5. Shell: whether running ok prints ok.\n\nAfter the table, write one final line: `RESULT: PASS` when every check passed, otherwise `RESULT: FAIL` followed by the reason.\n\nReply with the table and the RESULT line only. Do not add any other text before or after them."
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${claudeCode_1}"
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable Claude Code on the server\n\nThe Claude Code component is disabled by default, because its agent runs with full permissions on the server. Enable it only on a server you trust. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  component:\n    claude-code:\n      enabled: true\n```\n\nOr set the environment variable:\n\n```\nBYTECHEF_COMPONENT_CLAUDE_CODE_ENABLED=true\n```\n\nThe server also needs:\n\n- the Claude Code CLI on the PATH of the user that runs ByteChef:\n\n```\ncurl -fsSL https://claude.ai/install.sh | bash\n```\n\n- an Anthropic API key in the ANTHROPIC_API_KEY environment variable of ByteChef (or a logged-in CLI).\n\n### Run it\n\nClick **Test**. The Logger step prints the agent's PASS/FAIL table to the execution log. If the Claude Code CLI is missing, the Chat step fails with a setup message.\n\n### Next\n\nOpen the Chat step to attach MCP servers (MCP Client > MCP Server) and pick skills from your skill library in its Skills property.\n",
+                    "id": "setup-note-claude-code-basics",
+                    "position": {
+                        "x": 1023,
+                        "y": -111.625
+                    },
+                    "size": {
+                        "height": 820,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
