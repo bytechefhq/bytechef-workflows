@@ -1,0 +1,30 @@
+{
+  "name": "Check agent shell commands in Docker with a shared file workspace",
+  "category": "ai",
+  "description": "An AI agent runs shell commands in a Docker container and uses File System Tools on the same workspace: a file made in the shell is read by the file tools and the other way around. It also checks a failing command, a background process and the container's HOME.",
+  "shortDescription": "Shell commands in Docker and the file tools work on the same agent workspace.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Shell Tools with the Docker execution backend",
+    "Files shared between the shell and File System Tools",
+    "Failing command and background process handling",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.shell.enabled=true (BYTECHEF_AI_AGENT_UTILS_SHELL_ENABLED), which turns on Shell Tools",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools",
+    "Docker or Podman CLI on the ByteChef server's PATH"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent runs shell commands and file tool calls on the shared /workspace.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}
