@@ -1,0 +1,28 @@
+{
+  "name": "Run agent shell commands on the server with the Local backend",
+  "category": "ai",
+  "description": "An AI agent runs shell commands with the Local execution backend, which runs them directly on the ByteChef server instead of in a Docker container. It shows that commands start in the agent workspace but can see its parent directory. Use it only on a trusted single-tenant installation.",
+  "shortDescription": "Shell commands run on the server itself, starting in the agent workspace.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Shell Tools with the Local execution backend",
+    "Working directory set to the agent workspace",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.shell.enabled=true (BYTECHEF_AI_AGENT_UTILS_SHELL_ENABLED), which turns on Shell Tools",
+    "Server setting bytechef.ai.agent-utils.shell.allow-local=true (BYTECHEF_AI_AGENT_UTILS_SHELL_ALLOW_LOCAL), on a trusted single-tenant installation only"
+  ],
+  "idealFor": "Administrators of a trusted single-tenant ByteChef server who want agents to run commands without Docker.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent runs three shell commands on the server and reports what it can see.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}

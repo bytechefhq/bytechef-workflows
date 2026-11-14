@@ -1,0 +1,91 @@
+{
+    "label": "Run agent shell commands on the server with the Local backend",
+    "description": "An AI agent runs shell commands with the Local execution backend, directly on the ByteChef server. The commands start in the workspace but are not confined to it.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. Run: pwd; whoami; uname -a\n2. Run: echo local > local-made.txt && ls -la\n3. Run: ls .. | head\nReport whether the working directory is the agent workspace and whether the parent directory is visible.",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "Shell Tools (Local)",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/shellTools",
+                        "parameters": {
+                            "execBackend": "LOCAL"
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe Shell Tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      shell:\n        enabled: true\n        allow-local: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_SHELL_ENABLED=true\nBYTECHEF_AI_AGENT_UTILS_SHELL_ALLOW_LOCAL=true\n```\n\n**Local** runs commands directly on the server and does not confine them to the workspace. Allow it only on a trusted single-tenant installation, never on a shared or cloud server.\n\nLocal commands start in the workspace with a clean environment and see it at its real path on the server.\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run**. The agent reports every check in a PASS/FAIL table in the execution log.\n",
+                    "id": "setup-note-agent-shell-local-backend",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
