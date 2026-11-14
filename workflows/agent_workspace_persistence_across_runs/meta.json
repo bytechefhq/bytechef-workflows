@@ -1,0 +1,28 @@
+{
+  "name": "Count runs in a file to see how long an agent workspace lives",
+  "category": "ai",
+  "description": "An AI agent keeps a run counter in a file in its workspace. Run it twice in the editor and the count stays at 1, because every test run gets a fresh workspace; deploy it and the count grows with each run, because a deployed workflow keeps its workspace.",
+  "shortDescription": "A run counter in a file shows that deployed workflows keep their agent workspace.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "File System Tools reading and writing one file",
+    "Fresh workspace per editor test run",
+    "Workspace kept between runs of a deployed workflow"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools",
+    "A project deployment, to see the count grow across runs"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent reads run-count.txt, adds one and writes it back.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}

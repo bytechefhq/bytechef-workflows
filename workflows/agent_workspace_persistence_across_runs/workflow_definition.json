@@ -1,0 +1,89 @@
+{
+    "label": "Count runs in a file to see how long an agent workspace lives",
+    "description": "An AI agent reads run-count.txt, adds one and writes it back. Editor test runs get a fresh workspace each time; deployed runs keep their workspace, so the count grows.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. Read run-count.txt. If it does not exist, treat the count as 0.\n2. Write run-count.txt with the count plus one.\n3. Read it back.\n4. Report the new count.",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "File System Tools",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/fileSystemTools",
+                        "parameters": {}
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe File System Tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      file-system:\n        enabled: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED=true\n```\n\nEditor test runs get a fresh workspace per run, removed after 24 hours, so the count stays at 1. A deployed workflow keeps its workspace between runs, so the count goes up by one each run.\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run** twice in the editor: both runs report 1.\n3. Deploy the project, enable this workflow and run it twice: the count reaches 2.\n",
+                    "id": "setup-note-agent-workspace-persistence-across-runs",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
