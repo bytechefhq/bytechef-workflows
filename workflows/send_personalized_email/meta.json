@@ -1,0 +1,32 @@
+{
+  "name": "Email Liferay form sign-ups a personalized list of their workshops",
+  "category": "marketing",
+  "description": "A Liferay form posts each sign-up to the workflow's webhook. The workflow maps the form's time slot fields to workshop names, keeps only the workshops the person picked, and emails them one personalized message listing each workshop with its time.",
+  "shortDescription": "Send each Liferay form sign-up an email listing the workshops and times they chose.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Webhook trigger that receives Liferay object entries",
+    "Loop with a condition that keeps only the workshops the person signed up for",
+    "Personalized email body built from the chosen workshops and their time slots"
+  ],
+  "prerequisites": [
+    "A Liferay object action that posts new entries to the workflow's webhook URL",
+    "Form fields matching the ones read in the first step (email and one time slot field per workshop); rename them and the workshop names to match your form",
+    "SMTP server settings in the Send personalized email step, and a sender address in place of events@example.com",
+    "Server public URL configured, so Liferay can reach the webhook"
+  ],
+  "idealFor": "Event and marketing teams running workshop sign-ups in Liferay who want every attendee to get a confirmation of exactly what they chose.",
+  "steps": [
+    "Trigger: Liferay posts a new form entry to the webhook.",
+    "Map the form's time slot fields to workshop names.",
+    "Loop over the workshops and keep each one the person picked, with its time slot.",
+    "Join the chosen workshops into the email text.",
+    "Send the personalized email to the address from the form."
+  ],
+  "screenshot": "screenshot.png"
+}
