@@ -1,0 +1,27 @@
+{
+  "name": "Check that read-only agent file system tools cannot write",
+  "category": "ai",
+  "description": "An AI agent gets File System Tools with the Read Only option and a List Directory tool. It lists its tools, tries to create a file, and confirms the file does not exist. Use it to check that Read Only exposes only the Read tool.",
+  "shortDescription": "Confirms that File System Tools in Read Only mode offer no Write or Edit tool.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "File System Tools with the Read Only option",
+    "A write attempt that must fail",
+    "PASS/FAIL report in the execution log"
+  ],
+  "prerequisites": [
+    "Anthropic API key",
+    "Server setting bytechef.ai.agent-utils.file-system.enabled=true (BYTECHEF_AI_AGENT_UTILS_FILE_SYSTEM_ENABLED), which turns on the File System, Glob, Grep and List Directory tools"
+  ],
+  "idealFor": "Administrators of self-hosted ByteChef who want to check how the Agent Utils file and shell tools behave before they let agent builders use them.",
+  "steps": [
+    "Trigger: the workflow starts when you click Run in the workflow editor.",
+    "Run the checks: the AI Agent lists its tools, tries to write a file and lists the workspace.",
+    "Log the report: the Logger step prints the agent's PASS/FAIL table to the execution log."
+  ]
+}
