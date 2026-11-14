@@ -1,0 +1,219 @@
+{
+  "label": "Enrich new sales leads and send AI-written first messages",
+  "description": "Every weekday morning, picks up the leads marked new in a Google Sheet, enriches each one with Apollo and Hunter, and lets an AI agent choose the channel and the offer and write a short first message. The message goes out by Gmail or WhatsApp, or comes to you on Telegram to send on LinkedIn by hand, and the lead row is marked contacted with a follow-up date for the nurture workflow.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Weekdays at 9:00",
+      "name": "trigger_1",
+      "type": "schedule/v1/cron",
+      "parameters": {
+        "expression": "0 9 * * 1-5",
+        "timezone": "UTC"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the Leads sheet",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+        "sheetName": "Leads",
+        "isTheFirstRowHeader": true
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "For each lead",
+      "name": "loop_1",
+      "type": "loop/v1",
+      "parameters": {
+        "items": "${googleSheets_1}",
+        "iteratee": [
+          {
+            "label": "Is it a new lead?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": false,
+              "conditions": [
+                [
+                  {
+                    "type": "string",
+                    "value1": "${loop_1.item.status}",
+                    "operation": "EQUALS",
+                    "value2": "new"
+                  }
+                ]
+              ],
+              "caseTrue": [
+                {
+                  "label": "Enrich the person",
+                  "name": "apollo_1",
+                  "type": "apollo/v1/enrichPerson",
+                  "parameters": {
+                    "name": "${loop_1.item.name}",
+                    "email": "${loop_1.item.email}",
+                    "organization_name": "${loop_1.item.company}",
+                    "domain": "${loop_1.item.domain}",
+                    "linkedin_url": "${loop_1.item.linkedinUrl}"
+                  }
+                },
+                {
+                  "label": "Enrich the company",
+                  "name": "hunter_1",
+                  "type": "hunter/v1/companyEnrichment",
+                  "parameters": {
+                    "domain": "${loop_1.item.domain}"
+                  }
+                },
+                {
+                  "label": "Write the first message",
+                  "name": "aiAgent_1",
+                  "type": "aiAgent/v1/chat",
+                  "parameters": {
+                    "format": "SIMPLE",
+                    "systemPrompt": "You write the first message to a new sales lead for me, an independent consultant.\n\nOFFER (edit this block to describe what you sell):\n- In-house training workshops for company teams\n- Keynote talks at conferences and company events\n- Moderating panels, conferences and fireside chats\n- Sponsored content campaigns on my own channels\n\nRules:\n- Pick ONE channel, the one most likely to get a reply:\n  \"email\" for decision makers in companies (HR, L&D, marketing, founders and executives) when an email address is known,\n  \"whatsapp\" only when the lead has a phone number AND the notes say they messaged me on WhatsApp in the last 24 hours (WhatsApp does not deliver free-form messages outside that window),\n  \"linkedin\" when there is a LinkedIn URL and no usable email, or the person clearly lives on LinkedIn.\n- Pick the ONE offer that fits the lead best. A 200-person software company gets the workshop; an event organizer gets a keynote or moderation.\n- Write in the lead's language: the language of their country domain, English if unsure.\n- At most 90 words. One concrete detail from the enrichment data as the hook. One clear ask: a 15 minute call. No buzzwords, no em dashes, no flattery.\n- Leave subject empty for whatsapp and linkedin.\n- email is the best address for the lead, from the sheet or from Apollo, or empty.",
+                    "userPrompt": "Lead from my sheet: ${loop_1.item}\n\nApollo person enrichment: ${apollo_1}\n\nHunter company enrichment: ${hunter_1}",
+                    "response": {
+                      "responseFormat": "JSON",
+                      "responseSchema": "{\"type\":\"object\",\"properties\":{\"channel\":{\"type\":\"string\",\"enum\":[\"email\",\"whatsapp\",\"linkedin\"]},\"offer\":{\"type\":\"string\"},\"subject\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"channel\",\"offer\",\"subject\",\"message\",\"email\"]}"
+                    }
+                  },
+                  "clusterElements": {
+                    "model": {
+                      "label": "OpenAI",
+                      "name": "openAi_1",
+                      "type": "openAi/v1/model",
+                      "parameters": {
+                        "model": "gpt-5-mini"
+                      }
+                    }
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                },
+                {
+                  "label": "Send on the chosen channel",
+                  "name": "branch_1",
+                  "type": "branch/v1",
+                  "parameters": {
+                    "expression": "${aiAgent_1.channel}",
+                    "cases": [
+                      {
+                        "key": "email",
+                        "tasks": [
+                          {
+                            "label": "Send the email",
+                            "name": "googleMail_1",
+                            "type": "googleMail/v1/sendEmail",
+                            "parameters": {
+                              "to": [
+                                "${aiAgent_1.email}"
+                              ],
+                              "subject": "${aiAgent_1.subject}",
+                              "bodyType": "plain",
+                              "body": "${aiAgent_1.message}"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "key": "whatsapp",
+                        "tasks": [
+                          {
+                            "label": "Send the WhatsApp message",
+                            "name": "whatsApp_1",
+                            "type": "whatsApp/v1/sendMessage",
+                            "parameters": {
+                              "to": "${loop_1.item.phone}",
+                              "body": "${aiAgent_1.message}"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "key": "linkedin",
+                        "tasks": [
+                          {
+                            "label": "Send me the LinkedIn message",
+                            "name": "telegram_1",
+                            "type": "telegram/v1/sendMessage",
+                            "parameters": {
+                              "chat_id": "REPLACE_WITH_TELEGRAM_CHAT_ID",
+                              "text": "LinkedIn message to send by hand (LinkedIn does not allow automated messages):\n${loop_1.item.name}, ${loop_1.item.company}\n${loop_1.item.linkedinUrl}\n\n${aiAgent_1.message}"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "default": []
+                  }
+                },
+                {
+                  "label": "Mark the lead as contacted",
+                  "name": "googleSheets_2",
+                  "type": "googleSheets/v1/updateRow",
+                  "parameters": {
+                    "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                    "sheetName": "Leads",
+                    "rowNumber": "=${loop_1.index} + 2",
+                    "isTheFirstRowHeader": true,
+                    "updateWholeRow": false,
+                    "row": {
+                      "values": [
+                        {
+                          "column": "email",
+                          "value": "${aiAgent_1.email}"
+                        },
+                        {
+                          "column": "status",
+                          "value": "contacted"
+                        },
+                        {
+                          "column": "channel",
+                          "value": "${aiAgent_1.channel}"
+                        },
+                        {
+                          "column": "offer",
+                          "value": "${aiAgent_1.offer}"
+                        },
+                        {
+                          "column": "touchCount",
+                          "value": "1"
+                        },
+                        {
+                          "column": "nextTouch",
+                          "value": "=format(plusDays(now(), 4), 'yyyyMMdd')"
+                        },
+                        {
+                          "column": "lastMessage",
+                          "value": "${aiAgent_1.message}"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
