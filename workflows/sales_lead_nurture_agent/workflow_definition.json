@@ -1,0 +1,185 @@
+{
+  "label": "Send AI-written follow-ups to sales leads who have not replied",
+  "description": "Every weekday morning, finds the leads in a Google Sheet that are due for a follow-up and lets an AI agent write the next touch: a new angle, a case study, a useful link or a check-in. The email goes out by Gmail and the next follow-up date is written back to the sheet. After five touches the agent stops and the lead is marked cold.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Weekdays at 8:30",
+      "name": "trigger_1",
+      "type": "schedule/v1/cron",
+      "parameters": {
+        "expression": "30 8 * * 1-5",
+        "timezone": "UTC"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the Leads sheet",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+        "sheetName": "Leads",
+        "isTheFirstRowHeader": true
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "For each lead",
+      "name": "loop_1",
+      "type": "loop/v1",
+      "parameters": {
+        "items": "${googleSheets_1}",
+        "iteratee": [
+          {
+            "label": "Is a follow-up due?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": true,
+              "expression": "=(${loop_1.item.status} == 'contacted' or ${loop_1.item.status} == 'nurturing') and ${loop_1.item.email} != '' and ${loop_1.item.nextTouch} != '' and long(${loop_1.item.nextTouch}) <= long(format(now(), 'yyyyMMdd'))",
+              "caseTrue": [
+                {
+                  "label": "Write the next touch",
+                  "name": "aiAgent_1",
+                  "type": "aiAgent/v1/chat",
+                  "parameters": {
+                    "format": "SIMPLE",
+                    "systemPrompt": "You keep in touch with sales leads for me, an independent consultant. The lead got my first message and has not replied, or asked me to come back later. You write the NEXT email. It must never read like an automated sequence.\n\nOFFER (edit this block to describe what you sell):\n- In-house training workshops for company teams\n- Keynote talks at conferences and company events\n- Moderating panels, conferences and fireside chats\n- Sponsored content campaigns on my own channels\n\nCONTENT LIBRARY (edit this block; only ever link to these):\n- Case study: https://example.com/case-study\n- Newsletter archive: https://example.com/newsletter\n- Recent article: https://example.com/article\n\ntouchCount is how many messages the lead already got:\n- 1: a short follow-up to the first message, a new angle, the same ask.\n- 2: the most relevant case study, with one sentence on why it fits them.\n- 3: a recent article or newsletter issue, no ask, just something useful.\n- 4: a personal check-in, for example whether it is still relevant for next quarter.\n- 5 or more: return action \"stop\" and leave subject and message empty.\nIf the notes say they asked to hear back at a specific time, refer to it.\nWrite in the lead's language, at most 80 words, no em dashes. The subject is \"Re: \" plus the topic of the previous message.\ntouchCount in your answer is the count after this message is sent. nextTouchInDays: 4 after touch 1, 6 after touch 2, 10 after touch 3, 14 after touch 4.",
+                    "userPrompt": "Lead: ${loop_1.item}",
+                    "response": {
+                      "responseFormat": "JSON",
+                      "responseSchema": "{\"type\":\"object\",\"properties\":{\"action\":{\"type\":\"string\",\"enum\":[\"send\",\"stop\"]},\"subject\":{\"type\":\"string\"},\"message\":{\"type\":\"string\"},\"touchCount\":{\"type\":\"integer\"},\"nextTouchInDays\":{\"type\":\"integer\"}},\"required\":[\"action\",\"subject\",\"message\",\"touchCount\",\"nextTouchInDays\"]}"
+                    }
+                  },
+                  "clusterElements": {
+                    "model": {
+                      "label": "OpenAI",
+                      "name": "openAi_1",
+                      "type": "openAi/v1/model",
+                      "parameters": {
+                        "model": "gpt-5-mini"
+                      }
+                    }
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                },
+                {
+                  "label": "Send or stop?",
+                  "name": "condition_2",
+                  "type": "condition/v1",
+                  "parameters": {
+                    "rawExpression": false,
+                    "conditions": [
+                      [
+                        {
+                          "type": "string",
+                          "value1": "${aiAgent_1.action}",
+                          "operation": "EQUALS",
+                          "value2": "send"
+                        }
+                      ]
+                    ],
+                    "caseTrue": [
+                      {
+                        "label": "Send the follow-up",
+                        "name": "googleMail_1",
+                        "type": "googleMail/v1/sendEmail",
+                        "parameters": {
+                          "to": [
+                            "${loop_1.item.email}"
+                          ],
+                          "subject": "${aiAgent_1.subject}",
+                          "bodyType": "plain",
+                          "body": "${aiAgent_1.message}"
+                        }
+                      },
+                      {
+                        "label": "Schedule the next touch",
+                        "name": "googleSheets_2",
+                        "type": "googleSheets/v1/updateRow",
+                        "parameters": {
+                          "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                          "sheetName": "Leads",
+                          "rowNumber": "=${loop_1.index} + 2",
+                          "isTheFirstRowHeader": true,
+                          "updateWholeRow": false,
+                          "row": {
+                            "values": [
+                              {
+                                "column": "status",
+                                "value": "nurturing"
+                              },
+                              {
+                                "column": "touchCount",
+                                "value": "${aiAgent_1.touchCount}"
+                              },
+                              {
+                                "column": "nextTouch",
+                                "value": "=format(plusDays(now(), ${aiAgent_1.nextTouchInDays}), 'yyyyMMdd')"
+                              },
+                              {
+                                "column": "lastMessage",
+                                "value": "${aiAgent_1.message}"
+                              }
+                            ]
+                          }
+                        },
+                        "metadata": {
+                          "ui": {
+                            "dynamicPropertyTypes": {}
+                          }
+                        }
+                      }
+                    ],
+                    "caseFalse": [
+                      {
+                        "label": "Mark the lead as cold",
+                        "name": "googleSheets_3",
+                        "type": "googleSheets/v1/updateRow",
+                        "parameters": {
+                          "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                          "sheetName": "Leads",
+                          "rowNumber": "=${loop_1.index} + 2",
+                          "isTheFirstRowHeader": true,
+                          "updateWholeRow": false,
+                          "row": {
+                            "values": [
+                              {
+                                "column": "status",
+                                "value": "cold"
+                              },
+                              {
+                                "column": "nextTouch",
+                                "value": ""
+                              }
+                            ]
+                          }
+                        },
+                        "metadata": {
+                          "ui": {
+                            "dynamicPropertyTypes": {}
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
