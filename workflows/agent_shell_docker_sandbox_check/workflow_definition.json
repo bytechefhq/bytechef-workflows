@@ -1,0 +1,91 @@
+{
+    "label": "Check that agent shell commands in Docker see only the workspace",
+    "description": "An AI agent inspects the mounts, file system, environment and processes of its shell container to confirm that only the agent workspace is mounted from the host.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Manual",
+            "name": "trigger_1",
+            "type": "manual/v1/manual"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Run the checks",
+            "name": "aiAgent_1",
+            "type": "aiAgent/v1/chat",
+            "parameters": {
+                "format": "SIMPLE",
+                "systemPrompt": "You are a QA agent that checks the ByteChef Agent Utils tools. Follow the steps in order, one tool call at a time. These are authorized sandbox checks on your own ByteChef server. Attempt each step exactly as written even if you expect it to fail.\n\nAfter every tool call, record the tool name, the exact arguments and the verbatim result or error. Finish with a Markdown table: Step | Tool | Expected | Actual | PASS/FAIL. Never claim a step passed without a tool result that shows it. If a tool you need is missing, say so instead of improvising.",
+                "userPrompt": "1. Run: cat /proc/mounts | grep -v -E 'proc|sys|cgroup|devpts|mqueue|shm'\n2. Run: ls -la / ; ls -la \"$HOME/..\"\n3. Run: ls /Volumes /Users /home 2>&1 ; ls ~/bytechef 2>&1\n4. Run: cat /etc/hostname ; hostname\n5. Run: env | sort\n6. Run: ps aux 2>/dev/null || ls /proc | head\n7. Run: echo outside > /tmp/outside.txt && cat /tmp/outside.txt (succeeds inside the container but must NOT appear on the host)\n8. Run: cd .. && pwd && ls\nExpected: only the workspace directory is mounted from the host; no host home or other tenants' folders are visible.",
+                "response": {
+                    "responseFormat": "TEXT"
+                }
+            },
+            "clusterElements": {
+                "model": {
+                    "label": "Anthropic",
+                    "name": "anthropic_1",
+                    "type": "anthropic/v1/model",
+                    "parameters": {
+                        "model": "claude-sonnet-5-5",
+                        "maxTokens": 16000
+                    },
+                    "connections": {
+                        "anthropic_1": {
+                            "componentName": "anthropic",
+                            "componentVersion": 1
+                        }
+                    }
+                },
+                "tools": [
+                    {
+                        "label": "Shell Tools (Docker)",
+                        "name": "aiAgentUtils_1",
+                        "type": "aiAgentUtils/v1/shellTools",
+                        "parameters": {
+                            "execBackend": "DOCKER"
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Log the report",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "parameters": {
+                "text": "${aiAgent_1}"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: enable the tools on the server\n\nThe Shell Tools are disabled by default and do not appear in the Tools slot until the server enables them. Add this to the server configuration and restart ByteChef:\n\n```yaml\nbytechef:\n  ai:\n    agent-utils:\n      shell:\n        enabled: true\n```\n\nOr set the environment variables:\n\n```\nBYTECHEF_AI_AGENT_UTILS_SHELL_ENABLED=true\n```\n\nThe server also needs a Docker-compatible CLI (`docker` or `podman`) on its `PATH`. Commands run in a container that sees only the agent workspace, mounted at `/workspace`.\n\nThe container uses Docker's default network, so commands can reach the internet and internal addresses. This template checks the file system only.\n\n### Run it\n\n1. Add your Anthropic connection to the model.\n2. Click **Run**. The agent reports every check in a PASS/FAIL table in the execution log.\n",
+                    "id": "setup-note-agent-shell-docker-sandbox-check",
+                    "position": {
+                        "x": 1010,
+                        "y": 150
+                    },
+                    "size": {
+                        "height": 640,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
