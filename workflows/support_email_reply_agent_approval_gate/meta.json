@@ -1,0 +1,33 @@
+{
+  "name": "Answer Gmail support emails with an AI agent behind an approval gate",
+  "category": "support",
+  "description": "For each new email in Gmail, an AI agent reads the thread and the sender's earlier emails and answers the customer by calling a Send Reply tool. That tool sits behind an approval gate, so the reply waits for a person to approve the exact text. A denial with a reason goes back to the agent, which rewrites the reply and asks again, up to two more times. Newsletters and automated emails get no reply.",
+  "shortDescription": "An AI agent answers support emails itself, and an approval gate holds every reply until a person approves the exact text.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with Gmail Get Thread and Search Email tools, pinned to this thread and this sender",
+    "Send Reply placed under an Approval Gate, so every reply suspends the run until a person approves it",
+    "Reply recipient and thread are pinned, so the agent can only choose the reply text",
+    "Denials carry the reviewer's reason back to the agent, which revises the reply and raises a new approval"
+  ],
+  "prerequisites": [
+    "Google Mail (Gmail) connection for the support inbox",
+    "OpenAI API key",
+    "Someone who answers approvals in the Approval Tasks inbox, or swap the gate's Approval Task channel for Slack, email or another channel",
+    "Server public URL configured, so the approval links can be generated"
+  ],
+  "idealFor": "Support teams that want an AI agent to work the inbox on its own while nothing reaches a customer without a person approving it.",
+  "steps": [
+    "Trigger: poll Gmail for a new email.",
+    "Answer the email: the AI Agent reads the thread and the sender's earlier emails with its Gmail tools and decides whether a reply is needed.",
+    "Reply gate: when the agent calls Send Reply, the approval gate raises an approval task with the exact reply, and the run pauses.",
+    "Approved: the reply is sent in the original thread. Denied: the agent revises the reply from the reviewer's reason and asks again, at most two more times.",
+    "Log outcome: whether a reply was sent, and the agent's summary, is logged."
+  ],
+  "screenshot": "screenshot.png"
+}

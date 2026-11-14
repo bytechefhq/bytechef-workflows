@@ -1,0 +1,114 @@
+{
+  "label": "Answer Gmail support emails with an AI agent behind an approval gate",
+  "description": "For each new support email, an AI agent reads the conversation and answers by calling a Send Reply tool. The tool sits behind an approval gate, so a person approves the exact reply before it is sent, and a denial sends the agent back to revise it.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Email",
+      "name": "trigger_1",
+      "type": "googleMail/v1/newEmailPolling",
+      "parameters": {
+        "format": "SIMPLE"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Answer the email",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are a support agent. Use the Get thread tool to read the whole conversation and the Search earlier emails tool for context from the same sender. If the email is not a support request (newsletter, spam, automated notification), do not reply. Otherwise write a concise, polite plain text reply that answers the customer's question, signed by the support team, and call the Send reply tool with it. Do not promise refunds, discounts or dates. A person approves every reply before it is sent. If the result says the reply was denied, read the reason, rewrite the reply accordingly and call Send reply again; give up after two rewrites, or at once if the reason says not to reply. Finish with the outcome and a one sentence summary of the email.",
+        "userPrompt": "New email.\n\nFrom: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"outcome\":{\"type\":\"string\",\"enum\":[\"REPLIED\",\"NOT_SENT\",\"NO_REPLY_NEEDED\"]},\"summary\":{\"type\":\"string\"}},\"required\":[\"outcome\",\"summary\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get thread",
+            "name": "googleMail_1",
+            "type": "googleMail/v1/getThread",
+            "parameters": {
+              "id": "${trigger_1.threadId}"
+            }
+          },
+          {
+            "label": "Search earlier emails",
+            "name": "googleMail_2",
+            "type": "googleMail/v1/searchEmail",
+            "parameters": {
+              "from": "${trigger_1.from}",
+              "maxResults": 10,
+              "subject": "=fromAi('subject', 'STRING', {'description': 'Optional words from the subject to narrow the search; leave empty to list the sender''s recent emails', 'required': false})"
+            }
+          },
+          {
+            "label": "Reply gate",
+            "name": "approvalGate_1",
+            "type": "aiAgentUtils/v1/approvalGate",
+            "parameters": {
+              "name": "Customer replies",
+              "approvalExpiresIn": 2,
+              "approvalExpiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "approvalChannels": [
+                {
+                  "label": "Approval Task",
+                  "name": "approvalTask_1",
+                  "type": "approvalTask/v1/approvalTask",
+                  "parameters": {}
+                }
+              ],
+              "tools": [
+                {
+                  "label": "Send reply",
+                  "name": "googleMail_3",
+                  "type": "googleMail/v1/replyToEmail",
+                  "parameters": {
+                    "id": "${trigger_1.id}",
+                    "to": [
+                      "${trigger_1.from}"
+                    ],
+                    "bodyType": "plain",
+                    "body": "=fromAi('body', 'STRING', {'description': 'The full plain text reply to send to the customer', 'required': true})"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Log outcome",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "parameters": {
+        "text": "Email from ${trigger_1.from} about \"${trigger_1.subject}\": ${aiAgent_1.outcome}. ${aiAgent_1.summary}"
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    }
+  ]
+}
