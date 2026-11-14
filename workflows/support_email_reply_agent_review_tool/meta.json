@@ -1,0 +1,34 @@
+{
+  "name": "Draft Gmail support replies with an AI agent that asks for review",
+  "category": "support",
+  "description": "For each new email in Gmail, an AI agent reads the thread, drafts a reply and asks a person to review it with the Request Approval tool, in the middle of its own reasoning. The reviewer can edit the draft and approve it, or reject it with a note, and the agent continues with that answer: it sends the approved text, or rewrites the draft from the note and asks again. Questions the agent cannot answer from the thread go to the reviewer in the same form.",
+  "shortDescription": "An AI agent drafts support replies, asks a person to review them mid-conversation and keeps working with the feedback.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Request Approval attached to the AI Agent as a tool, so the agent decides when to ask and reads the answer",
+    "The review form carries the agent's draft as an editable field and any question it has for the reviewer",
+    "Rejections with a note send the agent back to revise, for up to three review rounds in one run",
+    "The agent sends the reviewer's approved text itself with the Gmail Send Reply tool"
+  ],
+  "prerequisites": [
+    "Google Mail (Gmail) connection for the support inbox",
+    "OpenAI API key",
+    "Someone who answers reviews in the Approval Tasks inbox, or swap the Approval Task channel for Slack, email or another channel",
+    "Server public URL configured, so the review links can be generated",
+    "Sending only after approval is an instruction to the agent, not enforced by the platform; use the approval gate template when every send must be blocked until approved"
+  ],
+  "idealFor": "Support teams that want to coach an AI agent reply by reply, editing its drafts and answering its questions, without leaving the review form.",
+  "steps": [
+    "Trigger: poll Gmail for a new email.",
+    "Draft and review: the AI Agent reads the thread and the sender's earlier emails, drafts a reply and calls Request Approval; the run pauses on a review form with the draft.",
+    "Approved: the agent sends the reviewer's version of the reply in the original thread.",
+    "Rejected with a note: the agent rewrites the draft from the note and asks for review again, at most three rounds.",
+    "Log outcome: whether a reply was sent, and the agent's summary, is logged."
+  ],
+  "screenshot": "screenshot.png"
+}
