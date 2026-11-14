@@ -1,0 +1,165 @@
+{
+  "label": "Write proposals from a Google Docs template with AI and your approval",
+  "description": "When a new deal lands in the Deals sheet, an AI agent writes the proposal in your voice and fills your Google Docs template with it. You review the document and the cover email from a Telegram link, edit the email if you like, and approve. On approval the proposal goes to the client by Gmail as a Word attachment. On rejection you get your note back on Telegram.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Row",
+      "name": "trigger_1",
+      "type": "googleSheets/v1/newRow",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+        "sheetName": "Deals",
+        "isTheFirstRowHeader": true
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Write the proposal",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You write my client proposals. They must read as if I wrote them myself.\n\nMY PAST PROPOSALS (paste two or three real ones here; copy their tone, structure and payment terms):\n<<PASTE YOUR PROPOSALS HERE>>\n\nRules:\n- Use only facts from the deal. If something is missing (date, group size, location), write \"to be confirmed\" instead of inventing it.\n- Payment terms, unless the deal says otherwise: 50% on order, 50% within 15 days of delivery.\n- The proposal is valid for 15 days from today's date, which is given with the deal.\n- Write in the client's language, no em dashes.\n- emailBody: three or four sentences that introduce the attached proposal and end with a request to confirm.",
+        "userPrompt": "='Today is ' + format(now(), 'yyyy-MM-dd') + '.\\n\\nDeal: ' + ${trigger_1}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"},\"intro\":{\"type\":\"string\"},\"scope\":{\"type\":\"string\"},\"duration\":{\"type\":\"string\"},\"deliverables\":{\"type\":\"string\"},\"price\":{\"type\":\"string\",\"description\":\"Formatted price with currency and a VAT note\"},\"paymentTerms\":{\"type\":\"string\"},\"validUntil\":{\"type\":\"string\"},\"emailSubject\":{\"type\":\"string\"},\"emailBody\":{\"type\":\"string\"}},\"required\":[\"title\",\"intro\",\"scope\",\"duration\",\"deliverables\",\"price\",\"paymentTerms\",\"validUntil\",\"emailSubject\",\"emailBody\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        }
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Fill the proposal template",
+      "name": "googleDocs_1",
+      "type": "googleDocs/v1/createDocumentFromTemplate",
+      "parameters": {
+        "fileId": "REPLACE_WITH_PROPOSAL_TEMPLATE_DOC_ID",
+        "placeholderFormat": "{{}}",
+        "fileName": "Proposal - ${trigger_1.company} - ${aiAgent_1.title}",
+        "values": {
+          "client": "${trigger_1.company}",
+          "contact": "${trigger_1.name}",
+          "title": "${aiAgent_1.title}",
+          "intro": "${aiAgent_1.intro}",
+          "scope": "${aiAgent_1.scope}",
+          "duration": "${aiAgent_1.duration}",
+          "deliverables": "${aiAgent_1.deliverables}",
+          "price": "${aiAgent_1.price}",
+          "paymentTerms": "${aiAgent_1.paymentTerms}",
+          "validUntil": "${aiAgent_1.validUntil}"
+        }
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Ask me to approve",
+      "name": "approval_1",
+      "type": "approval/v1/requestApproval",
+      "parameters": {
+        "formTitle": "Proposal for ${trigger_1.company}",
+        "formDescription": "${aiAgent_1.title}, ${aiAgent_1.price}\n\nRead the proposal: https://docs.google.com/document/d/${googleDocs_1.documentId}/edit\n\nEdit the cover email below if you like, then approve to send it to ${trigger_1.email}.",
+        "inputs": [
+          {
+            "fieldType": 5,
+            "fieldLabel": "Cover email",
+            "fieldName": "emailBody",
+            "defaultValue": "${aiAgent_1.emailBody}",
+            "required": true
+          }
+        ],
+        "expiresIn": 7,
+        "expiresInUnit": "DAYS"
+      },
+      "clusterElements": {
+        "approvalChannels": [
+          {
+            "label": "Telegram",
+            "name": "telegram_1",
+            "type": "telegram/v1/telegram",
+            "parameters": {
+              "chat_id": "REPLACE_WITH_TELEGRAM_CHAT_ID"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Approved?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": false,
+        "conditions": [
+          [
+            {
+              "type": "boolean",
+              "value1": "${approval_1.approved}",
+              "operation": "EQUALS",
+              "value2": true
+            }
+          ]
+        ],
+        "caseTrue": [
+          {
+            "label": "Export the proposal",
+            "name": "googleDrive_1",
+            "type": "googleDrive/v1/downloadFile",
+            "parameters": {
+              "fileId": "${googleDocs_1.documentId}"
+            }
+          },
+          {
+            "label": "Email the client",
+            "name": "googleMail_1",
+            "type": "googleMail/v1/sendEmail",
+            "parameters": {
+              "to": [
+                "${trigger_1.email}"
+              ],
+              "subject": "${aiAgent_1.emailSubject}",
+              "bodyType": "plain",
+              "body": "${approval_1.emailBody}",
+              "attachments": "={${googleDrive_1}}"
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Send me my note",
+            "name": "telegram_2",
+            "type": "telegram/v1/sendMessage",
+            "parameters": {
+              "chat_id": "REPLACE_WITH_TELEGRAM_CHAT_ID",
+              "text": "The proposal for ${trigger_1.company} was not sent. Your note: ${approval_1.comment}\nDocument: https://docs.google.com/document/d/${googleDocs_1.documentId}/edit"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

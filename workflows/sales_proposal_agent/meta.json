@@ -1,0 +1,42 @@
+{
+  "name": "Write proposals from a Google Docs template with AI and your approval",
+  "category": "sales",
+  "description": "When a new deal lands in the Deals sheet, an AI agent writes the proposal in your voice and fills your Google Docs template with it. You review the document and the cover email from a Telegram link, edit the email if you like, and approve. On approval the proposal goes to the client by Gmail as a Word attachment. On rejection you get your note back on Telegram.",
+  "shortDescription": "An AI agent fills your Google Docs proposal template for each new deal, and you approve before it is emailed.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI agent with a JSON response schema for title, intro, scope, duration, deliverables, price, payment terms and validity",
+    "MY PAST PROPOSALS block in the prompt so the text copies your tone, structure and payment terms",
+    "Google Docs Create Document From Template fills {{placeholder}} fields and keeps your design",
+    "Request Approval with an editable cover email field, sent through a Telegram channel",
+    "The approved Doc is exported as .docx and attached, so the client needs no Drive access",
+    "Part of a set of five sales templates that share one Google Sheet: prospecting, nurture, negotiation, booking and proposal."
+  ],
+  "prerequisites": [
+    "A Deals tab in the same spreadsheet whose header row is: email, name, company, engagement, details, price, status, date; replace REPLACE_WITH_SPREADSHEET_ID with the spreadsheet's ID",
+    "A Google Docs proposal template with the placeholders {{client}}, {{contact}}, {{title}}, {{intro}}, {{scope}}, {{duration}}, {{deliverables}}, {{price}}, {{paymentTerms}} and {{validUntil}}; replace REPLACE_WITH_PROPOSAL_TEMPLATE_DOC_ID with its ID",
+    "Google Sheets connection",
+    "Google Docs connection",
+    "Google Drive connection",
+    "Gmail connection",
+    "OpenAI API key",
+    "Telegram connection (bot token) for the approval channel; replace REPLACE_WITH_TELEGRAM_CHAT_ID with the chat where you approve",
+    "Paste two or three of your real proposals into the MY PAST PROPOSALS block of the AI agent's system prompt",
+    "Server public URL configured, so webhooks and the approval links can reach ByteChef"
+  ],
+  "idealFor": "Consultants and agencies who write similar proposals for every deal and want a ready draft in their own template that they only check and approve.",
+  "steps": [
+    "Trigger: a new row is added to the Deals tab.",
+    "The AI agent writes the proposal sections and a cover email from the deal.",
+    "Google Docs copies your template and fills in the placeholders.",
+    "Request Approval sends you a Telegram link to review the document and edit the cover email.",
+    "Approved: Google Drive exports the document as .docx and Gmail sends it to the client with your cover email.",
+    "Rejected: Telegram sends you your comment and the document link."
+  ],
+  "screenshot": "screenshot.png"
+}
