@@ -1,0 +1,36 @@
+{
+  "name": "Triage GitHub issues with an AI agent that asks before commenting",
+  "category": "it",
+  "description": "When a new GitHub issue is opened, an AI agent looks for duplicates with the GitHub tools, labels the issue itself and writes a comment for the author. Labels are cheap to undo, so the agent applies them directly. The comment speaks for the project in public, so the Post Comment tool sits behind an approval gate: a maintainer approves the exact text, or denies it with a reason the agent uses to revise it once.",
+  "shortDescription": "An AI agent labels new GitHub issues on its own, and an approval gate holds its public comment until a maintainer approves it.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with List Repository Issues and Get Issue tools to find duplicates",
+    "Add Labels attached directly to the agent, because labels are easy to undo",
+    "Post Comment placed under an Approval Gate, so a maintainer approves every public comment",
+    "The issue number is pinned in every write tool, so the agent can only act on the new issue",
+    "A denied comment goes back to the agent with the reason, and it may post one revised comment"
+  ],
+  "prerequisites": [
+    "GitHub connection with access to the repository",
+    "OpenAI API key",
+    "The repository owner and name set in the trigger and all four GitHub tools (replace your-github-account and your-repository)",
+    "Labels bug, enhancement, question, documentation and duplicate created in the repository",
+    "Someone who answers approvals in the Approval Tasks inbox, or swap the gate's Approval Task channel for Slack, email or another channel",
+    "Server public URL configured, so the approval links can be generated"
+  ],
+  "idealFor": "Open source maintainers who want new issues labeled at machine speed while every public comment in the project's name gets a human read first.",
+  "steps": [
+    "Trigger: poll GitHub for a newly opened issue.",
+    "Triage the issue: the AI Agent searches open issues for duplicates with its GitHub tools and adds labels to the new issue directly.",
+    "Comment gate: when the agent calls Post Comment, the approval gate raises an approval task with the exact comment, and the run pauses.",
+    "Approved: the comment is posted. Denied: the agent reads the reason and may post one revised comment, which needs its own approval.",
+    "Log triage: the labels, priority, duplicates and whether a comment was posted are logged."
+  ],
+  "screenshot": "screenshot.png"
+}
