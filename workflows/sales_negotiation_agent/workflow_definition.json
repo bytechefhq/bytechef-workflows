@@ -1,0 +1,171 @@
+{
+  "label": "Negotiate sales deals by Gmail with an AI agent and Telegram approval",
+  "description": "When a lead from your Google Sheet replies by Gmail, an AI agent answers within your price ranges and floors. Every reply and every new deal sits behind an approval gate: you approve or deny it from Telegram, and a denial with a note such as offer 1800 sends the agent back to rewrite. When the client accepts, the agent sends your booking link and records the deal in the Deals sheet.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Email",
+      "name": "trigger_1",
+      "type": "googleMail/v1/newEmailPolling",
+      "parameters": {
+        "format": "SIMPLE"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Read the Leads sheet",
+      "name": "googleSheets_1",
+      "type": "googleSheets/v1/getRows",
+      "parameters": {
+        "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+        "sheetName": "Leads",
+        "isTheFirstRowHeader": true
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Find the sender among the leads",
+      "name": "loop_1",
+      "type": "loop/v1",
+      "parameters": {
+        "items": "${googleSheets_1}",
+        "iteratee": [
+          {
+            "label": "Is the sender this lead?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": true,
+              "expression": "=${loop_1.item.email} != '' and ${trigger_1.from}.toLowerCase().contains(${loop_1.item.email}.toLowerCase()) and ${loop_1.item.status} != 'won' and ${loop_1.item.status} != 'lost'",
+              "caseTrue": [
+                {
+                  "label": "Negotiate",
+                  "name": "aiAgent_1",
+                  "type": "aiAgent/v1/chat",
+                  "parameters": {
+                    "format": "SIMPLE",
+                    "systemPrompt": "You negotiate for me, an independent consultant, by email. A lead from my pipeline just replied.\n\nOFFER (edit this block to describe what you sell):\n- In-house training workshops for company teams\n- Keynote talks at conferences and company events\n- Moderating panels, conferences and fireside chats\n- Sponsored content campaigns on my own channels\n\nPRICE RANGES in EUR, excluding VAT (edit this block):\n- Workshop: up to 15 people 2500-3500, 16-30 people 3500-5000. Floor 2200.\n- Keynote: 1500-3000 depending on audience size. Floor 1200.\n- Moderation: half day 1200-1800, full day 2000-2800. Floor 1000.\n- Content campaign: 1500-4000. Floor 1200.\nTravel outside my home city is billed on top.\n\nBOOKING LINK (edit): https://calendly.com/REPLACE_WITH_YOUR_LINK\n\nHow you work:\n1. Classify the reply.\n   - Interested, asks for a price, or counters: negotiate.\n   - \"Not now, get back to me in <month>\": thank them briefly and update the lead with status nurturing and nextTouch set to that date.\n   - Not interested: thank them in one line and update the lead with status lost.\n   - Out-of-office or automatic reply: do nothing.\n2. Negotiating: open at the top of the range. On a counter-offer give at most 10% per round, and always get something back (fewer hours, remote instead of on site, a smaller group, payment upfront). Never go below the floor.\n3. Send every answer with the Reply to the lead tool. I approve each reply before it leaves. If the result says I denied it, read my reason and follow it exactly (for example \"offer 1800\" means you now offer 1800), then call the tool again. Stop after three denials.\n4. When the client clearly accepts a price: reply to confirm and include the booking link so they can pick the date, call Record the deal, and update the lead with status won.\n5. Always finish by calling Update the lead once with the current status, nextTouch as yyyyMMdd (empty if none) and a one line note on where things stand, including the last price offered.\nWrite in the sender's language: short, warm and concrete, no em dashes. End your final answer with a one line summary of what you did.",
+                    "userPrompt": "New email\nFrom: ${trigger_1.from}\nSubject: ${trigger_1.subject}\n\n${trigger_1.bodyPlain}\n\nWhat I know about this lead: ${loop_1.item}",
+                    "response": {
+                      "responseFormat": "TEXT"
+                    }
+                  },
+                  "clusterElements": {
+                    "model": {
+                      "label": "OpenAI",
+                      "name": "openAi_1",
+                      "type": "openAi/v1/model",
+                      "parameters": {
+                        "model": "gpt-5-mini"
+                      }
+                    },
+                    "tools": [
+                      {
+                        "label": "Update the lead",
+                        "name": "googleSheets_2",
+                        "type": "googleSheets/v1/updateRow",
+                        "parameters": {
+                          "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                          "sheetName": "Leads",
+                          "rowNumber": "=${loop_1.index} + 2",
+                          "isTheFirstRowHeader": true,
+                          "updateWholeRow": false,
+                          "row": {
+                            "values": [
+                              {
+                                "column": "status",
+                                "value": "=fromAi('status', 'STRING', {'description': 'negotiating, nurturing, won or lost', 'required': true})"
+                              },
+                              {
+                                "column": "nextTouch",
+                                "value": "=fromAi('nextTouch', 'STRING', {'description': 'Date of the next follow-up as yyyyMMdd, empty if none', 'required': false})"
+                              },
+                              {
+                                "column": "notes",
+                                "value": "=fromAi('notes', 'STRING', {'description': 'One line on where the negotiation stands, including the last price offered', 'required': true})"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "label": "Approval gate",
+                        "name": "approvalGate_1",
+                        "type": "aiAgentUtils/v1/approvalGate",
+                        "parameters": {
+                          "name": "Lead replies and deals",
+                          "approvalExpiresIn": 2,
+                          "approvalExpiresInUnit": "DAYS"
+                        },
+                        "clusterElements": {
+                          "approvalChannels": [
+                            {
+                              "label": "Telegram",
+                              "name": "telegram_1",
+                              "type": "telegram/v1/telegram",
+                              "parameters": {
+                                "chat_id": "REPLACE_WITH_TELEGRAM_CHAT_ID"
+                              }
+                            }
+                          ],
+                          "tools": [
+                            {
+                              "label": "Reply to the lead",
+                              "name": "googleMail_1",
+                              "type": "googleMail/v1/replyToEmail",
+                              "parameters": {
+                                "id": "${trigger_1.id}",
+                                "to": [
+                                  "${loop_1.item.email}"
+                                ],
+                                "bodyType": "plain",
+                                "body": "=fromAi('body', 'STRING', {'description': 'The full plain text reply to the lead', 'required': true})"
+                              }
+                            },
+                            {
+                              "label": "Record the deal",
+                              "name": "googleSheets_3",
+                              "type": "googleSheets/v1/insertRow",
+                              "parameters": {
+                                "spreadsheetId": "REPLACE_WITH_SPREADSHEET_ID",
+                                "sheetName": "Deals",
+                                "valueInputOption": "USER_ENTERED",
+                                "isTheFirstRowHeader": true,
+                                "row": {
+                                  "values": {
+                                    "email": "${loop_1.item.email}",
+                                    "name": "${loop_1.item.name}",
+                                    "company": "${loop_1.item.company}",
+                                    "engagement": "=fromAi('engagement', 'STRING', {'description': 'Which offer was sold, plus a short description', 'required': true})",
+                                    "details": "=fromAi('details', 'STRING', {'description': 'Group size, duration, location, event name and anything else agreed', 'required': true})",
+                                    "price": "=fromAi('price', 'NUMBER', {'description': 'Agreed price in EUR excluding VAT', 'required': true})",
+                                    "status": "won"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
