@@ -20,8 +20,7 @@
     "Google Mail (Gmail) connection for the support inbox",
     "Anthropic API key",
     "Linear personal API key and a team named Support",
-    "Notion internal integration with access to your help center pages",
-    "Notion MCP server reachable from ByteChef (for example @notionhq/notion-mcp-server started with --transport http)"
+    "Notion account that can open your help center pages (the hosted Notion MCP server signs in with OAuth)"
   ],
   "idealFor": "Support teams that want an AI agent to handle first-line email support, with every decision it makes visible and auditable.",
   "steps": [
