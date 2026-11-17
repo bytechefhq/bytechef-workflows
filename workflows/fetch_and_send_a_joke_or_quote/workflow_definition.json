@@ -105,7 +105,7 @@
 				"caseTrue": [
 					{
 						"clusterElements": {},
-						"description": "Weekend branch: fetches a random joke from the Official Joke API. Its setup and punchline are used in the email that follows.",
+						"description": "Weekend branch: fetches a random two-part joke from JokeAPI (programming, misc and pun categories, safe mode only). Its setup and delivery are used in the email that follows.",
 						"label": "Get a random joke",
 						"maxRetries": 0,
 						"metadata": {
@@ -125,13 +125,13 @@
 							"followRedirect": false,
 							"ignoreResponseCode": false,
 							"timeout": 1000,
-							"uri": "https://official-joke-api.appspot.com/random_joke"
+							"uri": "https://v2.jokeapi.dev/joke/Programming,Misc,Pun?type=twopart&safe-mode"
 						},
 						"type": "httpClient/v1/get"
 					},
 					{
 						"clusterElements": {},
-						"description": "Weekend branch: emails the joke, with the setup in the subject and the punchline as the body. Set the recipient address in the To field.",
+						"description": "Weekend branch: emails the joke, with the setup in the subject and the delivery (the punchline) as the body. Set the recipient address in the To field.",
 						"label": "Send the joke",
 						"maxRetries": 0,
 						"metadata": {
@@ -146,7 +146,7 @@
 						"parameters": {
 							"bodyType": "plain",
 							"subject": "Here's a joke - ${httpClient_2.setup}",
-							"body": "${httpClient_2.punchline}"
+							"body": "${httpClient_2.delivery}"
 						},
 						"type": "googleMail/v1/sendEmail"
 					}

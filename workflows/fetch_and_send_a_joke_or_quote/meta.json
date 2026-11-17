@@ -22,7 +22,7 @@
 		"Trigger: the workflow fires every day at 08:00 Europe/London.",
 		"Check if it's the weekend using the dateHelper isWeekend component.",
 		"Condition branches on the result: TRUE path for weekends, FALSE path for weekdays.",
-		"Weekend (TRUE): fetch a random joke from the Official Joke API, then send it as an email with the setup as subject and punchline as body.",
+		"Weekend (TRUE): fetch a random safe-mode joke from JokeAPI (v2.jokeapi.dev), then send it as an email with the setup as subject and the delivery (punchline) as body.",
 		"Weekday (FALSE): fetch a random quote from dummyjson.com, then send it as an email with the author as subject and the quote as body."
 	],
 	"screenshot": "screenshot.png"
