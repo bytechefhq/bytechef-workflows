@@ -18,7 +18,7 @@
     "Condition-based file sorting into Google Drive folders"
   ],
   "prerequisites": [
-    "Google Forms connection, with the application form selected in the \"A Google Forms is filled\" trigger (question 1 name, question 2 email, question 3 CV upload)",
+    "Google Forms connection, with the application form selected in the \"A Google Forms is filled\" trigger (three required questions, in order: name, email, CV upload)",
     "Google Drive connection, with the target folders selected in the \"Rejected Candidates\" and \"Potential Candidates\" steps",
     "OpenAI API key, plus OpenAI added as a provider in Settings > AI > Providers for the \"Summarize CV\" step",
     "Google Sheets connection, with the target spreadsheet and sheet selected in the \"Record Results\" step"
