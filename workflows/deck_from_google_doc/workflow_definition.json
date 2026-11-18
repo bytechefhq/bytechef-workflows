@@ -17,7 +17,7 @@
         {
             "label": "Number of slides (8 to 12 is typical)",
             "name": "slideCount",
-            "type": "string",
+            "type": "integer",
             "required": true
         },
         {
