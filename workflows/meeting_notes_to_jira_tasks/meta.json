@@ -1,0 +1,33 @@
+{
+  "name": "Turn Google Meet notes into Jira tasks after approval",
+  "category": "documentOps",
+  "description": "When Google Meet saves meeting notes or a transcript to your Meet Recordings folder in Google Drive, an AI agent reads the document and extracts three lists: decisions, action items with owner and due date, and open questions. Owners and dates come only from the notes, so unknowns stay unassigned or TBD. It checks Jira for matching tasks, and after a person approves the draft list, each action item is created as a Jira task.",
+  "shortDescription": "File every meeting's action items as Jira tasks, approved before anything is created.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Google Drive New File trigger on the folder where Meet saves notes and transcripts",
+    "AI Agent with the meeting-notes-to-tasks skill and Google Docs and Jira search tools",
+    "Owners and due dates taken only from the notes; unknowns stay ? and TBD",
+    "Duplicate check in Jira and approval before any task is created"
+  ],
+  "prerequisites": [
+    "The `meeting-notes-to-tasks` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Drive and Google Docs connection with access to the Meet Recordings folder",
+    "Google Meet note-taking or transcripts turned on, so notes are saved to Drive",
+    "Jira connection, plus your project and issue type selected in the Create Jira task step"
+  ],
+  "idealFor": "Teams that run many meetings and want follow-ups tracked without someone typing them up.",
+  "steps": [
+    "Trigger: a new notes or transcript document appears in the Meet Recordings folder.",
+    "Extract the action items: the AI Agent loads the meeting-notes-to-tasks skill, reads the document, extracts decisions, action items and open questions, and checks Jira for duplicates.",
+    "Approve: the run pauses until a reviewer approves the draft tasks.",
+    "Approved: create one Jira task per action item.",
+    "Rejected: log the comment and create nothing."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Prepare a renewal brief from contracts and product usage",
+  "category": "sales",
+  "description": "Run it with an account name. An AI agent reads the account and its open opportunities from Salesforce, the executed order forms and amendments from Google Drive, and usage figures from Salesforce fields. It compares usage with entitlements per product, recommends expand, hold or at risk with the rule that fired, and emails the brief to you.",
+  "shortDescription": "Compare an account's contracts with its usage and get an expand, hold or at-risk call before the renewal.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the renewal-and-usage-brief skill and Salesforce, Google Drive and Google Docs tools",
+    "Contract timeline built from executed order forms, which win over CRM fields",
+    "Expand, hold or at-risk recommendation with the rule and the numbers behind it",
+    "Read-only: nothing is written to the CRM and the customer is never contacted"
+  ],
+  "prerequisites": [
+    "The `renewal-and-usage-brief` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Salesforce connection with read access to Account and Opportunity, and usage fields on the Account (or swap in your usage source)",
+    "Google Drive and Google Docs connection with access to the contracts folder",
+    "Google Mail (Gmail) connection to send the brief to yourself"
+  ],
+  "idealFor": "Account managers and customer success teams preparing for renewal conversations.",
+  "steps": [
+    "Trigger: run the workflow manually with the account name and your email address.",
+    "Build the brief: the AI Agent loads the renewal-and-usage-brief skill, reads the account in Salesforce and the contracts in Google Drive, then compares usage with entitlements.",
+    "Email the brief to the address you entered."
+  ]
+}

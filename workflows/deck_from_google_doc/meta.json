@@ -1,0 +1,33 @@
+{
+  "name": "Turn a Google Doc into a slide deck with Gamma after outline approval",
+  "category": "documentOps",
+  "description": "Run it with a Google Doc ID, the audience and a rough slide count. An AI agent reads the document and drafts a slide-by-slide outline: one idea per slide, a title and three to five bullets each, with nothing invented beyond the source. A person edits and approves the outline, then Gamma generates the presentation from it, and when it is ready the deck link is emailed to you.",
+  "shortDescription": "Approve an outline drawn from your doc, then let Gamma build the deck.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the deck-from-docs skill and the Google Docs Get Document tool",
+    "Outline-first: nothing is created until the outline is approved, and it stays editable",
+    "Gamma generates the deck from the approved outline with the Gamma Generate Presentation action",
+    "No invented data, quotes or charts; cut content listed for review"
+  ],
+  "prerequisites": [
+    "The `deck-from-docs` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Docs and Google Mail (Gmail) connection",
+    "Gamma connection with an API key, on a Gamma plan with API access"
+  ],
+  "idealFor": "Anyone who has the content in a doc and needs a presentation without building slides by hand.",
+  "steps": [
+    "Trigger: run the workflow manually with the Google Doc ID, audience, slide count and your email address.",
+    "Draft the outline: the AI Agent loads the deck-from-docs skill, reads the doc and writes a slide-by-slide outline.",
+    "Approve: the run pauses until a reviewer edits and approves the outline.",
+    "Approved: start a Gamma generation from the outline, wait for it and read the result.",
+    "Email the deck link, or the status if Gamma is not done yet.",
+    "Rejected: log the comment and create nothing."
+  ]
+}

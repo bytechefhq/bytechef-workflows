@@ -1,0 +1,31 @@
+{
+  "name": "Find a meeting time that works for everyone and book it",
+  "category": "other",
+  "description": "Run it with the attendees' emails, a duration, a date range and any constraints. An AI agent checks free time on every calendar it can see in Google Calendar, respects working hours and time zones, and ranks two to four slots that fit everyone. The approval form shows the options with the best one pre-filled; you confirm it or pick another time, and only then is the event created and invitations sent.",
+  "shortDescription": "Ranked slots that fit everyone, booked with invites once you confirm the time.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the find-a-time skill and the Google Calendar Get Free Time Slots tool",
+    "Working hours, time zones and constraints respected; assumed availability called out",
+    "Approval form with the start and end pre-filled and editable",
+    "Event created with invitations only after you confirm"
+  ],
+  "prerequisites": [
+    "The `find-a-time` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Google Calendar connection, with the attendees' calendars shared with you for free/busy"
+  ],
+  "idealFor": "Anyone who schedules meetings across several people and time zones.",
+  "steps": [
+    "Trigger: run the workflow manually with title, attendees, duration, date range and constraints.",
+    "Find slots: the AI Agent loads the find-a-time skill, checks each attendee's free time and ranks the candidate slots.",
+    "Confirm: the run pauses until you confirm or change the pre-filled time.",
+    "Approved: create the event and send invitations.",
+    "Rejected: log the comment and book nothing."
+  ]
+}

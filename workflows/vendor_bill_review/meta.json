@@ -1,0 +1,31 @@
+{
+  "name": "Review open vendor bills for due, overdue and duplicate bills",
+  "category": "finance",
+  "description": "Every Monday an AI agent reads open vendor bills from QuickBooks Online through its query API. It lists bills due in the next seven days and overdue bills, flags likely duplicates with the matching bill side by side, keeps recurring bills apart, and flags bills missing a due date, memo or PO. Totals are given per currency, and the summary is posted to your finance Slack channel before the payment run.",
+  "shortDescription": "A weekly pre-payment-run check of vendor bills: due, overdue, duplicates and missing details.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the vendor-bill-review skill and the QuickBooks Search Bills and Get Bill tools",
+    "Duplicate detection that always shows the matching bill ID",
+    "Recurring bills (rent, subscriptions) listed apart from duplicates",
+    "Read-only: no bill is created, approved, paid, edited or voided"
+  ],
+  "prerequisites": [
+    "The `vendor-bill-review` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "QuickBooks connection (OAuth2 with your Intuit app and company ID)",
+    "Slack connection and the ID of the finance channel"
+  ],
+  "idealFor": "Finance and accounts payable teams that want a clean list before every payment run.",
+  "steps": [
+    "Trigger: every Monday at 07:00 UTC.",
+    "Get the current date.",
+    "Review the bills: the AI Agent loads the vendor-bill-review skill, queries open bills from QuickBooks Online and builds the four sections.",
+    "Post the summary to the finance Slack channel."
+  ]
+}

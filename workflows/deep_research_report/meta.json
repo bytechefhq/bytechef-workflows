@@ -1,0 +1,33 @@
+{
+  "name": "Research a question across many sources and get a cited report",
+  "category": "ai",
+  "description": "Run it with a research question. An AI agent splits it into three to six sub-questions, searches the web with Tavily and the biomedical literature with PubMed, keeps the most credible and recent sources, and reads the strongest ones in full with Firecrawl. It writes a report with an executive summary, findings per sub-question, an evidence-quality note on each finding, contradictions stated plainly and a numbered source list, saves it as a Google Doc and emails you the link.",
+  "shortDescription": "A cited, multi-source research report saved to Google Docs.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "AI Agent with the deep-research skill and Tavily, Firecrawl and PubMed tools",
+    "Two rounds: breadth first, then full-text reading of the strongest sources",
+    "Every claim cited, with study type and preprint or peer-reviewed status noted",
+    "Report saved as a Google Doc and the link emailed to you"
+  ],
+  "prerequisites": [
+    "The `deep-research` skill created under Settings → AI → Skills, from the SKILL.md in the blue canvas note",
+    "Anthropic API key",
+    "Tavily API key",
+    "Firecrawl API key",
+    "Google Docs and Google Mail (Gmail) connection"
+  ],
+  "idealFor": "Marketing, strategy and research teams that need a credible, sourced answer rather than a quick summary.",
+  "steps": [
+    "Trigger: run the workflow manually with the research question and your email address.",
+    "Get the current date.",
+    "Research the question: the AI Agent loads the deep-research skill, plans sub-questions, searches with Tavily and PubMed, reads sources with Firecrawl and writes the report.",
+    "Save the report as a Google Doc.",
+    "Email the link to you."
+  ]
+}
