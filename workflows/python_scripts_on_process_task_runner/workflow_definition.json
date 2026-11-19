@@ -1,0 +1,86 @@
+{
+  "label": "Run Python scripts on the Process task runner",
+  "description": "Runs a Python script outside the GraalVM sandbox on the Process task runner, once without a connection and once with an HTTP Client connection whose parameters the script reads to call an echo API. Each task returns the runtime it ran on, so you can see where the code executed.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "import platform\nimport socket\nimport sys\n\n\ndef perform(input, context):\n    total = sum(input[\"numbers\"])\n\n    print(f\"Hello {input['name']} from Python {platform.python_version()} on {platform.system()}/{platform.machine()}\")\n\n    return {\n        \"greeting\": f\"Hello, {input['name']}!\",\n        \"total\": total,\n        \"runtime\": {\n            \"python\": platform.python_version(),\n            \"platform\": platform.system(),\n            \"arch\": platform.machine(),\n            \"hostname\": socket.gethostname(),\n        },\n    }\n",
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "script/v1/python"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "import json\nimport urllib.parse\nimport urllib.request\n\n\ndef perform(input, connection, context):\n    echo = connection[\"echo\"]\n\n    print(\"The token as printed by the script (masked in stdout):\", echo[\"token\"])\n\n    query = urllib.parse.urlencode({\"caller\": input[\"name\"]})\n    request = urllib.request.Request(\n        f\"{echo['baseUri']}/get?{query}\",\n        headers={\"Authorization\": f\"Bearer {echo['token']}\", \"User-Agent\": \"bytechef-runner-showcase\"},\n    )\n\n    with urllib.request.urlopen(request, timeout=30) as response:\n        body = json.load(response)\n        status = response.status\n\n    return {\n        \"status\": status,\n        \"tokenAccepted\": body[\"headers\"].get(\"authorization\") == f\"Bearer {echo['token']}\",\n        \"echoedQuery\": body[\"args\"],\n        \"connectionParameterNames\": sorted(echo.keys()),\n    }\n",
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "script/v1/python",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Process** task runner is off by default. An operator enables it with `bytechef.script.runners.process.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_PROCESS_ENABLED=true`).\n- The ByteChef server host needs `python3` on its PATH, since the Process runner starts it as a local process.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_e66c785c-cbdc-5aaa-bde3-cbff9e2a5941",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 420,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Without Connection** calls `perform(input, context)` with the task's **Input**. The map it returns becomes `vars` in the task output, next to `stdout`, `stderr` and `exitCode`.\n- **With Connection** calls `perform(input, connection, context)`. `connection.echo` holds the connection's parameters, and the token is masked when the script prints it.",
+          "id": "stickyNote_59222f0c-9c51-53dd-8c84-232e4b8f709f",
+          "position": {
+            "x": 150.0,
+            "y": 460.0
+          },
+          "size": {
+            "height": 318,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
