@@ -65,7 +65,7 @@
       "parameters": {
         "response": {
           "responseFormat": "JSON",
-          "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"score\":{\"type\":\"integer\",\"title\":\"score\"}},\"required\":[],\"type\":\"object\",\"title\":\"candidate\"}"
+          "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"score\":{\"type\":\"integer\",\"title\":\"score\"}},\"required\":[\"score\"],\"type\":\"object\",\"title\":\"candidate\"}"
         },
         "n": 1,
         "temperature": 1,

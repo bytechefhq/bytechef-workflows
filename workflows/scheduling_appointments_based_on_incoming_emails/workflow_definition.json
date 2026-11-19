@@ -91,13 +91,13 @@
               "items": "${googleCalendar_1}",
               "iteratee": [
                 {
-                  "label": "If a time slot is longer than 45 minutes",
-                  "description": "Checks whether the current slot is longer than 45 minutes, the length of one appointment.",
+                  "label": "If a time slot is at least 45 minutes long",
+                  "description": "Checks whether the current slot is at least 45 minutes long, the length of one appointment.",
                   "name": "condition_1",
                   "type": "condition/v1",
                   "parameters": {
                     "rawExpression": true,
-                    "expression": "T(java.time.LocalDateTime).parse('${loop_1.item.endTime}').minusMinutes(45).isAfter(T(java.time.LocalDateTime).parse('${loop_1.item.startTime}'))",
+                    "expression": "=minusMinutes(parseDateTime(${loop_1.item.endTime}), 45) >= parseDateTime(${loop_1.item.startTime})",
                     "caseTrue": [
                       {
                         "label": "Append to a list",
