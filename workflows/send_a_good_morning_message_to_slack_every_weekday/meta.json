@@ -1,0 +1,28 @@
+{
+  "name": "Send a good morning message to a Slack channel every weekday",
+  "category": "other",
+  "description": "Posts a good morning message to a Slack channel at 9:00 every Monday to Friday. Change the hour, the days, the time zone or the text to fit your team.",
+  "shortDescription": "Greet your team in Slack at the start of every working day.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Runs on a schedule at 9:00 on Monday to Friday, in the time zone you choose",
+    "Posts to any public or private channel the Slack app has been added to",
+    "Two steps, so it is easy to extend: add a weather report, today's calendar or open tickets before the message"
+  ],
+  "prerequisites": [
+    "A Slack connection in ByteChef, with the ByteChef Slack app added to the channel you post to",
+    "The channel to post to, picked in the Send good morning message step",
+    "Your team's time zone, set in the schedule trigger (it ships as UTC)"
+  ],
+  "idealFor": "Team leads who want a daily check-in prompt in Slack without posting it by hand.",
+  "steps": [
+    "Trigger: run at 9:00 on Monday to Friday.",
+    "Post the good morning message to the chosen Slack channel."
+  ],
+  "screenshot": "screenshot.png"
+}
