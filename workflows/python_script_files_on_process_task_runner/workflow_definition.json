@@ -1,0 +1,78 @@
+{
+  "label": "Pass files between Python scripts on the Process task runner",
+  "description": "Two Python script tasks on the Process task runner hand files to each other. The first gets a CSV and a JSON config through Input Files and a title through Environment, aggregates the orders and writes a report and a chart. Output Files keeps only the report and the chart, and the second task reads both back through Input Files.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Produce Report",
+      "name": "produceReport",
+      "parameters": {
+        "inputFiles": {
+          "orders.csv": "order_id,customer,amount\n1001,Acme,250.00\n1002,Globex,99.50\n1003,Acme,410.25\n1004,Initech,75.00\n1005,Globex,120.00\n",
+          "config.json": "{\"currency\": \"EUR\", \"minimumTotal\": 100}"
+        },
+        "script": "import csv\nimport json\nimport os\n\n\ndef perform(input, context):\n    working_directory = os.environ[\"BYTECHEF_WORKING_DIR\"]\n    output_directory = os.environ[\"BYTECHEF_OUTPUT_DIR\"]\n\n    with open(os.path.join(working_directory, \"config.json\")) as config_file:\n        config = json.load(config_file)\n\n    totals = {}\n\n    with open(os.path.join(working_directory, \"orders.csv\"), newline=\"\") as orders_file:\n        for order in csv.DictReader(orders_file):\n            summary = totals.setdefault(order[\"customer\"], {\"orders\": 0, \"total\": 0.0})\n            summary[\"orders\"] += 1\n            summary[\"total\"] += float(order[\"amount\"])\n\n    kept = sorted(\n        ((customer, summary) for customer, summary in totals.items() if summary[\"total\"] >= config[\"minimumTotal\"]),\n        key=lambda item: item[1][\"total\"],\n        reverse=True,\n    )\n\n    with open(os.path.join(output_directory, \"report.csv\"), \"w\", newline=\"\") as report_file:\n        writer = csv.writer(report_file, lineterminator=\"\\n\")\n        writer.writerow([\"customer\", \"orders\", \"total\"])\n\n        for customer, summary in kept:\n            writer.writerow([customer, summary[\"orders\"], f\"{summary['total']:.2f}\"])\n\n    os.makedirs(os.path.join(output_directory, \"charts\"), exist_ok=True)\n\n    with open(os.path.join(output_directory, \"charts\", \"summary.txt\"), \"w\") as chart_file:\n        chart_file.write(os.environ[\"REPORT_TITLE\"] + \"\\n\\n\")\n\n        for customer, summary in kept:\n            bar = \"#\" * round(summary[\"total\"] / 50)\n            chart_file.write(f\"{customer:<8} {bar} {summary['total']:.2f} {config['currency']}\\n\")\n\n    with open(os.path.join(output_directory, \"scratch.log\"), \"w\") as scratch_file:\n        scratch_file.write(\"No Output Files pattern matches this file, so it is not kept.\\n\")\n\n    print(f\"Wrote a report of {len(kept)} customers\")\n\n    return {\n        \"title\": os.environ[\"REPORT_TITLE\"],\n        \"currency\": config[\"currency\"],\n        \"customers\": len(kept),\n        \"workingDirectoryFiles\": sorted(os.listdir(working_directory)),\n    }\n",
+        "taskRunner": {
+          "type": "process"
+        },
+        "outputFiles": [
+          "*.csv",
+          "charts/*.txt"
+        ],
+        "env": {
+          "REPORT_TITLE": "Revenue by customer"
+        }
+      },
+      "type": "script/v1/python"
+    },
+    {
+      "label": "Consume Report",
+      "name": "consumeReport",
+      "parameters": {
+        "inputFiles": {
+          "report.csv": "${produceReport.outputFiles['report.csv']}",
+          "inputs/summary.txt": "${produceReport.outputFiles['charts/summary.txt']}",
+          "notes.txt": "Customers under the minimum total are left out of the report."
+        },
+        "script": "import csv\nimport os\n\n\ndef perform(input, context):\n    working_directory = os.environ[\"BYTECHEF_WORKING_DIR\"]\n\n    with open(os.path.join(working_directory, \"report.csv\"), newline=\"\") as report_file:\n        rows = list(csv.reader(report_file))\n\n    with open(os.path.join(working_directory, \"inputs\", \"summary.txt\")) as summary_file:\n        summary_first_line = summary_file.readline().strip()\n\n    with open(os.path.join(working_directory, \"notes.txt\")) as notes_file:\n        notes = notes_file.read()\n\n    header, *records = rows\n\n    return {\n        \"header\": \",\".join(header),\n        \"rowCount\": len(records),\n        \"largestCustomer\": records[0][0],\n        \"largestTotal\": float(records[0][2]),\n        \"summaryFirstLine\": summary_first_line,\n        \"notes\": notes,\n    }\n",
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "script/v1/python"
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Process** task runner is off by default. An operator enables it with `bytechef.script.runners.process.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_PROCESS_ENABLED=true`).\n- The ByteChef server host needs `python3` on its PATH, since the Process runner starts it as a local process.\n- Run it with the **Test** button or on a schedule: the files go through ByteChef's file storage, so no extra setup is needed.",
+          "id": "stickyNote_6e25ad20-4c61-53a1-85c0-e8861c1f9e77",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 372,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Produce Report** gets `orders.csv` and `config.json` through **Input Files** and `REPORT_TITLE` through **Environment**. It writes `report.csv`, `charts/summary.txt` and `scratch.log` to `$BYTECHEF_OUTPUT_DIR`.\n- **Output Files** keeps `*.csv` and `charts/*.txt`, so `scratch.log` is dropped. Each kept file is stored and listed under `outputFiles`, keyed by its path.\n- **Consume Report** takes the stored files back through **Input Files**: `${produceReport.outputFiles['report.csv']}` is copied into its working directory, and `charts/summary.txt` lands in `inputs/summary.txt`.\n- Until **Produce Report** has been tested once, the editor shows two \"might not exist\" warnings for the `outputFiles` references: the task's output is only known after a test. Use **Test Action** on its Output tab, or run the workflow, and the warnings clear.",
+          "id": "stickyNote_47665ec9-fcb9-509f-8b83-533e35374ec6",
+          "position": {
+            "x": 150.0,
+            "y": 412.0
+          },
+          "size": {
+            "height": 594,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
