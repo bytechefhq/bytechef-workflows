@@ -1,0 +1,28 @@
+{
+  "name": "Pass files between Bash scripts on the Process task runner",
+  "category": "it",
+  "description": "Two Bash script tasks on the Process task runner hand files to each other. The first gets a CSV and a JSON config through Input Files and a title through Environment, aggregates the orders and writes a report and a chart. Output Files keeps only the report and the chart, and the second task reads both back through Input Files.",
+  "shortDescription": "Hand files from one Bash script task to the next with Input Files and Output Files.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Inline file contents written into the working directory through Input Files",
+    "Environment variables set per task",
+    "Output Files glob patterns that decide which files are kept",
+    "Stored output files passed to the next task, including into a subdirectory"
+  ],
+  "prerequisites": [
+    "The Process task runner enabled with bytechef.script.runners.process.enabled=true",
+    "bash installed on the ByteChef server host"
+  ],
+  "idealFor": "Developers who need a real language runtime, its libraries or local tools in a workflow step, beyond what the sandboxed GraalVM runner allows.",
+  "steps": [
+    "Produce Report reads orders.csv and config.json from Input Files and writes report.csv, charts/summary.txt and scratch.log.",
+    "Output Files keeps report.csv and charts/summary.txt and drops scratch.log.",
+    "Consume Report gets the two stored files through Input Files and returns what it reads from them."
+  ]
+}
