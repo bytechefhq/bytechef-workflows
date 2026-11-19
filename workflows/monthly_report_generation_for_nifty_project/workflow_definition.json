@@ -60,7 +60,7 @@
       "parameters": {
         "response": {
           "responseFormat": "JSON",
-          "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"monthName\":{\"type\":\"string\",\"title\":\"monthName\"},\"firstDayOfMonth\":{\"type\":\"string\",\"title\":\"firstDayOfMonth\",\"format\":\"date-time\"},\"lastDayOfMonth\":{\"type\":\"string\",\"title\":\"lastDayOfMonth\",\"format\":\"date-time\"},\"year\":{\"type\":\"integer\",\"title\":\"year\"}},\"required\":[],\"type\":\"object\",\"title\":\"DateInformations\"}"
+          "responseSchema": "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"properties\":{\"monthName\":{\"type\":\"string\",\"title\":\"monthName\"},\"firstDayOfMonth\":{\"type\":\"string\",\"title\":\"firstDayOfMonth\",\"format\":\"date-time\"},\"lastDayOfMonth\":{\"type\":\"string\",\"title\":\"lastDayOfMonth\",\"format\":\"date-time\"},\"year\":{\"type\":\"integer\",\"title\":\"year\"}},\"required\":[\"monthName\",\"firstDayOfMonth\",\"lastDayOfMonth\",\"year\"],\"type\":\"object\",\"title\":\"DateInformations\"}"
         },
         "n": 1,
         "temperature": 1,
@@ -221,7 +221,7 @@
             null,
             null,
             "Total (hours ):",
-            "=SUM(E2:E${nifty_1.body.items.size()+1})"
+            "='=SUM(E2:E' + (size(${nifty_1.body.items}) + 1) + ')'"
           ]
         }
       },

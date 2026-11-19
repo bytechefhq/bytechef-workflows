@@ -79,7 +79,7 @@
         "messages": [
           {
             "role": "USER",
-            "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or customer support. \n\nTicket: ${hubspot_1.properties.subject}, ${hubspot_1.properties.content}"
+            "content": "Read the following customer support ticket and categorize it into one of the following categories: tech or support. Reply with only the category name in lowercase, tech or support, and nothing else.\n\nTicket: ${hubspot_1.properties.subject}, ${hubspot_1.properties.content}"
           }
         ]
       },
@@ -91,7 +91,7 @@
           }
         }
       },
-      "description": "Reads the ticket and answers with a single word: tech for a technical issue, or a customer support category otherwise. The next step routes on this answer."
+      "description": "Reads the ticket and answers with a single lowercase word: tech for a technical issue, or support otherwise. The next step routes on this answer."
     },
     {
       "description": "Routes the ticket on the category. tech goes to the tech team's channel; anything else goes to the sales team's channel.",
@@ -121,7 +121,7 @@
             "type": "slack/v1/sendChannelMessage"
           }
         ],
-        "expression": "='${openAi_2}'=='tech'"
+        "expression": "=${openAi_2} == 'tech'"
       },
       "type": "condition/v1",
       "metadata": {
