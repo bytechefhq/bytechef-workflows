@@ -1,0 +1,91 @@
+{
+  "label": "Pass files between shell commands on the Process task runner",
+  "description": "Two shell command tasks on the Process task runner hand files to each other. The first gets a CSV and a JSON config through Input Files and a title through Environment, aggregates the orders and writes a report and a chart. Output Files keeps only the report and the chart, and the second task reads both back through Input Files.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Produce Report",
+      "name": "produceReport",
+      "parameters": {
+        "commands": [
+          "cd \"$BYTECHEF_WORKING_DIR\"",
+          "minimum_total=\"$(sed -E 's/.*\"minimumTotal\": *([0-9.]+).*/\\1/' config.json)\"",
+          "awk -F, -v minimum=\"$minimum_total\" 'NR > 1 { orders[$2]++; total[$2] += $3 } END { for (customer in total) if (total[customer] >= minimum) printf \"%s,%d,%.2f\\n\", customer, orders[customer], total[customer] }' orders.csv | sort -t, -k3 -rn > kept.csv",
+          "{ echo customer,orders,total; cat kept.csv; } > \"$BYTECHEF_OUTPUT_DIR/report.csv\"",
+          "mkdir -p \"$BYTECHEF_OUTPUT_DIR/charts\"",
+          "{ printf '%s\\n\\n' \"$REPORT_TITLE\"; awk -F, '{ printf \"%-8s %s\\n\", $1, $3 }' kept.csv; } > \"$BYTECHEF_OUTPUT_DIR/charts/summary.txt\"",
+          "echo 'No Output Files pattern matches this file, so it is not kept.' > \"$BYTECHEF_OUTPUT_DIR/scratch.log\"",
+          "printf '{\"title\": \"%s\", \"customers\": %s}\\n' \"$REPORT_TITLE\" \"$(wc -l < kept.csv | tr -d ' ')\" > \"$BYTECHEF_OUTPUT_DIR/output.json\""
+        ],
+        "inputFiles": {
+          "orders.csv": "order_id,customer,amount\n1001,Acme,250.00\n1002,Globex,99.50\n1003,Acme,410.25\n1004,Initech,75.00\n1005,Globex,120.00\n",
+          "config.json": "{\"currency\": \"EUR\", \"minimumTotal\": 100}"
+        },
+        "taskRunner": {
+          "type": "process"
+        },
+        "outputFiles": [
+          "*.csv",
+          "charts/*.txt"
+        ],
+        "env": {
+          "REPORT_TITLE": "Revenue by customer"
+        }
+      },
+      "type": "commands/v1/shell"
+    },
+    {
+      "label": "Consume Report",
+      "name": "consumeReport",
+      "parameters": {
+        "commands": [
+          "cd \"$BYTECHEF_WORKING_DIR\"",
+          "ls -R",
+          "printf '{\"header\": \"%s\", \"rowCount\": %s, \"largestCustomer\": \"%s\", \"summaryFirstLine\": \"%s\", \"notes\": \"%s\"}\\n' \"$(head -n 1 report.csv)\" \"$(tail -n +2 report.csv | wc -l | tr -d ' ')\" \"$(sed -n 2p report.csv | cut -d, -f1)\" \"$(head -n 1 inputs/summary.txt)\" \"$(cat notes.txt)\" > \"$BYTECHEF_OUTPUT_DIR/output.json\""
+        ],
+        "inputFiles": {
+          "report.csv": "${produceReport.outputFiles['report.csv']}",
+          "inputs/summary.txt": "${produceReport.outputFiles['charts/summary.txt']}",
+          "notes.txt": "Customers under the minimum total are left out of the report."
+        },
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "commands/v1/shell"
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Process** task runner is off by default. An operator enables it with `bytechef.script.runners.process.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_PROCESS_ENABLED=true`).\n- The ByteChef server host needs `sh` on its PATH, since the Process runner starts it as a local process.\n- Run it with the **Test** button or on a schedule: the files go through ByteChef's file storage, so no extra setup is needed.",
+          "id": "stickyNote_aec5dee8-bf9c-535e-a54c-e4d946ed9eea",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 372,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Produce Report** gets `orders.csv` and `config.json` through **Input Files** and `REPORT_TITLE` through **Environment**. It writes `report.csv`, `charts/summary.txt` and `scratch.log` to `$BYTECHEF_OUTPUT_DIR`.\n- **Output Files** keeps `*.csv` and `charts/*.txt`, so `scratch.log` is dropped. Each kept file is stored and listed under `outputFiles`, keyed by its path.\n- **Consume Report** takes the stored files back through **Input Files**: `${produceReport.outputFiles['report.csv']}` is copied into its working directory, and `charts/summary.txt` lands in `inputs/summary.txt`.\n- Until **Produce Report** has been tested once, the editor shows two \"might not exist\" warnings for the `outputFiles` references: the task's output is only known after a test. Use **Test Action** on its Output tab, or run the workflow, and the warnings clear.",
+          "id": "stickyNote_47665ec9-fcb9-509f-8b83-533e35374ec6",
+          "position": {
+            "x": 150.0,
+            "y": 412.0
+          },
+          "size": {
+            "height": 594,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
