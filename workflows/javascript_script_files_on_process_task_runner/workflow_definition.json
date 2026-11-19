@@ -1,0 +1,78 @@
+{
+  "label": "Pass files between JavaScript scripts on the Process task runner",
+  "description": "Two JavaScript script tasks on the Process task runner hand files to each other. The first gets a CSV and a JSON config through Input Files and a title through Environment, aggregates the orders and writes a report and a chart. Output Files keeps only the report and the chart, and the second task reads both back through Input Files.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Produce Report",
+      "name": "produceReport",
+      "parameters": {
+        "inputFiles": {
+          "orders.csv": "order_id,customer,amount\n1001,Acme,250.00\n1002,Globex,99.50\n1003,Acme,410.25\n1004,Initech,75.00\n1005,Globex,120.00\n",
+          "config.json": "{\"currency\": \"EUR\", \"minimumTotal\": 100}"
+        },
+        "script": "const fs = require('fs');\nconst path = require('path');\n\nfunction perform(input, context) {\n    const workingDirectory = process.env.BYTECHEF_WORKING_DIR;\n    const outputDirectory = process.env.BYTECHEF_OUTPUT_DIR;\n\n    const config = JSON.parse(fs.readFileSync(path.join(workingDirectory, 'config.json'), 'utf8'));\n    const [, ...rows] = fs.readFileSync(path.join(workingDirectory, 'orders.csv'), 'utf8').trim().split('\\n');\n\n    const totals = {};\n\n    for (const row of rows) {\n        const [, customer, amount] = row.split(',');\n\n        totals[customer] = totals[customer] || {orders: 0, total: 0};\n        totals[customer].orders += 1;\n        totals[customer].total += Number(amount);\n    }\n\n    const kept = Object.entries(totals)\n        .filter(([, summary]) => summary.total >= config.minimumTotal)\n        .sort(([, left], [, right]) => right.total - left.total);\n\n    const reportLines = ['customer,orders,total', ...kept.map(([customer, summary]) =>\n        `${customer},${summary.orders},${summary.total.toFixed(2)}`)];\n    const chartLines = kept.map(([customer, summary]) =>\n        `${customer.padEnd(8)} ${'#'.repeat(Math.round(summary.total / 50))} ${summary.total.toFixed(2)} ${config.currency}`);\n\n    fs.mkdirSync(path.join(outputDirectory, 'charts'), {recursive: true});\n    fs.writeFileSync(path.join(outputDirectory, 'report.csv'), reportLines.join('\\n') + '\\n');\n    fs.writeFileSync(path.join(outputDirectory, 'charts', 'summary.txt'), `${process.env.REPORT_TITLE}\\n\\n${chartLines.join('\\n')}\\n`);\n    fs.writeFileSync(path.join(outputDirectory, 'scratch.log'), 'No Output Files pattern matches this file, so it is not kept.\\n');\n\n    console.log(`Wrote a report of ${kept.length} customers`);\n\n    return {\n        title: process.env.REPORT_TITLE,\n        currency: config.currency,\n        customers: kept.length,\n        workingDirectoryFiles: fs.readdirSync(workingDirectory).sort(),\n    };\n}\n",
+        "taskRunner": {
+          "type": "process"
+        },
+        "outputFiles": [
+          "*.csv",
+          "charts/*.txt"
+        ],
+        "env": {
+          "REPORT_TITLE": "Revenue by customer"
+        }
+      },
+      "type": "script/v1/javascript"
+    },
+    {
+      "label": "Consume Report",
+      "name": "consumeReport",
+      "parameters": {
+        "inputFiles": {
+          "report.csv": "${produceReport.outputFiles['report.csv']}",
+          "inputs/summary.txt": "${produceReport.outputFiles['charts/summary.txt']}",
+          "notes.txt": "Customers under the minimum total are left out of the report."
+        },
+        "script": "const fs = require('fs');\nconst path = require('path');\n\nfunction perform(input, context) {\n    const workingDirectory = process.env.BYTECHEF_WORKING_DIR;\n\n    const [header, ...rows] = fs.readFileSync(path.join(workingDirectory, 'report.csv'), 'utf8').trim().split('\\n');\n    const summary = fs.readFileSync(path.join(workingDirectory, 'inputs', 'summary.txt'), 'utf8');\n    const notes = fs.readFileSync(path.join(workingDirectory, 'notes.txt'), 'utf8');\n\n    const [largestCustomer, , largestTotal] = rows[0].split(',');\n\n    return {\n        header,\n        rowCount: rows.length,\n        largestCustomer,\n        largestTotal: Number(largestTotal),\n        summaryFirstLine: summary.split('\\n')[0],\n        notes,\n    };\n}\n",
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "script/v1/javascript"
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Process** task runner is off by default. An operator enables it with `bytechef.script.runners.process.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_PROCESS_ENABLED=true`).\n- The ByteChef server host needs `node` on its PATH, since the Process runner starts it as a local process.\n- Run it with the **Test** button or on a schedule: the files go through ByteChef's file storage, so no extra setup is needed.",
+          "id": "stickyNote_20ad7222-77f5-5908-bf6a-ac82c44a3ac4",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 372,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Produce Report** gets `orders.csv` and `config.json` through **Input Files** and `REPORT_TITLE` through **Environment**. It writes `report.csv`, `charts/summary.txt` and `scratch.log` to `$BYTECHEF_OUTPUT_DIR`.\n- **Output Files** keeps `*.csv` and `charts/*.txt`, so `scratch.log` is dropped. Each kept file is stored and listed under `outputFiles`, keyed by its path.\n- **Consume Report** takes the stored files back through **Input Files**: `${produceReport.outputFiles['report.csv']}` is copied into its working directory, and `charts/summary.txt` lands in `inputs/summary.txt`.\n- Until **Produce Report** has been tested once, the editor shows two \"might not exist\" warnings for the `outputFiles` references: the task's output is only known after a test. Use **Test Action** on its Output tab, or run the workflow, and the warnings clear.",
+          "id": "stickyNote_47665ec9-fcb9-509f-8b83-533e35374ec6",
+          "position": {
+            "x": 150.0,
+            "y": 412.0
+          },
+          "size": {
+            "height": 594,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
