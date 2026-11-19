@@ -1,0 +1,87 @@
+{
+  "label": "Run Bash scripts on the Docker task runner",
+  "description": "Runs a Bash script outside the GraalVM sandbox on the Docker task runner, once without a connection and once with an HTTP Client connection whose parameters the script reads to call an echo API. Each task returns the runtime it ran on, so you can see where the code executed.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "set -euo pipefail\n\ntotal=0\nfor number in $(echo \"$INPUT_numbers\" | tr -d '[] ' | tr ',' ' '); do\n  total=$((total + number))\ndone\n\necho \"Hello $INPUT_name from $(bash --version | head -1)\"\necho \"Running on $(uname -s)/$(uname -m) as $(id -un)\"\n\nprintf '{\"greeting\": \"Hello, %s!\", \"total\": %d, \"kernel\": \"%s\", \"user\": \"%s\"}\\n' \\\n  \"$INPUT_name\" \"$total\" \"$(uname -sr)\" \"$(id -un)\" > \"$BYTECHEF_OUTPUT_DIR/output.json\"\n",
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "script/v1/bash"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "set -euo pipefail\n\n# The default Ubuntu image ships without curl and jq, so install them first; bake them into your own image for real use\napt-get update -qq > /dev/null && apt-get install -y -qq curl jq ca-certificates > /dev/null\n\nbase_uri=\"$(jq -r '.echo.baseUri' \"$BYTECHEF_CONNECTIONS_FILE\")\"\ntoken=\"$(jq -r '.echo.token' \"$BYTECHEF_CONNECTIONS_FILE\")\"\n\necho \"The token as printed by the script (masked in stdout): $token\"\n\nresponse=\"$(curl -sS -H \"Authorization: Bearer $token\" \"$base_uri/get?caller=$INPUT_name\")\"\n\njq -n --argjson body \"$response\" --arg expected \"Bearer $token\" \\\n  --argjson names \"$(jq '.echo | keys' \"$BYTECHEF_CONNECTIONS_FILE\")\" \\\n  '{tokenAccepted: ($body.headers.authorization == $expected), echoedQuery: $body.args,\n    connectionParameterNames: $names}' > \"$BYTECHEF_OUTPUT_DIR/output.json\"\n",
+        "taskRunner": {
+          "type": "docker"
+        },
+        "timeout": 300
+      },
+      "type": "script/v1/bash",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Docker** task runner is off by default. An operator enables it with `bytechef.script.runners.docker.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_DOCKER_ENABLED=true`).\n- The ByteChef server needs a Docker daemon it can reach. The first run pulls the default image for the language, which can take a minute.\n- **With Connection** installs `curl` and `jq` with `apt-get` on every run, so the container needs internet access. Bake them into your own image for real use.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_7ccbf79a-d753-59c9-aef2-1b1bf3e4e29e",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 546,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- Bash scripts get each **Input** value as an `INPUT_<name>` environment variable.\n- The script writes its result as JSON to `$BYTECHEF_OUTPUT_DIR/output.json`, which becomes `vars` in the task output.\n- **With Connection** reads the connection's parameters from the JSON file `$BYTECHEF_CONNECTIONS_FILE` names. The token is masked in the captured output.",
+          "id": "stickyNote_ff24adbc-d48b-55ee-bbb5-b9b275878dc1",
+          "position": {
+            "x": 150.0,
+            "y": 586.0
+          },
+          "size": {
+            "height": 324,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
