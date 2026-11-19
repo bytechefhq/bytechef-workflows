@@ -1,0 +1,61 @@
+{
+    "label": "Send a good morning message to a Slack channel every weekday",
+    "description": "Posts a good morning message to a Slack channel at 9:00 every Monday to Friday. Change the hour, the days, the time zone or the text to fit your team.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Every weekday at 9:00",
+            "description": "Runs at 9:00 on Monday to Friday in the chosen time zone.",
+            "name": "trigger_1",
+            "type": "schedule/v1/everyDay",
+            "parameters": {
+                "hour": 9,
+                "minute": 0,
+                "dayOfWeek": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "timezone": "UTC"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Send good morning message",
+            "description": "Posts the good morning message to the chosen Slack channel.",
+            "name": "slack_1",
+            "type": "slack/v1/sendChannelMessage",
+            "parameters": {
+                "channel": "",
+                "text": "Good morning team"
+            },
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "ui": {
+            "stickyNotes": [
+                {
+                    "color": "yellow",
+                    "content": "## Setup: Slack channel and time zone\n\n1. Add your Slack connection to **Send good morning message**, then pick the **Channel ID**. Invite the ByteChef Slack app to that channel first.\n2. Set **Timezone** in **Every weekday at 9:00** to your team's time zone. It ships as UTC.\n3. Change **Hour**, **Days of Week** or the message text if you like.\n4. Click **Test** to post the message once, then deploy the workflow to run it every weekday.",
+                    "id": "setup-note-slack-good-morning",
+                    "position": {
+                        "x": 20,
+                        "y": 40
+                    },
+                    "size": {
+                        "height": 300,
+                        "width": 480
+                    }
+                }
+            ]
+        }
+    }
+}
