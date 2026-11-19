@@ -1,0 +1,171 @@
+{
+  "label": "Draft Gmail support replies with an AI agent and send after approval",
+  "description": "For each new support email, an AI agent reads the conversation and past emails from the same customer with the Gmail tools and drafts a reply. A person edits and approves the draft, and only then is the reply sent in the original thread.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "New Email",
+      "name": "trigger_1",
+      "type": "googleMail/v1/newEmailPolling",
+      "parameters": {
+        "format": "SIMPLE"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Draft a reply",
+      "name": "aiAgent_1",
+      "type": "aiAgent/v1/chat",
+      "parameters": {
+        "format": "SIMPLE",
+        "systemPrompt": "You are a support agent who drafts email replies for a human to review. Use the Get thread tool with the thread ID to read the whole conversation, and the Search email tool to find earlier emails from the same sender for context. Draft a concise, polite reply in plain text that answers the customer's question. Do not promise refunds, discounts or dates. If the email is not a support request (newsletter, spam, automated notification), set needsReply to false. Sign off as the support team.",
+        "userPrompt": "New email.\n\nFrom: ${trigger_1.from}\nSubject: ${trigger_1.subject}\nThread ID: ${trigger_1.threadId}\n\n${trigger_1.bodyPlain}",
+        "response": {
+          "responseFormat": "JSON",
+          "responseSchema": "{\"type\":\"object\",\"properties\":{\"needsReply\":{\"type\":\"boolean\"},\"summary\":{\"type\":\"string\"},\"reply\":{\"type\":\"string\"}},\"required\":[\"needsReply\",\"summary\",\"reply\"]}"
+        }
+      },
+      "clusterElements": {
+        "model": {
+          "label": "OpenAI",
+          "name": "openAi_1",
+          "type": "openAi/v1/model",
+          "parameters": {
+            "model": "gpt-5-mini"
+          }
+        },
+        "tools": [
+          {
+            "label": "Get thread",
+            "name": "googleMail_1",
+            "type": "googleMail/v1/getThread",
+            "parameters": {
+              "id": "${trigger_1.threadId}"
+            }
+          },
+          {
+            "label": "Search email",
+            "name": "googleMail_2",
+            "type": "googleMail/v1/searchEmail",
+            "parameters": {
+              "from": "${trigger_1.from}",
+              "maxResults": 10,
+              "subject": "=fromAi('subject', 'STRING', {'description': 'Optional words from the subject to narrow the search; leave empty to list the sender''s recent emails', 'required': false})"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "ui": {
+          "dynamicPropertyTypes": {}
+        }
+      }
+    },
+    {
+      "label": "Needs a reply?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "parameters": {
+        "rawExpression": true,
+        "expression": "${aiAgent_1.needsReply}",
+        "caseTrue": [
+          {
+            "label": "Approve reply",
+            "name": "approval_1",
+            "type": "approval/v1/requestApproval",
+            "parameters": {
+              "formTitle": "Reply to ${trigger_1.from}: ${trigger_1.subject}",
+              "formDescription": "Summary: ${aiAgent_1.summary}\n\nCustomer wrote:\n${trigger_1.bodyPlain}\n\nEdit the draft below, then approve to send it in the original thread, or reject to send nothing.",
+              "inputs": [
+                {
+                  "fieldType": 5,
+                  "fieldLabel": "Reply",
+                  "fieldName": "reply",
+                  "defaultValue": "${aiAgent_1.reply}",
+                  "required": true
+                }
+              ],
+              "expiresIn": 2,
+              "expiresInUnit": "DAYS"
+            },
+            "clusterElements": {
+              "approvalChannels": [
+                {
+                  "label": "Approval Task",
+                  "name": "approvalTask_1",
+                  "type": "approvalTask/v1/approvalTask",
+                  "parameters": {}
+                }
+              ]
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          },
+          {
+            "label": "Approved?",
+            "name": "condition_2",
+            "type": "condition/v1",
+            "parameters": {
+              "rawExpression": true,
+              "expression": "${approval_1.approved}",
+              "caseTrue": [
+                {
+                  "label": "Send reply",
+                  "name": "googleMail_3",
+                  "type": "googleMail/v1/replyToEmail",
+                  "parameters": {
+                    "id": "${trigger_1.id}",
+                    "to": [
+                      "${trigger_1.from}"
+                    ],
+                    "bodyType": "plain",
+                    "body": "${approval_1.reply}"
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                }
+              ],
+              "caseFalse": [
+                {
+                  "label": "Log rejection",
+                  "name": "logger_1",
+                  "type": "logger/v1/info",
+                  "parameters": {
+                    "text": "Reply to ${trigger_1.from} about \"${trigger_1.subject}\" was rejected. ${approval_1.comment}"
+                  },
+                  "metadata": {
+                    "ui": {
+                      "dynamicPropertyTypes": {}
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Log skipped email",
+            "name": "logger_2",
+            "type": "logger/v1/info",
+            "parameters": {
+              "text": "No reply needed for \"${trigger_1.subject}\": ${aiAgent_1.summary}"
+            },
+            "metadata": {
+              "ui": {
+                "dynamicPropertyTypes": {}
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
