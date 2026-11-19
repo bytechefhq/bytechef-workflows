@@ -1,0 +1,86 @@
+{
+  "label": "Run JavaScript scripts on the Docker task runner",
+  "description": "Runs a JavaScript script outside the GraalVM sandbox on the Docker task runner, once without a connection and once with an HTTP Client connection whose parameters the script reads to call an echo API. Each task returns the runtime it ran on, so you can see where the code executed.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "const os = require('os');\n\nfunction perform(input, context) {\n    const total = input.numbers.reduce((sum, number) => sum + number, 0);\n\n    console.log(`Hello ${input.name} from Node ${process.version} on ${os.platform()}/${os.arch()}`);\n\n    return {\n        greeting: `Hello, ${input.name}!`,\n        total,\n        runtime: {node: process.version, platform: os.platform(), arch: os.arch(), hostname: os.hostname()},\n        contextAvailable: false,\n    };\n}\n",
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "script/v1/javascript"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "input": {
+          "name": "ByteChef",
+          "numbers": [
+            3,
+            5,
+            8,
+            13
+          ]
+        },
+        "script": "async function perform(input, connection, context) {\n    const echo = connection.echo;\n\n    console.log('The token as printed by the script (masked in stdout):', echo.token);\n\n    const response = await fetch(`${echo.baseUri}/get?caller=${encodeURIComponent(input.name)}`, {\n        headers: {Authorization: `Bearer ${echo.token}`},\n    });\n    const body = await response.json();\n\n    return {\n        status: response.status,\n        tokenAccepted: body.headers.authorization === `Bearer ${echo.token}`,\n        echoedQuery: body.args,\n        connectionParameterNames: Object.keys(echo).sort(),\n    };\n}\n",
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "script/v1/javascript",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Docker** task runner is off by default. An operator enables it with `bytechef.script.runners.docker.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_DOCKER_ENABLED=true`).\n- The ByteChef server needs a Docker daemon it can reach. The first run pulls the default image for the language, which can take a minute.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_b2fdb263-d485-5215-a2db-067191055c0c",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 444,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Without Connection** calls `perform(input, context)` with the task's **Input**. The map it returns becomes `vars` in the task output, next to `stdout`, `stderr` and `exitCode`.\n- **With Connection** calls `perform(input, connection, context)`. `connection.echo` holds the connection's parameters, and the token is masked when the script prints it.",
+          "id": "stickyNote_59222f0c-9c51-53dd-8c84-232e4b8f709f",
+          "position": {
+            "x": 150.0,
+            "y": 484.0
+          },
+          "size": {
+            "height": 318,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
