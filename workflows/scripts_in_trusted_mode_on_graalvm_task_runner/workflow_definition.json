@@ -11,7 +11,7 @@
         "input": {
           "name": "ByteChef"
         },
-        "script": "function perform(input, context) {\n    let hostClassLookup;\n\n    try {\n        Java.type('java.lang.System');\n\n        hostClassLookup = 'allowed';\n    } catch (error) {\n        hostClassLookup = `blocked: ${error.message}`;\n    }\n\n    return {\n        mode: 'strict',\n        greeting: `Hello, ${input.name}!`,\n        hostClassLookup,\n    };\n}\n",
+        "script": "function perform(input, context) {\n    let hostClassLookup;\n\n    try {\n        Java.type('java.lang.System');\n\n        hostClassLookup = 'allowed';\n    } catch (error) {\n        hostClassLookup = 'blocked: ' + error.message;\n    }\n\n    return {\n        mode: 'strict',\n        greeting: 'Hello, ' + input.name + '!',\n        hostClassLookup,\n    };\n}\n",
         "taskRunner": {
           "type": "graalvm",
           "mode": "strict"
@@ -26,7 +26,7 @@
         "input": {
           "name": "ByteChef"
         },
-        "script": "function perform(input, context) {\n    const System = Java.type('java.lang.System');\n    const Runtime = Java.type('java.lang.Runtime');\n\n    const runtime = Runtime.getRuntime();\n\n    return {\n        mode: 'trusted',\n        greeting: `Hello, ${input.name}!`,\n        hostClassLookup: 'allowed',\n        server: {\n            javaVersion: String(System.getProperty('java.version')),\n            osName: String(System.getProperty('os.name')),\n            availableProcessors: runtime.availableProcessors(),\n            maxMemoryMegabytes: Math.round(runtime.maxMemory() / (1024 * 1024)),\n        },\n    };\n}\n",
+        "script": "function perform(input, context) {\n    const System = Java.type('java.lang.System');\n    const Runtime = Java.type('java.lang.Runtime');\n\n    const runtime = Runtime.getRuntime();\n\n    return {\n        mode: 'trusted',\n        greeting: 'Hello, ' + input.name + '!',\n        hostClassLookup: 'allowed',\n        server: {\n            javaVersion: String(System.getProperty('java.version')),\n            osName: String(System.getProperty('os.name')),\n            availableProcessors: runtime.availableProcessors(),\n            maxMemoryMegabytes: Math.round(runtime.maxMemory() / (1024 * 1024)),\n        },\n    };\n}\n",
         "taskRunner": {
           "type": "graalvm",
           "mode": "trusted"
