@@ -1,0 +1,26 @@
+{
+  "name": "Run scripts in trusted mode on the GraalVM task runner",
+  "category": "it",
+  "description": "Runs the same host access check on the GraalVM task runner in strict mode and in trusted mode, once in JavaScript and once in Python. Strict mode reports that Java host classes are blocked; trusted mode reads the server's Java version, operating system and memory through them, so you can see what trusted mode lifts.",
+  "shortDescription": "Compare strict and trusted mode on the GraalVM task runner in JavaScript and Python.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "The same host access check in GraalVM strict mode and trusted mode",
+    "Java host classes read from JavaScript with Java.type and from Python with java.type",
+    "Server details returned as the task result, without leaving the server process"
+  ],
+  "prerequisites": [
+    "Trusted script mode enabled with bytechef.script.trusted.enabled=true, the shipped self-hosted default"
+  ],
+  "idealFor": "Operators and developers who want to see what trusted mode allows before letting a workflow use it, or who need a script step with access to the server's own Java classes.",
+  "steps": [
+    "Strict JavaScript tries to load a Java host class and reports that the sandbox blocks it.",
+    "Trusted JavaScript loads Java host classes and returns the server's Java version, operating system, processors and maximum heap.",
+    "Trusted Python does the same through GraalPy's java module."
+  ]
+}

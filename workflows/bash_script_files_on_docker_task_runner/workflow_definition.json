@@ -1,0 +1,78 @@
+{
+  "label": "Pass files between Bash scripts on the Docker task runner",
+  "description": "Two Bash script tasks on the Docker task runner hand files to each other. The first gets a CSV and a JSON config through Input Files and a title through Environment, aggregates the orders and writes a report and a chart. Output Files keeps only the report and the chart, and the second task reads both back through Input Files.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Produce Report",
+      "name": "produceReport",
+      "parameters": {
+        "inputFiles": {
+          "orders.csv": "order_id,customer,amount\n1001,Acme,250.00\n1002,Globex,99.50\n1003,Acme,410.25\n1004,Initech,75.00\n1005,Globex,120.00\n",
+          "config.json": "{\"currency\": \"EUR\", \"minimumTotal\": 100}"
+        },
+        "script": "set -euo pipefail\n\ncd \"$BYTECHEF_WORKING_DIR\"\n\nminimum_total=\"$(sed -E 's/.*\"minimumTotal\": *([0-9.]+).*/\\1/' config.json)\"\ncurrency=\"$(sed -E 's/.*\"currency\": *\"([^\"]+)\".*/\\1/' config.json)\"\n\nmkdir -p \"$BYTECHEF_OUTPUT_DIR/charts\"\n\nawk -F, -v minimum=\"$minimum_total\" 'NR > 1 { orders[$2]++; total[$2] += $3 }\n    END { for (customer in total) if (total[customer] >= minimum)\n        printf \"%s,%d,%.2f\\n\", customer, orders[customer], total[customer] }' orders.csv \\\n    | sort -t, -k3 -rn > kept.csv\n\n{ echo \"customer,orders,total\"; cat kept.csv; } > \"$BYTECHEF_OUTPUT_DIR/report.csv\"\n\n{\n    printf '%s\\n\\n' \"$REPORT_TITLE\"\n    awk -F, -v currency=\"$currency\" '{ bar = \"\"; for (i = 0; i < int($3 / 50 + 0.5); i++) bar = bar \"#\";\n        printf \"%-8s %s %s %s\\n\", $1, bar, $3, currency }' kept.csv\n} > \"$BYTECHEF_OUTPUT_DIR/charts/summary.txt\"\n\necho \"No Output Files pattern matches this file, so it is not kept.\" > \"$BYTECHEF_OUTPUT_DIR/scratch.log\"\n\ncustomers=\"$(wc -l < kept.csv | tr -d ' ')\"\nfiles=\"$(ls | sort | awk '{ printf \"%s\\\"%s\\\"\", (NR > 1 ? \",\" : \"\"), $0 }')\"\n\necho \"Wrote a report of $customers customers\"\n\nprintf '{\"title\": \"%s\", \"currency\": \"%s\", \"customers\": %s, \"workingDirectoryFiles\": [%s]}\\n' \\\n    \"$REPORT_TITLE\" \"$currency\" \"$customers\" \"$files\" > \"$BYTECHEF_OUTPUT_DIR/output.json\"\n",
+        "taskRunner": {
+          "type": "docker"
+        },
+        "outputFiles": [
+          "*.csv",
+          "charts/*.txt"
+        ],
+        "env": {
+          "REPORT_TITLE": "Revenue by customer"
+        }
+      },
+      "type": "script/v1/bash"
+    },
+    {
+      "label": "Consume Report",
+      "name": "consumeReport",
+      "parameters": {
+        "inputFiles": {
+          "report.csv": "${produceReport.outputFiles['report.csv']}",
+          "inputs/summary.txt": "${produceReport.outputFiles['charts/summary.txt']}",
+          "notes.txt": "Customers under the minimum total are left out of the report."
+        },
+        "script": "set -euo pipefail\n\ncd \"$BYTECHEF_WORKING_DIR\"\n\nheader=\"$(head -n 1 report.csv)\"\nrow_count=\"$(tail -n +2 report.csv | wc -l | tr -d ' ')\"\nlargest_customer=\"$(sed -n 2p report.csv | cut -d, -f1)\"\nlargest_total=\"$(sed -n 2p report.csv | cut -d, -f3)\"\nsummary_first_line=\"$(head -n 1 inputs/summary.txt)\"\nnotes=\"$(cat notes.txt)\"\n\nprintf '{\"header\": \"%s\", \"rowCount\": %s, \"largestCustomer\": \"%s\", \"largestTotal\": %s, \"summaryFirstLine\": \"%s\", \"notes\": \"%s\"}\\n' \\\n    \"$header\" \"$row_count\" \"$largest_customer\" \"$largest_total\" \"$summary_first_line\" \"$notes\" \\\n    > \"$BYTECHEF_OUTPUT_DIR/output.json\"\n",
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "script/v1/bash"
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Docker** task runner is off by default. An operator enables it with `bytechef.script.runners.docker.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_DOCKER_ENABLED=true`).\n- The ByteChef server needs a Docker daemon it can reach. The first run pulls the default image for the language, which can take a minute.\n- Run it with the **Test** button or on a schedule: the files go through ByteChef's file storage, so no extra setup is needed.",
+          "id": "stickyNote_bdf17887-d197-575e-a58c-19a71f535c0e",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 396,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Produce Report** gets `orders.csv` and `config.json` through **Input Files** and `REPORT_TITLE` through **Environment**. It writes `report.csv`, `charts/summary.txt` and `scratch.log` to `$BYTECHEF_OUTPUT_DIR`.\n- **Output Files** keeps `*.csv` and `charts/*.txt`, so `scratch.log` is dropped. Each kept file is stored and listed under `outputFiles`, keyed by its path.\n- **Consume Report** takes the stored files back through **Input Files**: `${produceReport.outputFiles['report.csv']}` is copied into its working directory, and `charts/summary.txt` lands in `inputs/summary.txt`.\n- Until **Produce Report** has been tested once, the editor shows two \"might not exist\" warnings for the `outputFiles` references: the task's output is only known after a test. Use **Test Action** on its Output tab, or run the workflow, and the warnings clear.",
+          "id": "stickyNote_47665ec9-fcb9-509f-8b83-533e35374ec6",
+          "position": {
+            "x": 150.0,
+            "y": 436.0
+          },
+          "size": {
+            "height": 594,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}

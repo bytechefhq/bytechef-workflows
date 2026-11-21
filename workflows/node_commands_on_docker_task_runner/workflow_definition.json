@@ -1,0 +1,92 @@
+{
+  "label": "Run Node.js commands on the Docker task runner",
+  "description": "Runs Node.js command lines on the Docker task runner with environment variables, once without a connection and once with an HTTP Client connection whose parameters the commands read from a JSON file to call an echo API. The commands write their result to output.json.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "commands": [
+          "const fs = require('fs'), os = require('os'), path = require('path');",
+          "const message = `${process.env.GREETING}, ${process.env.NAME} from Node ${process.version}`;",
+          "console.log(message);",
+          "const result = {greeting: message, platform: os.platform(), arch: os.arch()};",
+          "fs.writeFileSync(path.join(process.env.BYTECHEF_OUTPUT_DIR, 'output.json'), JSON.stringify(result));"
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "commands/v1/node"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "commands": [
+          "const fs = require('fs'), path = require('path');",
+          "const echo = JSON.parse(fs.readFileSync(process.env.BYTECHEF_CONNECTIONS_FILE, 'utf8')).echo;",
+          "console.log('The token as printed by the commands (masked in stdout):', echo.token);",
+          "(async () => {",
+          "  const response = await fetch(`${echo.baseUri}/get?caller=${process.env.NAME}`, {headers: {Authorization: `Bearer ${echo.token}`}});",
+          "  const body = await response.json();",
+          "  const result = {status: response.status, tokenAccepted: body.headers.authorization === `Bearer ${echo.token}`, echoedQuery: body.args, connectionParameterNames: Object.keys(echo).sort()};",
+          "  fs.writeFileSync(path.join(process.env.BYTECHEF_OUTPUT_DIR, 'output.json'), JSON.stringify(result));",
+          "})();"
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "commands/v1/node",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Docker** task runner is off by default. An operator enables it with `bytechef.script.runners.docker.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_DOCKER_ENABLED=true`).\n- The ByteChef server needs a Docker daemon it can reach. The first run pulls the default image for the language, which can take a minute.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_b2fdb263-d485-5215-a2db-067191055c0c",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 444,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- Each line of **Commands** runs as Node.js code in one execution, with **Environment** setting `GREETING` and `NAME`.\n- The commands write their result as JSON to `$BYTECHEF_OUTPUT_DIR/output.json`, which becomes `vars` in the task output.\n- **With Connection** reads the connection's parameters from the JSON file `$BYTECHEF_CONNECTIONS_FILE` names. The token is masked in the captured output.",
+          "id": "stickyNote_a3590c26-4724-528b-9eb9-d908c8789aca",
+          "position": {
+            "x": 150.0,
+            "y": 484.0
+          },
+          "size": {
+            "height": 348,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}

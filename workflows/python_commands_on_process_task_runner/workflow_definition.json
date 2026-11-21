@@ -1,0 +1,90 @@
+{
+  "label": "Run Python commands on the Process task runner",
+  "description": "Runs Python command lines on the Process task runner with environment variables, once without a connection and once with an HTTP Client connection whose parameters the commands read from a JSON file to call an echo API. The commands write their result to output.json.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "commands": [
+          "import json, os, platform",
+          "message = f\"{os.environ['GREETING']}, {os.environ['NAME']} from Python {platform.python_version()}\"",
+          "print(message)",
+          "result = {'greeting': message, 'platform': platform.system(), 'arch': platform.machine()}",
+          "open(os.path.join(os.environ['BYTECHEF_OUTPUT_DIR'], 'output.json'), 'w').write(json.dumps(result))"
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "commands/v1/python"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "commands": [
+          "import json, os, urllib.request",
+          "echo = json.load(open(os.environ['BYTECHEF_CONNECTIONS_FILE']))['echo']",
+          "print('The token as printed by the commands (masked in stdout):', echo['token'])",
+          "request = urllib.request.Request(echo['baseUri'] + '/get?caller=' + os.environ['NAME'], headers={'Authorization': 'Bearer ' + echo['token'], 'User-Agent': 'bytechef-runner-showcase'})",
+          "body = json.load(urllib.request.urlopen(request, timeout=30))",
+          "result = {'tokenAccepted': body['headers'].get('authorization') == 'Bearer ' + echo['token'], 'echoedQuery': body['args'], 'connectionParameterNames': sorted(echo)}",
+          "open(os.path.join(os.environ['BYTECHEF_OUTPUT_DIR'], 'output.json'), 'w').write(json.dumps(result))"
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "process"
+        }
+      },
+      "type": "commands/v1/python",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Process** task runner is off by default. An operator enables it with `bytechef.script.runners.process.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_PROCESS_ENABLED=true`).\n- The ByteChef server host needs `python3` on its PATH, since the Process runner starts it as a local process.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_e66c785c-cbdc-5aaa-bde3-cbff9e2a5941",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 420,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- Each line of **Commands** runs as Python code in one execution, with **Environment** setting `GREETING` and `NAME`.\n- The commands write their result as JSON to `$BYTECHEF_OUTPUT_DIR/output.json`, which becomes `vars` in the task output.\n- **With Connection** reads the connection's parameters from the JSON file `$BYTECHEF_CONNECTIONS_FILE` names. The token is masked in the captured output.",
+          "id": "stickyNote_c4f50135-8d43-5ab0-ac34-9a88a56795b7",
+          "position": {
+            "x": 150.0,
+            "y": 460.0
+          },
+          "size": {
+            "height": 348,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}

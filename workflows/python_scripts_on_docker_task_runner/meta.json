@@ -1,0 +1,27 @@
+{
+  "name": "Run Python scripts on the Docker task runner",
+  "category": "it",
+  "description": "Runs a Python script outside the GraalVM sandbox on the Docker task runner, once without a connection and once with an HTTP Client connection whose parameters the script reads to call an echo API. Each task returns the runtime it ran on, so you can see where the code executed.",
+  "shortDescription": "Run Python scripts in a real Python runtime with and without a connection.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Python executed by the Docker task runner instead of the in-process GraalVM sandbox",
+    "Connection parameters handed to the code, with secrets masked in the captured output",
+    "Structured results returned through vars, next to stdout, stderr and the exit code"
+  ],
+  "prerequisites": [
+    "The Docker task runner enabled with bytechef.script.runners.docker.enabled=true",
+    "A Docker daemon the ByteChef server can reach, with internet access to pull images",
+    "HTTP Client connection to https://postman-echo.com with Bearer Token authentication"
+  ],
+  "idealFor": "Developers who need a real language runtime, its libraries or local tools in a workflow step, beyond what the sandboxed GraalVM runner allows.",
+  "steps": [
+    "Without Connection runs the code with the task's input and returns a greeting and runtime details.",
+    "With Connection reads the echo connection's base URI and token and calls the echo API with them."
+  ]
+}
