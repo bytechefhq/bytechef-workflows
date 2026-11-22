@@ -1,0 +1,40 @@
+{
+  "name": "Write a daily briefing with a local LLM and send it to Slack",
+  "category": "ai",
+  "description": "Every weekday morning, collects your unread Gmail inbox, open Google Tasks, Slack mentions and the next 24 hours of Google Calendar, and hands them to Qwen3 8B running in your own Ollama. The model picks out priorities, things you are waiting on and meetings that need preparation, drops the noise, and the briefing arrives as a Slack direct message with a link back to every source.",
+  "shortDescription": "A daily briefing from Gmail, Tasks, Slack and Calendar, written by a local LLM.",
+  "author": {
+    "name": "Ivica Cardic",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Runs on Qwen3 8B in Ollama, so your email, tasks and messages never reach a hosted AI API",
+    "Deterministic steps collect the data and the model only judges it, which is the job small models are good at",
+    "Filters noise, merges duplicates and links every item back to its email, Slack message or calendar event",
+    "Separates your own to-dos from things you are waiting on and adds prep notes for each meeting"
+  ],
+  "prerequisites": [
+    "Ollama installed and running (https://ollama.com), reachable from ByteChef",
+    "The qwen3:8b model pulled with `ollama pull qwen3:8b` (about 5 GB on disk, about 10 GB of memory while loaded with a 16K context)",
+    "An Ollama connection in ByteChef whose URL points at the Ollama server (http://localhost:11434 by default, http://host.docker.internal:11434 when ByteChef runs in Docker)",
+    "Google Mail, Google Calendar and Google Tasks connections",
+    "A Slack connection with the search:read scope (searching messages needs a user token) and permission to send direct messages",
+    "Replace @your-handle in the Slack search step with your Slack handle and U0123456789 in the last step with your Slack member ID",
+    "Set the trigger's hour, days and timezone to your own morning"
+  ],
+  "idealFor": "People who want an AI morning briefing across their work apps without sending their inbox to a hosted model.",
+  "steps": [
+    "Trigger: run every weekday at 07:30.",
+    "Work out the end of a 24-hour window with Date Helper.",
+    "Get the next 24 hours of events from Google Calendar.",
+    "List open tasks from Google Tasks.",
+    "Search Slack for the newest messages that mention you.",
+    "Find up to 25 unread emails in the Gmail Primary inbox.",
+    "Loop over the emails, read each one's sender, subject and snippet, and append it to a list.",
+    "Read the email list back.",
+    "Write the briefing with Qwen3 8B in Ollama: priorities, waiting on others, meetings to prepare for.",
+    "Send the briefing to you as a Slack direct message."
+  ]
+}
