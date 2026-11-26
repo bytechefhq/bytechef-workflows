@@ -1,0 +1,58 @@
+{
+  "label": "Pass data between steps with data pills",
+  "description": "Learn how ByteChef steps share data. A Variable step holds a name and a city, a Text Helper step upper-cases the city, and a Logger step combines both into a greeting using data pills such as ${var_1.name}. It runs with one click and needs no connection.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Set name and city",
+      "name": "var_1",
+      "type": "var/v1/set",
+      "description": "Holds an object with a name and a city. Its output is that object, so later steps can use ${var_1.name} and ${var_1.city}.",
+      "parameters": {
+        "type": "OBJECT",
+        "value": {
+          "name": "Ada",
+          "city": "Zagreb"
+        }
+      }
+    },
+    {
+      "label": "Make the city upper case",
+      "name": "textHelper_1",
+      "type": "textHelper/v1/upperCase",
+      "description": "Takes the city from the first step with the ${var_1.city} data pill and returns it in capital letters. Its whole output is used as ${textHelper_1}.",
+      "parameters": {
+        "text": "${var_1.city}"
+      }
+    },
+    {
+      "label": "Log a greeting",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "description": "Writes a greeting to the execution log, built from two data pills: ${var_1.name} from the first step and ${textHelper_1} from the second.",
+      "parameters": {
+        "text": "Hello ${var_1.name}, welcome to ${textHelper_1}!"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: pass data between steps\n\nEvery step can use what earlier steps returned. You pick it as a **data pill**, which is written as `${step_name.field}`. This workflow needs no connection.\n\n1. Click **Test** at the top to run it.\n2. Click **Set name and city** and open its **Output** tab: it returned `name` and `city`.\n3. Click **Make the city upper case**. Its text is `${var_1.city}`, the city from step 1, and its output is the same city in capitals.\n4. Click **Log a greeting**. Its text mixes plain words with two pills: `${var_1.name}` and `${textHelper_1}`. Open **Logs** after a run to read the result.\n5. Change the name in **Set name and city** to your own and click **Test** again.\n6. Optional: open **Workflow Inputs** in the right sidebar, add an input called `name` and set a test value for it. Then replace `${var_1.name}` with `${name}` in **Log a greeting** and click **Test**.",
+          "id": "setup-note-pass-data-between-steps",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 560,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
+}
