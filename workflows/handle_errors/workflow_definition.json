@@ -1,0 +1,83 @@
+{
+  "label": "Handle errors and keep the workflow going",
+  "description": "Learn how an Error Handler keeps a workflow running when a step fails. The workflow calls a test URL that always fails; the Error Handler runs its error branch instead of stopping, and a final step proves the workflow kept going. It runs with one click and needs no connection.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Catch errors",
+      "name": "onError_1",
+      "type": "on-error/v1",
+      "description": "Runs Call a failing API and Log the success in its TRY branch. If one of them fails, it skips the rest of the TRY branch and runs Log the failure in its CATCH branch.",
+      "parameters": {
+        "main-branch": [
+          {
+            "label": "Call a failing API",
+            "name": "httpClient_1",
+            "type": "httpClient/v1/get",
+            "maxRetries": 0,
+            "description": "Calls https://httpbin.org/status/500, a free test URL that always answers with an error, so this step fails on purpose. It does not retry.",
+            "parameters": {
+              "allowUnauthorizedCerts": false,
+              "responseType": "JSON",
+              "fullResponse": false,
+              "followAllRedirects": false,
+              "followRedirect": false,
+              "ignoreResponseCode": false,
+              "timeout": 10000,
+              "uri": "https://httpbin.org/status/500"
+            }
+          },
+          {
+            "label": "Log the success",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "description": "Runs only when Call a failing API succeeds. Writes a success message to the log.",
+            "parameters": {
+              "text": "Request succeeded."
+            }
+          }
+        ],
+        "on-error-branch": [
+          {
+            "label": "Log the failure",
+            "name": "logger_2",
+            "type": "logger/v1/info",
+            "description": "Runs only when a step in the TRY branch fails. Writes a message to the log instead of stopping the workflow.",
+            "parameters": {
+              "text": "Request failed. Continuing without its data."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Log that the workflow kept going",
+      "name": "logger_3",
+      "type": "logger/v1/info",
+      "description": "Runs after the Error Handler, whichever branch ran. It shows that the failure did not stop the workflow.",
+      "parameters": {
+        "text": "The workflow kept going."
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: handle errors\n\nWhen a step fails, the workflow normally stops. An **Error Handler** catches the failure instead: if a step in its **TRY** branch fails, the steps in its **CATCH** branch run, and the workflow keeps going. This workflow calls a test URL that always fails. It needs no connection.\n\n1. Click **Test** at the top to run it.\n2. Open **Logs**: **Call a failing API** failed with status 500, so **Log the failure** ran instead of **Log the success**. Then **Log that the workflow kept going** ran, and the run still ends as completed.\n3. In the run panel at the bottom, open **Try branch**, click **Call a failing API** and open its **Error** tab: it shows `500`.\n4. Change its URL from `https://httpbin.org/status/500` to `https://httpbin.org/status/200` and click **Test** again: now the TRY branch finishes and **Log the success** runs.\n5. Change it back to `/status/500`. Any step you put in the TRY branch is protected the same way.",
+          "id": "setup-note-handle-errors",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 640,
+            "width": 370
+          }
+        }
+      ]
+    }
+  }
+}
