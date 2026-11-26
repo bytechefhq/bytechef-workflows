@@ -42,14 +42,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Start here: respond to a webhook\n\nA **Webhook** trigger gives the workflow its own URL. Any app, or you with `curl`, can start the workflow by sending an HTTP request to it. The workflow then answers the caller. It needs no connection.\n\n1. Click **Receive a request**, open its **Output** tab and click **Test Trigger**. Copy the test webhook URL it shows; it waits for one request.\n2. In a terminal, send it a name (put your URL in place of `<webhook URL>`):\n\n   `curl -X POST '<webhook URL>' -H 'Content-Type: application/json' -d '{\"name\": \"Ada\"}'`\n\n3. Open the trigger's **Output** tab: the request you sent is there, with your JSON under `body`.\n4. Click **Test** at the top. The workflow runs with that request. **Log the request** writes the body to **Logs**, and **Send a greeting back** builds `{\"greeting\": \"Hello, Ada!\"}`. Open its **Output** tab to see it.\n5. Click **Test Trigger** again, send `-d '{}'` without a name and click **Test**: the greeting becomes `Hello, there!`. The `?: 'there'` part of the greeting formula is the fallback.\n6. Optional: to get the greeting back in your terminal, click **Publish**, then deploy and enable the workflow and `curl` its production webhook URL. The test URL only records the request for the editor.",
+          "content": "## Start here: respond to a webhook\n\nA **Webhook** trigger gives the workflow its own URL. Any app, or you with `curl`, can start the workflow by sending an HTTP request to it. The workflow then answers the caller. It needs no connection.\n\n1. Click **Receive a request**, open its **Output** tab and click **Test Trigger**. Copy the test webhook URL it shows; it waits for one request.\n2. In a terminal, send it a name (put your URL in place of `<webhook URL>`):\n\n   `curl -X POST '<webhook URL>' -H 'Content-Type: application/json' -d '{\"name\": \"Ada\"}'`\n\n3. Open the trigger's **Output** tab: the request you sent is there, with your JSON under `body`.\n4. Click **Test** at the top. The workflow runs with that request. **Log the request** writes the body to **Logs**, and **Send a greeting back** builds `{\"greeting\": \"Hello, Ada!\"}`. Open its **Output** tab to see it.\n5. Click **Test Trigger** again, send `-d '{}'` without a name and click **Test**: the greeting becomes `Hello, there!`. The `?: 'there'` part of the greeting formula is the fallback.\n6. Optional: to get the greeting back in your terminal, click **Publish**, then deploy and enable the workflow and `curl` its production webhook URL. The test URL only records the request for the editor.\n7. **Next:** import *Collect answers with a form* to learn how a workflow can collect input from people.",
           "id": "setup-note-respond-to-a-webhook",
           "position": {
             "x": 20,
             "y": 40
           },
           "size": {
-            "height": 780,
+            "height": 840,
             "width": 480
           }
         }

@@ -1,0 +1,71 @@
+{
+  "label": "Collect answers with a form",
+  "description": "Learn how a Form trigger turns a workflow into a web form. Open the form, submit a name, a favourite colour and a lucky number, and the workflow writes the answers to the log with data pills. It needs no connection.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Answer three questions",
+      "name": "trigger_1",
+      "type": "form/v1/newFormRequest",
+      "description": "Shows a web form with three fields and starts the workflow when it is submitted. Each answer is available by its field name, for example ${trigger_1.body.name}.",
+      "parameters": {
+        "formTitle": "Tell us about you",
+        "formDescription": "Three quick questions.",
+        "buttonLabel": "Send",
+        "inputs": [
+          {
+            "fieldType": 6,
+            "fieldLabel": "Your name",
+            "fieldName": "name",
+            "placeholder": "Ada",
+            "required": true
+          },
+          {
+            "fieldType": 6,
+            "fieldLabel": "Favourite colour",
+            "fieldName": "favouriteColour",
+            "placeholder": "blue",
+            "required": true
+          },
+          {
+            "fieldType": 9,
+            "fieldLabel": "Lucky number",
+            "fieldName": "luckyNumber",
+            "placeholder": "7",
+            "required": true
+          }
+        ]
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Log the answers",
+      "name": "logger_1",
+      "type": "logger/v1/info",
+      "description": "Writes the submitted answers to the log, using the ${trigger_1.body.name}, ${trigger_1.body.favouriteColour} and ${trigger_1.body.luckyNumber} data pills.",
+      "parameters": {
+        "text": "${trigger_1.body.name} likes ${trigger_1.body.favouriteColour}; lucky number ${trigger_1.body.luckyNumber}."
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: collect answers with a form\n\nA **Form** trigger gives the workflow a web form. Each time someone submits it, the workflow runs with their answers. It needs no connection.\n\n1. Click **Answer three questions**, open its **Output** tab and click **Test Trigger**. Copy the test URL it shows; it waits for one set of answers.\n2. While testing, you send answers the way the form would. In a terminal (put your URL in place of `<test URL>`):\n\n   `curl -X POST '<test URL>' -H 'Content-Type: application/json' -d '{\"body\": {\"name\": \"Ada\", \"favouriteColour\": \"blue\", \"luckyNumber\": 7}}'`\n\n3. The trigger's **Output** tab now shows the answers under `body`: `name`, `favouriteColour` and `luckyNumber`.\n4. Click **Test** at the top. **Log the answers** writes them to **Logs** using `${trigger_1.body.name}`, `${trigger_1.body.favouriteColour}` and `${trigger_1.body.luckyNumber}`.\n5. Click **Answer three questions** and look at **Inputs**: add a field, set its type and name, then use it in the logger as `${trigger_1.body.<name>}`.\n6. To see the real web form, click **Publish**, then deploy and enable the workflow. In the deployment's workflow list, click the form icon next to it to open the form. Submit it, then find the run under **Executions**.",
+          "id": "setup-note-collect-answers-with-a-form",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 760,
+            "width": 480
+          }
+        }
+      ]
+    }
+  }
+}
