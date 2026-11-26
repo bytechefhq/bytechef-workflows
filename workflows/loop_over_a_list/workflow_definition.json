@@ -79,14 +79,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Start here: loop over a list\n\nA **Loop** runs the steps inside it once for every item in a list. Inside the loop, `${loop_1.item}` is the item of the current round. This workflow goes through 10 sample products and logs the cheap ones. It needs no connection.\n\nA ⚠ on steps that read the product data is normal: the editor cannot know the response fields before a run. The workflow still runs.\n\n1. Click **Test** at the top to run it.\n2. Click **Get 10 products** and open its **Output** tab: `products` is a list of items with a `title` and a `price`.\n3. Click **For each product**. Its **List of items** field is `${httpClient_1.products}`, the list to go through.\n4. Click **Is it under $20?**. It compares `${loop_1.item.price}` with `20`. Only cheap products reach **Log the product**.\n5. Open **Logs** after the run: one line per cheap product, then the summary from **Log a summary**, which runs once, after the loop.\n6. Change `20` to `100` and click **Test** again to see more products.",
+          "content": "## Start here: loop over a list\n\nA **Loop** runs the steps inside it once for every item in a list. Inside the loop, `${loop_1.item}` is the item of the current round. This workflow goes through 10 sample products and logs the cheap ones. It needs no connection.\n\nA ⚠ on steps that read the product data is normal: the editor cannot know the response fields before a run. The workflow still runs.\n\n1. Click **Test** at the top to run it.\n2. Click **Get 10 products** and open its **Output** tab: `products` is a list of items with a `title` and a `price`.\n3. Click **For each product**. Its **List of items** field is `${httpClient_1.products}`, the list to go through.\n4. Click **Is it under $20?**. It compares `${loop_1.item.price}` with `20`. Only cheap products reach **Log the product**.\n5. Open **Logs** after the run: one line per cheap product, then the summary from **Log a summary**, which runs once, after the loop.\n6. Change `20` to `100` and click **Test** again to see more products.\n7. **Next:** import *Remember data between runs with Data Storage* to learn how a workflow runs on a schedule and remembers values.",
           "id": "setup-note-loop-over-a-list",
           "position": {
             "x": 20,
             "y": 40
           },
           "size": {
-            "height": 760,
+            "height": 820,
             "width": 370
           }
         }

@@ -1,0 +1,114 @@
+{
+  "label": "Remember data between runs with Data Storage",
+  "description": "Learn how a Schedule trigger runs a workflow on its own and how Data Storage keeps a value from one run to the next. Every hour the workflow gets the top Hacker News story, compares it with the one it saved last time and logs only when it changed. It needs no connection.",
+  "inputs": [],
+  "triggers": [
+    {
+      "label": "Every hour",
+      "name": "trigger_1",
+      "type": "schedule/v1/interval",
+      "description": "Starts the workflow every 60 minutes once it is deployed and enabled. When you click Test, it runs once immediately instead.",
+      "parameters": {
+        "interval": 1,
+        "timeUnit": 2,
+        "timezone": "UTC"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Get the top story",
+      "name": "hackerNews_1",
+      "type": "hackerNews/v1/fetchTopStories",
+      "description": "Gets the current top story from Hacker News, retrying up to 3 times if the API does not answer. It returns a list with one story; ${hackerNews_1[0].id} is its id and ${hackerNews_1[0].title} its title.",
+      "parameters": {
+        "numberOfStories": 1
+      },
+      "maxRetries": 3
+    },
+    {
+      "label": "Get the stored story id",
+      "name": "dataStorage_1",
+      "type": "dataStorage/v1/getValue",
+      "description": "Reads the story id saved by the previous run under the key lastTopStoryId, in this workflow's own storage. On the very first run nothing is saved yet, so it returns the default value 0.",
+      "parameters": {
+        "key": "lastTopStoryId",
+        "scope": "WORKFLOW",
+        "type": "INTEGER",
+        "defaultValue": 0
+      }
+    },
+    {
+      "label": "Is it a new story?",
+      "name": "condition_1",
+      "type": "condition/v1",
+      "description": "Compares the id of the current top story, ${hackerNews_1[0].id}, with the id saved last time, ${dataStorage_1}. If they differ, the True path logs and saves the new story; otherwise the False path logs that nothing changed.",
+      "parameters": {
+        "rawExpression": false,
+        "conditions": [
+          [
+            {
+              "type": "number",
+              "value1": "${hackerNews_1[0].id}",
+              "operation": "NOT_EQUALS",
+              "value2": "${dataStorage_1}"
+            }
+          ]
+        ],
+        "caseTrue": [
+          {
+            "label": "Log: new top story",
+            "name": "logger_1",
+            "type": "logger/v1/info",
+            "description": "Runs when the top story changed. Writes its title, ${hackerNews_1[0].title}, and its Hacker News link, built from ${hackerNews_1[0].id}, to the log.",
+            "parameters": {
+              "text": "New top story: ${hackerNews_1[0].title} (https://news.ycombinator.com/item?id=${hackerNews_1[0].id})"
+            }
+          },
+          {
+            "label": "Remember the story",
+            "name": "dataStorage_2",
+            "type": "dataStorage/v1/setValue",
+            "description": "Saves the id of the new top story, ${hackerNews_1[0].id}, under the key lastTopStoryId so the next run can compare against it.",
+            "parameters": {
+              "key": "lastTopStoryId",
+              "scope": "WORKFLOW",
+              "type": "INTEGER",
+              "value": "${hackerNews_1[0].id}"
+            }
+          }
+        ],
+        "caseFalse": [
+          {
+            "label": "Log: top story unchanged",
+            "name": "logger_2",
+            "type": "logger/v1/info",
+            "description": "Runs when the top story is the one saved last time. Writes its title, ${hackerNews_1[0].title}, to the log.",
+            "parameters": {
+              "text": "Top story unchanged: ${hackerNews_1[0].title}"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: remember data between runs\n\nA **Schedule** trigger starts this workflow every hour. **Data Storage** keeps a value between runs, so the workflow can tell what changed since last time. Here it remembers the top Hacker News story and only announces a new one. It needs no connection.\n\n1. Click **Test** at the top. The schedule does not wait: Test runs the workflow once, right now.\n2. Open **Logs**: the first run says **New top story**, because nothing was stored yet.\n3. Click **Test** again. Now the log says **Top story unchanged**, because **Remember the story** saved its id in the first run (unless a new story reached the top in the meantime).\n4. Click **Get the stored story id** and look at **Scope**: `Workflow` means the value belongs to this workflow only. Another copy of the template keeps its own value.\n5. To let the schedule fire by itself every hour, click **Publish**, then deploy and enable the workflow. Each run shows up under **Executions**.",
+          "id": "setup-note-remember-data-between-runs",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 700,
+            "width": 370
+          }
+        }
+      ]
+    }
+  }
+}

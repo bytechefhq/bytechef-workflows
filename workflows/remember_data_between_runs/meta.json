@@ -1,0 +1,30 @@
+{
+  "name": "Remember data between runs with Data Storage",
+  "category": "getting-started",
+  "description": "Learn how a Schedule trigger runs a workflow on its own and how Data Storage keeps a value from one run to the next. Every hour the workflow gets the top Hacker News story, compares it with the one it saved last time and logs only when it changed. It needs no connection.",
+  "shortDescription": "Learn how a Schedule trigger runs a workflow on its own and how Data Storage remembers values between runs.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Start a workflow on a fixed interval with a Schedule trigger",
+    "Read and save a value with Data Storage so the next run can use it",
+    "Keep stored values private to one workflow with the Workflow scope",
+    "Act only when something changed since the last run"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance",
+    "Internet access to reach hacker-news.firebaseio.com"
+  ],
+  "idealFor": "First-time ByteChef users who want to learn how to run workflows on a schedule and keep state between runs.",
+  "steps": [
+    "Trigger: the workflow runs every hour once deployed and enabled; Test runs it once immediately.",
+    "Get the top story: the Hacker News component returns the current top story.",
+    "Get the stored story id: Data Storage reads the id saved by the previous run under lastTopStoryId, or 0 on the first run.",
+    "Is it a new story?: a Condition compares ${hackerNews_1[0].id} with ${dataStorage_1}.",
+    "True path: the Logger announces the new story and Data Storage saves its id. False path: the Logger writes that the top story is unchanged."
+  ]
+}
