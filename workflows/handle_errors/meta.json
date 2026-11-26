@@ -1,0 +1,29 @@
+{
+  "name": "Handle errors and keep the workflow going",
+  "category": "getting-started",
+  "description": "Learn how an Error Handler keeps a workflow running when a step fails. The workflow calls a test URL that always fails; the Error Handler runs its error branch instead of stopping, and a final step proves the workflow kept going. It runs with one click and needs no connection.",
+  "shortDescription": "Learn how an Error Handler keeps a workflow running when a step fails.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Wrap steps that can fail in an Error Handler",
+    "Run a CATCH branch instead of stopping the workflow",
+    "See a failed step's error in the run panel",
+    "Continue with the rest of the workflow after a failure"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance",
+    "Internet access to reach httpbin.org"
+  ],
+  "idealFor": "First-time ByteChef users who want their workflows to survive a failing API call.",
+  "steps": [
+    "Trigger: the workflow starts when you click Test in the workflow editor.",
+    "Catch errors: an Error Handler runs its TRY branch: Call a failing API (an HTTP GET to httpbin.org/status/500) and Log the success.",
+    "The HTTP call fails, so the TRY branch stops and the CATCH branch runs: the Logger writes that the request failed.",
+    "Log that the workflow kept going: after the Error Handler, the Logger writes that the workflow continued."
+  ]
+}
