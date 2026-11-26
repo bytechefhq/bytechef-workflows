@@ -1,0 +1,27 @@
+{
+  "name": "Respond to a webhook",
+  "category": "getting-started",
+  "description": "Learn how a Webhook trigger starts a workflow from an HTTP request and how the workflow answers the caller. Send a name with curl, see the request in the trigger's output, and the workflow builds a JSON greeting as the response. It needs no connection.",
+  "shortDescription": "Learn how a Webhook trigger starts a workflow from an HTTP request and how the workflow answers the caller.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Start a workflow from any app with an HTTP request to its webhook URL",
+    "Capture a sample request with Test Trigger and run the workflow on it",
+    "Answer the caller with a JSON response built from the request",
+    "Fall back to a default value in a formula when a field is missing"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance"
+  ],
+  "idealFor": "First-time ByteChef users who want to learn how other apps can start a workflow and get an answer back.",
+  "steps": [
+    "Trigger: the workflow starts when an HTTP request arrives at its webhook URL, and the caller waits for the answer.",
+    "Log the request: the Logger writes the JSON body the caller sent.",
+    "Send a greeting back: the workflow answers with status 200 and {\"greeting\": \"Hello, <name>!\"}, or \"Hello, there!\" when no name was sent."
+  ]
+}
