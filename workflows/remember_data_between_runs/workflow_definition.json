@@ -97,14 +97,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Start here: remember data between runs\n\nA **Schedule** trigger starts this workflow every hour. **Data Storage** keeps a value between runs, so the workflow can tell what changed since last time. Here it remembers the top Hacker News story and only announces a new one. It needs no connection.\n\n1. Click **Test** at the top. The schedule does not wait: Test runs the workflow once, right now.\n2. Open **Logs**: the first run says **New top story**, because nothing was stored yet.\n3. Click **Test** again. Now the log says **Top story unchanged**, because **Remember the story** saved its id in the first run (unless a new story reached the top in the meantime).\n4. Click **Get the stored story id** and look at **Scope**: `Workflow` means the value belongs to this workflow only. Another copy of the template keeps its own value.\n5. To let the schedule fire by itself every hour, click **Publish**, then deploy and enable the workflow. Each run shows up under **Executions**.",
+          "content": "## Start here: remember data between runs\n\nA **Schedule** trigger starts this workflow every hour. **Data Storage** keeps a value between runs, so the workflow can tell what changed since last time. Here it remembers the top Hacker News story and only announces a new one. It needs no connection.\n\n1. Click **Test** at the top. The schedule does not wait: Test runs the workflow once, right now.\n2. Open **Logs**: the first run says **New top story**, because nothing was stored yet.\n3. Click **Test** again. Now the log says **Top story unchanged**, because **Remember the story** saved its id in the first run (unless a new story reached the top in the meantime).\n4. Click **Get the stored story id** and look at **Scope**: `Workflow` means the value belongs to this workflow only. Another copy of the template keeps its own value.\n5. To let the schedule fire by itself every hour, click **Publish**, then deploy and enable the workflow. Each run shows up under **Executions**.\n6. **Next:** import *Respond to a webhook* to learn how other apps can start a workflow over HTTP.",
           "id": "setup-note-remember-data-between-runs",
           "position": {
             "x": 20,
             "y": 40
           },
           "size": {
-            "height": 700,
+            "height": 760,
             "width": 370
           }
         }
