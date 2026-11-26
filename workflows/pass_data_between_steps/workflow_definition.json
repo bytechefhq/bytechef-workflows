@@ -41,14 +41,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Start here: pass data between steps\n\nEvery step can use what earlier steps returned. You pick it as a **data pill**, which is written as `${step_name.field}`. This workflow needs no connection.\n\n1. Click **Test** at the top to run it.\n2. Click **Set name and city** and open its **Output** tab: it returned `name` and `city`.\n3. Click **Make the city upper case**. Its text is `${var_1.city}`, the city from step 1, and its output is the same city in capitals.\n4. Click **Log a greeting**. Its text mixes plain words with two pills: `${var_1.name}` and `${textHelper_1}`. Open **Logs** after a run to read the result.\n5. Change the name in **Set name and city** to your own and click **Test** again.\n6. Optional: open **Workflow Inputs** in the right sidebar, add an input called `name` and set a test value for it. Then replace `${var_1.name}` with `${name}` in **Log a greeting** and click **Test**.",
+          "content": "## Start here: pass data between steps\n\nEvery step can use what earlier steps returned. You pick it as a **data pill**, which is written as `${step_name.field}`. This workflow needs no connection.\n\n1. Click **Test** at the top to run it.\n2. Click **Set name and city** and open its **Output** tab: it returned `name` and `city`.\n3. Click **Make the city upper case**. Its text is `${var_1.city}`, the city from step 1, and its output is the same city in capitals.\n4. Click **Log a greeting**. Its text mixes plain words with two pills: `${var_1.name}` and `${textHelper_1}`. Open **Logs** after a run to read the result.\n5. Change the name in **Set name and city** to your own and click **Test** again.\n6. Optional: open **Workflow Inputs** in the right sidebar, add an input called `name` and set a test value for it. Then replace `${var_1.name}` with `${name}` in **Log a greeting** and click **Test**.\n7. **Next:** import *Decide what to do with a condition* to learn how a workflow takes one of two paths.",
           "id": "setup-note-pass-data-between-steps",
           "position": {
             "x": 20,
             "y": 40
           },
           "size": {
-            "height": 560,
+            "height": 620,
             "width": 480
           }
         }

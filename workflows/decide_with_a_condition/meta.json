@@ -1,0 +1,28 @@
+{
+  "name": "Decide what to do with a condition",
+  "category": "getting-started",
+  "description": "Learn how a Condition splits a workflow into two paths. The workflow gets the current weather in Zagreb from the free Open-Meteo API, checks whether it is raining and writes a different message to the log for each case. It runs with one click and needs no connection.",
+  "shortDescription": "Learn how a Condition sends a workflow down one of two paths.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Compare a number from an earlier step with a fixed value",
+    "Run different steps on the True and False paths",
+    "Read fields from a JSON response of a public API"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance",
+    "Internet access to reach api.open-meteo.com"
+  ],
+  "idealFor": "First-time ByteChef users who want to learn how a workflow makes decisions before building their own.",
+  "steps": [
+    "Trigger: the workflow starts when you click Test in the workflow editor.",
+    "Get the current weather: an HTTP GET to the free Open-Meteo API returns the current temperature and rain in Zagreb.",
+    "Is it raining?: a Condition checks whether ${httpClient_1.current.precipitation} is greater than 0.",
+    "True path: the Logger writes how much rain is falling. False path: the Logger writes that no umbrella is needed and the current temperature."
+  ]
+}
