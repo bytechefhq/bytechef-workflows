@@ -1,0 +1,27 @@
+{
+  "name": "Pass data between steps with data pills",
+  "category": "getting-started",
+  "description": "Learn how ByteChef steps share data. A Variable step holds a name and a city, a Text Helper step upper-cases the city, and a Logger step combines both into a greeting using data pills such as ${var_1.name}. It runs with one click and needs no connection.",
+  "shortDescription": "Learn how ByteChef steps pass data to each other with data pills.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Read a step's output and reuse it in a later step with a data pill",
+    "Transform a value with a Text Helper action",
+    "Combine plain text and several data pills in one field"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance"
+  ],
+  "idealFor": "First-time ByteChef users who want to understand how steps share data before building their own workflows.",
+  "steps": [
+    "Trigger: the workflow starts when you click Test in the workflow editor.",
+    "Set name and city: a Variable step returns an object with a name (Ada) and a city (Zagreb).",
+    "Make the city upper case: a Text Helper step takes ${var_1.city} and returns ZAGREB.",
+    "Log a greeting: the Logger writes \"Hello Ada, welcome to ZAGREB!\" using the ${var_1.name} and ${textHelper_1} data pills."
+  ]
+}
