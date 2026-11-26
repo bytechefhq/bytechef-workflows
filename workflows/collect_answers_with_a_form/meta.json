@@ -1,0 +1,26 @@
+{
+  "name": "Collect answers with a form",
+  "category": "getting-started",
+  "description": "Learn how a Form trigger turns a workflow into a web form. Open the form, submit a name, a favourite colour and a lucky number, and the workflow writes the answers to the log with data pills. It needs no connection.",
+  "shortDescription": "Learn how a Form trigger turns a workflow into a web form and how to use the submitted answers.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Build a web form with text and number fields, no code needed",
+    "Run the workflow with a sample submission while testing",
+    "Use each answer in later steps with data pills such as ${trigger_1.body.name}",
+    "Make fields required so every submission is complete"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance"
+  ],
+  "idealFor": "First-time ByteChef users who want to collect input from people with a simple web form.",
+  "steps": [
+    "Trigger: the workflow starts when someone submits the three-question form (name, favourite colour, lucky number).",
+    "Log the answers: the Logger writes \"<name> likes <colour>; lucky number <number>.\" using ${trigger_1.body.name}, ${trigger_1.body.favouriteColour} and ${trigger_1.body.luckyNumber}."
+  ]
+}
