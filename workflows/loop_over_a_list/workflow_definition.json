@@ -1,0 +1,96 @@
+{
+  "label": "Loop over a list of items",
+  "description": "Learn how a Loop repeats steps for every item in a list. The workflow gets 10 sample products from the free DummyJSON API, loops over them, logs each product under $20 and writes a summary when the loop is done. It runs with one click and needs no connection.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Get 10 products",
+      "name": "httpClient_1",
+      "type": "httpClient/v1/get",
+      "maxRetries": 3,
+      "description": "Gets 10 sample products, each with a title and a price, from the free DummyJSON API. The list is in ${httpClient_1.products}.",
+      "parameters": {
+        "allowUnauthorizedCerts": false,
+        "responseType": "JSON",
+        "fullResponse": false,
+        "followAllRedirects": false,
+        "followRedirect": false,
+        "ignoreResponseCode": false,
+        "timeout": 10000,
+        "uri": "https://dummyjson.com/products?limit=10&select=title,price"
+      }
+    },
+    {
+      "label": "For each product",
+      "name": "loop_1",
+      "type": "loop/v1",
+      "description": "Goes through the list in ${httpClient_1.products} one product at a time. The steps inside it see the current product as ${loop_1.item}.",
+      "parameters": {
+        "items": "${httpClient_1.products}",
+        "loopForever": false,
+        "iteratee": [
+          {
+            "label": "Is it under $20?",
+            "name": "condition_1",
+            "type": "condition/v1",
+            "description": "Checks whether the price of the current product, ${loop_1.item.price}, is less than 20. Cheap products go to the True path; the rest are skipped.",
+            "parameters": {
+              "rawExpression": false,
+              "conditions": [
+                [
+                  {
+                    "type": "number",
+                    "value1": "${loop_1.item.price}",
+                    "operation": "LESS",
+                    "value2": 20
+                  }
+                ]
+              ],
+              "caseTrue": [
+                {
+                  "label": "Log the product",
+                  "name": "logger_1",
+                  "type": "logger/v1/info",
+                  "description": "Runs only for products under $20. Writes the title and price of the current item, ${loop_1.item.title} and ${loop_1.item.price}, to the log.",
+                  "parameters": {
+                    "text": "${loop_1.item.title}: ${loop_1.item.price} USD"
+                  }
+                }
+              ],
+              "caseFalse": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Log a summary",
+      "name": "logger_2",
+      "type": "logger/v1/info",
+      "description": "Runs once, after the loop has finished. Writes how many products were checked, using ${httpClient_1.limit}.",
+      "parameters": {
+        "text": "Done: checked ${httpClient_1.limit} products."
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "yellow",
+          "content": "## Start here: loop over a list\n\nA **Loop** runs the steps inside it once for every item in a list. Inside the loop, `${loop_1.item}` is the item of the current round. This workflow goes through 10 sample products and logs the cheap ones. It needs no connection.\n\nA ⚠ on steps that read the product data is normal: the editor cannot know the response fields before a run. The workflow still runs.\n\n1. Click **Test** at the top to run it.\n2. Click **Get 10 products** and open its **Output** tab: `products` is a list of items with a `title` and a `price`.\n3. Click **For each product**. Its **List of items** field is `${httpClient_1.products}`, the list to go through.\n4. Click **Is it under $20?**. It compares `${loop_1.item.price}` with `20`. Only cheap products reach **Log the product**.\n5. Open **Logs** after the run: one line per cheap product, then the summary from **Log a summary**, which runs once, after the loop.\n6. Change `20` to `100` and click **Test** again to see more products.",
+          "id": "setup-note-loop-over-a-list",
+          "position": {
+            "x": 20,
+            "y": 40
+          },
+          "size": {
+            "height": 760,
+            "width": 370
+          }
+        }
+      ]
+    }
+  }
+}

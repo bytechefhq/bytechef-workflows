@@ -1,0 +1,30 @@
+{
+  "name": "Loop over a list of items",
+  "category": "getting-started",
+  "description": "Learn how a Loop repeats steps for every item in a list. The workflow gets 10 sample products from the free DummyJSON API, loops over them, logs each product under $20 and writes a summary when the loop is done. It runs with one click and needs no connection.",
+  "shortDescription": "Learn how a Loop repeats steps for every item in a list.",
+  "author": {
+    "name": "",
+    "email": "",
+    "role": "",
+    "socialLinks": ""
+  },
+  "keyFeatures": [
+    "Loop over a list returned by an earlier step",
+    "Use the current item inside the loop with ${loop_1.item}",
+    "Combine a Loop with a Condition to act only on some items",
+    "Run a step once after the loop has finished"
+  ],
+  "prerequisites": [
+    "A running ByteChef instance",
+    "Internet access to reach dummyjson.com"
+  ],
+  "idealFor": "First-time ByteChef users who want to learn how to process a list of records one by one.",
+  "steps": [
+    "Trigger: the workflow starts when you click Test in the workflow editor.",
+    "Get 10 products: an HTTP GET to the free DummyJSON API returns 10 products with a title and a price.",
+    "For each product: a Loop goes through ${httpClient_1.products} one product at a time.",
+    "Is it under $20?: inside the loop, a Condition checks ${loop_1.item.price}; for cheap products the Logger writes the title and price.",
+    "Log a summary: after the loop, the Logger writes how many products were checked."
+  ]
+}

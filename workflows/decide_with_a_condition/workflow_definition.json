@@ -68,14 +68,14 @@
       "stickyNotes": [
         {
           "color": "yellow",
-          "content": "## Start here: decide with a condition\n\nA **Condition** sends the workflow down one of two paths, **True** or **False**, depending on data from an earlier step. This one checks if it is raining in Zagreb right now. It needs no connection.\n\nA ⚠ on the steps that read the weather is normal: the editor cannot know the response fields before a run. The workflow still runs.\n\n1. Click **Test** at the top to run it.\n2. Click **Get the current weather** and open its **Output** tab. Look for `current.precipitation` (rain in mm) and `current.temperature_2m`.\n3. Click **Is it raining?**. It compares `${httpClient_1.current.precipitation}` with `0` using **Greater**. Steps under **True** run when it rains, steps under **False** when it does not.\n4. Open **Logs** after the run to see which message was written.\n5. To see the other path without waiting for the weather: if the log said no umbrella, change the `0` in **Is it raining?** to `-1`; if it said umbrella, change it to `1000`. Then click **Test** again.\n6. For another city, change `latitude` and `longitude` in the URL of **Get the current weather**.",
+          "content": "## Start here: decide with a condition\n\nA **Condition** sends the workflow down one of two paths, **True** or **False**, depending on data from an earlier step. This one checks if it is raining in Zagreb right now. It needs no connection.\n\nA ⚠ on the steps that read the weather is normal: the editor cannot know the response fields before a run. The workflow still runs.\n\n1. Click **Test** at the top to run it.\n2. Click **Get the current weather** and open its **Output** tab. Look for `current.precipitation` (rain in mm) and `current.temperature_2m`.\n3. Click **Is it raining?**. It compares `${httpClient_1.current.precipitation}` with `0` using **Greater**. Steps under **True** run when it rains, steps under **False** when it does not.\n4. Open **Logs** after the run to see which message was written.\n5. To see the other path without waiting for the weather: if the log said no umbrella, change the `0` in **Is it raining?** to `-1`; if it said umbrella, change it to `1000`. Then click **Test** again.\n6. For another city, change `latitude` and `longitude` in the URL of **Get the current weather**.\n7. **Next:** import *Loop over a list of items* to learn how to repeat steps for every item in a list.",
           "id": "setup-note-decide-with-a-condition",
           "position": {
             "x": 20,
             "y": 40
           },
           "size": {
-            "height": 720,
+            "height": 780,
             "width": 370
           }
         }
