@@ -1,0 +1,85 @@
+{
+  "label": "Run scripts in trusted mode on the GraalVM task runner",
+  "description": "Runs the same host access check on the GraalVM task runner in strict mode and in trusted mode, once in JavaScript and once in Python. Strict mode reports that Java host classes are blocked; trusted mode reads the server's Java version, operating system and memory through them, so you can see what trusted mode lifts.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Strict JavaScript",
+      "name": "strictJavascript",
+      "parameters": {
+        "input": {
+          "name": "ByteChef"
+        },
+        "script": "function perform(input, context) {\n    let hostClassLookup;\n\n    try {\n        Java.type('java.lang.System');\n\n        hostClassLookup = 'allowed';\n    } catch (error) {\n        hostClassLookup = 'blocked: ' + error.message;\n    }\n\n    return {\n        mode: 'strict',\n        greeting: 'Hello, ' + input.name + '!',\n        hostClassLookup,\n    };\n}\n",
+        "taskRunner": {
+          "type": "graalvm",
+          "mode": "strict"
+        }
+      },
+      "type": "script/v1/javascript"
+    },
+    {
+      "label": "Trusted JavaScript",
+      "name": "trustedJavascript",
+      "parameters": {
+        "input": {
+          "name": "ByteChef"
+        },
+        "script": "function perform(input, context) {\n    const System = Java.type('java.lang.System');\n    const Runtime = Java.type('java.lang.Runtime');\n\n    const runtime = Runtime.getRuntime();\n\n    return {\n        mode: 'trusted',\n        greeting: 'Hello, ' + input.name + '!',\n        hostClassLookup: 'allowed',\n        server: {\n            javaVersion: String(System.getProperty('java.version')),\n            osName: String(System.getProperty('os.name')),\n            availableProcessors: runtime.availableProcessors(),\n            maxMemoryMegabytes: Math.round(runtime.maxMemory() / (1024 * 1024)),\n        },\n    };\n}\n",
+        "taskRunner": {
+          "type": "graalvm",
+          "mode": "trusted"
+        }
+      },
+      "type": "script/v1/javascript"
+    },
+    {
+      "label": "Trusted Python",
+      "name": "trustedPython",
+      "parameters": {
+        "input": {
+          "name": "ByteChef"
+        },
+        "script": "import java\n\n\ndef perform(input, context):\n    system = java.type(\"java.lang.System\")\n    runtime = java.type(\"java.lang.Runtime\").getRuntime()\n\n    return {\n        \"mode\": \"trusted\",\n        \"greeting\": \"Hello, \" + input[\"name\"] + \"!\",\n        \"hostClassLookup\": \"allowed\",\n        \"server\": {\n            \"javaVersion\": str(system.getProperty(\"java.version\")),\n            \"osName\": str(system.getProperty(\"os.name\")),\n            \"availableProcessors\": int(runtime.availableProcessors()),\n            \"maxMemoryMegabytes\": round(runtime.maxMemory() / (1024 * 1024)),\n        },\n    }\n",
+        "taskRunner": {
+          "type": "graalvm",
+          "mode": "trusted"
+        }
+      },
+      "type": "script/v1/python"
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- Trusted mode needs `bytechef.script.trusted.enabled=true` (environment variable `BYTECHEF_SCRIPT_TRUSTED_ENABLED=true`). The shipped self-hosted configuration sets it; a multi-tenant installation should turn it off.\n- While it is off, the **Mode** select offers only **Strict**, and the two trusted tasks fail with a message naming that property.\n- No connection and no host tools are needed: the GraalVM runner runs the scripts inside the ByteChef server.",
+          "id": "stickyNote_3286eff3-9c37-57fd-9e67-68930aa111bb",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 400,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- **Strict JavaScript** tries `Java.type('java.lang.System')`. The strict sandbox blocks host classes, so `hostClassLookup` reports the error.\n- **Trusted JavaScript** and **Trusted Python** run with full host access. They read the server's Java version, operating system, processor count and maximum heap through Java classes.\n- Trusted scripts have no CPU or heap limit, only a 5 minute wall-clock timeout unless the task sets **Timeout (seconds)**.",
+          "id": "stickyNote_b31ea2be-4445-56c8-9006-d39a154a761d",
+          "position": {
+            "x": 150.0,
+            "y": 440.0
+          },
+          "size": {
+            "height": 400,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}

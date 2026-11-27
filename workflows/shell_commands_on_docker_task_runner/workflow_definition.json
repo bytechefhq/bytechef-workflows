@@ -1,0 +1,88 @@
+{
+  "label": "Run shell commands on the Docker task runner",
+  "description": "Runs shell command lines on the Docker task runner with environment variables, once without a connection and once with an HTTP Client connection whose parameters the commands read from a JSON file to call an echo API. The commands write their result to output.json.",
+  "inputs": [],
+  "triggers": [],
+  "tasks": [
+    {
+      "label": "Without Connection",
+      "name": "withoutConnection",
+      "parameters": {
+        "commands": [
+          "echo \"$GREETING, $NAME from $(uname -s)/$(uname -m)\"",
+          "echo \"Shell: $(readlink -f /proc/$$/exe 2>/dev/null || echo \"$0\")\"",
+          "ls \"$BYTECHEF_WORKING_DIR\"",
+          "printf '{\"greeting\": \"%s, %s!\", \"kernel\": \"%s\"}\\n' \"$GREETING\" \"$NAME\" \"$(uname -sr)\" > \"$BYTECHEF_OUTPUT_DIR/output.json\""
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "commands/v1/shell"
+    },
+    {
+      "label": "With Connection",
+      "name": "withConnection",
+      "parameters": {
+        "commands": [
+          "apt-get update -qq > /dev/null && apt-get install -y -qq curl jq ca-certificates > /dev/null",
+          "base_uri=\"$(jq -r '.echo.baseUri' \"$BYTECHEF_CONNECTIONS_FILE\")\"",
+          "token=\"$(jq -r '.echo.token' \"$BYTECHEF_CONNECTIONS_FILE\")\"",
+          "echo \"The token as printed by the commands (masked in stdout): $token\"",
+          "response=\"$(curl -sS -H \"Authorization: Bearer $token\" \"$base_uri/get?caller=$NAME\")\"",
+          "jq -n --argjson body \"$response\" --arg expected \"Bearer $token\" '{tokenAccepted: ($body.headers.authorization == $expected), echoedQuery: $body.args}' > \"$BYTECHEF_OUTPUT_DIR/output.json\""
+        ],
+        "env": {
+          "GREETING": "Hello",
+          "NAME": "ByteChef"
+        },
+        "taskRunner": {
+          "type": "docker"
+        }
+      },
+      "type": "commands/v1/shell",
+      "connections": {
+        "echo": {
+          "componentName": "httpClient",
+          "componentVersion": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "stickyNotes": [
+        {
+          "color": "orange",
+          "content": "**Before you run it**\n\n- The **Docker** task runner is off by default. An operator enables it with `bytechef.script.runners.docker.enabled=true` (environment variable `BYTECHEF_SCRIPT_RUNNERS_DOCKER_ENABLED=true`).\n- The ByteChef server needs a Docker daemon it can reach. The first run pulls the default image for the language, which can take a minute.\n- **With Connection** installs `curl` and `jq` with `apt-get` on every run, so the container needs internet access. Bake them into your own image for real use.\n- **With Connection** needs an **HTTP Client** connection with Base URI `https://postman-echo.com` and Bearer Token authentication (any token value works). Select it for the task's `echo` connection.",
+          "id": "stickyNote_7ccbf79a-d753-59c9-aef2-1b1bf3e4e29e",
+          "position": {
+            "x": 150.0,
+            "y": 0.0
+          },
+          "size": {
+            "height": 546,
+            "width": 360
+          }
+        },
+        {
+          "color": "yellow",
+          "content": "**How it works**\n\n- Each line of **Commands** runs as shell code in one execution, with **Environment** setting `GREETING` and `NAME`.\n- The commands write their result as JSON to `$BYTECHEF_OUTPUT_DIR/output.json`, which becomes `vars` in the task output.\n- **With Connection** reads the connection's parameters from the JSON file `$BYTECHEF_CONNECTIONS_FILE` names. The token is masked in the captured output.",
+          "id": "stickyNote_0ae8591b-6d1c-5c2b-9709-78e23fe878ec",
+          "position": {
+            "x": 150.0,
+            "y": 586.0
+          },
+          "size": {
+            "height": 348,
+            "width": 360
+          }
+        }
+      ]
+    }
+  }
+}
