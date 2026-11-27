@@ -1,0 +1,229 @@
+{
+    "label": "Write a daily briefing with a local LLM and send it to Slack",
+    "description": "Every weekday morning, collects your unread Gmail inbox, open Google Tasks, Slack mentions and the next 24 hours of Google Calendar, and hands them to Qwen3 8B running in your own Ollama. The model picks out priorities, things you are waiting on and meetings that need preparation, drops the noise, and the briefing arrives as a Slack direct message with a link back to every source.",
+    "inputs": [],
+    "triggers": [
+        {
+            "label": "Every weekday at 07:30",
+            "description": "Starts the workflow at 07:30 London time, Monday to Friday. Change the hour, days and timezone to match your morning.",
+            "name": "trigger_1",
+            "parameters": {
+                "hour": 7,
+                "minute": 30,
+                "dayOfWeek": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "timezone": "Europe/London"
+            },
+            "type": "schedule/v1/everyDay"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "End of the briefing window",
+            "description": "Adds 24 hours to the trigger time. The calendar step uses this as the end of the window it looks at.",
+            "name": "dateHelper_1",
+            "parameters": {
+                "date": "${trigger_1.dateTime}",
+                "dateFormat": "yyyy-MM-dd'T'HH:mm:ss",
+                "day": 1
+            },
+            "type": "dateHelper/v1/addTime",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Get the next 24 hours of meetings",
+            "description": "Reads events from your primary Google Calendar that fall between now and the same time tomorrow.",
+            "name": "googleCalendar_1",
+            "parameters": {
+                "calendarId": "primary",
+                "eventType": [
+                    "default"
+                ],
+                "maxResults": 250,
+                "dateRange": {
+                    "from": "${trigger_1.dateTime}",
+                    "to": "${dateHelper_1}"
+                }
+            },
+            "type": "googleCalendar/v1/getEvents",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Get open tasks",
+            "description": "Lists the tasks in your default Google Tasks list that are not completed yet.",
+            "name": "googleTasks_1",
+            "parameters": {
+                "listId": "@default",
+                "showCompleted": false
+            },
+            "type": "googleTasks/v1/listTasks",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Find Slack messages that mention me",
+            "description": "Searches Slack for the 30 newest messages that mention you. Replace @your-handle with your own Slack handle.",
+            "name": "slack_1",
+            "parameters": {
+                "query": "@your-handle",
+                "sort": "timestamp",
+                "sortDirection": "desc",
+                "count": 30
+            },
+            "type": "slack/v1/searchMessages",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Find unread inbox emails",
+            "description": "Lists up to 25 unread emails in the Primary inbox category. Gmail returns only the message and thread IDs here, so the loop below reads each one.",
+            "name": "googleMail_1",
+            "parameters": {
+                "labelIds": [
+                    "INBOX",
+                    "UNREAD"
+                ],
+                "category": "primary",
+                "maxResults": 25,
+                "includeSpamTrash": false
+            },
+            "type": "googleMail/v1/searchEmail",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Read each email",
+            "description": "Goes through the unread emails one by one and keeps a compact version of each for the model.",
+            "name": "loop_1",
+            "parameters": {
+                "items": "${googleMail_1.messages}",
+                "loopForever": false,
+                "iteratee": [
+                    {
+                        "label": "Get sender, subject and snippet",
+                        "description": "Fetches only the From, Subject and Date headers plus Gmail's snippet, which keeps the prompt small enough for a local model.",
+                        "name": "googleMail_2",
+                        "parameters": {
+                            "id": "${loop_1.item.id}",
+                            "format": "METADATA",
+                            "metadataHeaders": [
+                                "From",
+                                "Subject",
+                                "Date"
+                            ]
+                        },
+                        "type": "googleMail/v1/getEmail",
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {}
+                            }
+                        }
+                    },
+                    {
+                        "label": "Add the email to the list",
+                        "description": "Appends the headers, snippet and a Gmail link to the emails list stored for this run.",
+                        "name": "dataStorage_1",
+                        "parameters": {
+                            "scope": "CURRENT_EXECUTION",
+                            "key": "emails",
+                            "type": "OBJECT",
+                            "value": {
+                                "headers": "${googleMail_2.payload.headers}",
+                                "snippet": "${googleMail_2.snippet}",
+                                "link": "https://mail.google.com/mail/u/0/#inbox/${loop_1.item.threadId}"
+                            }
+                        },
+                        "type": "dataStorage/v1/appendValueToList",
+                        "metadata": {
+                            "ui": {
+                                "dynamicPropertyTypes": {
+                                    "key": "STRING",
+                                    "value": "OBJECT"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "type": "loop/v1"
+        },
+        {
+            "label": "Get the email list",
+            "description": "Reads back every email the loop collected. Returns an empty list on a morning with no unread email.",
+            "name": "dataStorage_2",
+            "parameters": {
+                "scope": "CURRENT_EXECUTION",
+                "key": "emails",
+                "type": "ARRAY",
+                "defaultValue": []
+            },
+            "type": "dataStorage/v1/getValue",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Write the briefing",
+            "description": "Qwen3 8B in your own Ollama reads the four lists and writes the briefing. Nothing is sent to a hosted AI API. The context window is raised to 16K tokens so a busy morning still fits.",
+            "name": "ollama_1",
+            "parameters": {
+                "model": "qwen3:8b",
+                "format": "SIMPLE",
+                "systemPrompt": "You are a chief of staff who writes one short morning briefing. You do not chat and you do not invent anything.\n\nYou get four lists: unread inbox emails, open tasks, recent Slack messages that mention the user, and calendar events for the next 24 hours. Read all of them, then decide what actually needs the user's attention today.\n\nRules:\n- Ignore newsletters, receipts, marketing, automated notifications and casual chatter.\n- If several emails, messages or tasks are about the same thing, merge them into one item.\n- Every item gets one line of context and the link to its source (the email link, the Slack permalink, the event htmlLink). Never make up a link. If an item has no link, leave the link out.\n- Separate what the user has to do from what the user is waiting on other people for.\n- For each meeting, say what to prepare: open questions from related emails or messages, documents to read, decisions still pending. If nothing relates to a meeting, write \"No prep found\".\n- If a section is empty, write \"Nothing today\".\n- Keep the whole briefing under 300 words.\n\nReply in Slack mrkdwn, exactly in this layout and with nothing before or after it:\n\n*Good morning. Here is your briefing.*\n\n*Priorities*\n- <item> - <one line of context> <link>\n\n*Waiting on others*\n- <who> - <what> <link>\n\n*Meetings to prepare for*\n- <time> <title> - <what to prepare> <link>\n\n*Skipped*\n<number> items looked like noise and were left out.",
+                "userPrompt": "Unread inbox emails:\n${dataStorage_2}\n\nOpen tasks:\n${googleTasks_1}\n\nSlack messages that mention me:\n${slack_1.matches}\n\nCalendar events in the next 24 hours:\n${googleCalendar_1}",
+                "response": {
+                    "responseFormat": "TEXT"
+                },
+                "thinking": false,
+                "temperature": 0.2,
+                "numCtx": 16384,
+                "keepAlive": "5m"
+            },
+            "type": "ollama/v1/ask",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        },
+        {
+            "label": "Send the briefing to me on Slack",
+            "description": "Sends the briefing to you as a Slack direct message. Replace U0123456789 with your own Slack member ID.",
+            "name": "slack_2",
+            "parameters": {
+                "channel": "U0123456789",
+                "text": "${ollama_1}"
+            },
+            "type": "slack/v1/sendDirectMessage",
+            "metadata": {
+                "ui": {
+                    "dynamicPropertyTypes": {}
+                }
+            }
+        }
+    ]
+}
